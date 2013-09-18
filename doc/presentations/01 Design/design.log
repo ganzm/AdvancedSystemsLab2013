@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.8.28)  18 SEP 2013 22:08
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (MiKTeX 2.9) (preloaded format=pdflatex 2012.8.28)  18 SEP 2013 23:51
 entering extended mode
 **design.tex
 
@@ -939,15 +939,9 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 104.
  Design\design.aux")
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 104.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 104.
+Package rerunfilecheck Info: File `design.out' has not changed.
+(rerunfilecheck)             Checksum: FEEAEC4B36ECA3E9FF5C7AA86CDFA0CD;449.
 
-
-Package rerunfilecheck Warning: File `design.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `design.out':
-(rerunfilecheck)             Before: 2082BC02A6A309BD4E2BFE24EF9D2F08;458
-(rerunfilecheck)             After:  FEEAEC4B36ECA3E9FF5C7AA86CDFA0CD;449.
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
@@ -966,7 +960,7 @@ Here is how much of TeX's memory you used:
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmss12.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb
 >
-Output written on design.pdf (10 pages, 89948 bytes).
+Output written on design.pdf (10 pages, 89560 bytes).
 PDF statistics:
  331 PDF objects out of 1000 (max. 8388607)
  30 named destinations out of 1000 (max. 500000)
