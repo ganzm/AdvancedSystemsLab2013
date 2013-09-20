@@ -6,6 +6,10 @@
 \author{Lukas Elmer, Matthias Ganz} 
 \date{\today} 
 
+\usepackage{epstopdf}
+
+
+
 %\usetheme{Antibes}
 %\usecolortheme{default}
 
@@ -27,7 +31,16 @@
 \section{Overview}
 \begin{frame}
 \frametitle{Overview}
-show fancy overview image
+
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.3]{../../drawings/system-overview.eps}
+  \end{center}
+  \caption{System Overview}
+  \label{fig:system-overview}
+\end{figure}
+
 \end{frame}
 
 \section{Database}
@@ -35,6 +48,14 @@ show fancy overview image
 \frametitle{DB Schema}
 
 \end{frame}
+
+
+\section{Database Schema}
+\begin{frame}
+\frametitle{Database Schema}
+Schema, Stored Procedures
+\end{frame}
+
 
 
 \section{Messaging System}
@@ -46,16 +67,17 @@ show fancy overview image
 \end{itemize}
 \end{frame}
 
+\begin{frame}
+\frametitle{Client-Middleware Communication}
+\begin{itemize}
+\item Describe Communication between
+\end{itemize}
+\end{frame}
+
 
 \section{Client}
 \begin{frame}
 Describe the client
-\end{frame}
-
-\section{Database Schema}
-\begin{frame}
-\frametitle{Database Schema}
-Schema, Stored Procedures
 \end{frame}
 
 
@@ -74,32 +96,19 @@ Use JMX?
 \end{frame}
 
 
-
-
-
-
-
-
-
-
-
-\section{Delete me}
-\subsection{Blocks}
+\section{Measurements}
 \begin{frame}
-\frametitle{Bl\"ocke}
-
-\begin{block}{Blocktitel}
-Blocktext 
-\end{block}
-
-\begin{exampleblock}{Blocktitel}
-Blocktext 
-\end{exampleblock}
+\frametitle{What experiments are performed}
 
 
-\begin{alertblock}{Blocktitel}
-Blocktext 
-\end{alertblock}
+\begin{enumerate}
+\item what kind of experiments are performed
+\item how to perform measurements
+\item where to store measurement results (Format, Use DB, etc)
+\end{enumerate}
+
 \end{frame}
+
+
 \end{document}
 
