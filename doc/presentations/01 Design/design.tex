@@ -30,30 +30,35 @@
 
 \section{Overview}
 \begin{frame}
-\frametitle{Overview}
-
+\frametitle{System Overview}
 
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=0.3]{../../drawings/system-overview.eps}
+    \includegraphics[scale=0.2]{../../drawings/system-overview.eps}
   \end{center}
   \caption{System Overview}
   \label{fig:system-overview}
 \end{figure}
 
+The messaging system utilizes a single database instance. On the logic tier multiple broker instances may be running. Each broker serves a certain number of clients.
+
+
 \end{frame}
 
 \section{Database}
 \begin{frame}
-\frametitle{DB Schema}
-
-\end{frame}
-
-
-\section{Database Schema}
-\begin{frame}
 \frametitle{Database Schema}
-Schema, Stored Procedures
+
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.4]{../../database/db-schema.png}
+  \end{center}
+  \caption{Database Schema}
+  \label{fig:db-schema}
+\end{figure}
+
+
+
 \end{frame}
 
 
@@ -68,16 +73,22 @@ Schema, Stored Procedures
 \end{frame}
 
 \begin{frame}
-\frametitle{Client-Middleware Communication}
+\frametitle{Client to Broker Communication}
+Describe Communication between clients and broker
 \begin{itemize}
-\item Describe Communication between
+\item simplified http, only http post
+\item xml over http with fixed content-length
 \end{itemize}
+
+
 \end{frame}
 
 
 \section{Client}
 \begin{frame}
-Describe the client
+\begin{enumerate}
+\item 
+\end{enumerate}
 \end{frame}
 
 
