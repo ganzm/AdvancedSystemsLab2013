@@ -68,18 +68,30 @@ The messaging system utilizes a single database instance. On the logic tier mult
 \frametitle{Server}
 \begin{itemize}
 \item Threading
-\item Java NIO Reactor
+\item Java NIO (Reactor or Leader/Followers)
 \end{itemize}
+http://www.kircher-schwanninger.de/michael/publications/lf.pdf
+
 \end{frame}
 
 \begin{frame}
 \frametitle{Client to Broker Communication}
+
 Describe Communication between clients and broker
 \begin{itemize}
 \item simplified http, only http post
 \item xml over http with fixed content-length
 \end{itemize}
 
+Are we allowed to use this:
+http://docs.oracle.com/javase/7/docs/jre/api/net/httpserver/
+spec/com/sun/net/httpserver/HttpServer.html
+
+HTTP in Java:
+http://docs.oracle.com/javase/6/docs/jre/api/net/httpserver/
+spec/com/sun/net/httpserver/HttpExchange.html
+
+-> Problem: no keep-alive -> bad...?
 
 \end{frame}
 
@@ -87,8 +99,11 @@ Describe Communication between clients and broker
 \section{Client}
 \begin{frame}
 \frametitle{Client}
+Browser: good idea for development and management console.
+But: cannot do many requests and measure them?
 \begin{itemize}
 \item May be implemented as a simple html page running in any browser
+\item Management console in HTTP?
 \end{itemize}
 \end{frame}
 
