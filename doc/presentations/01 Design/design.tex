@@ -71,8 +71,8 @@ The messaging system utilizes a single database instance. On the logic tier mult
 \item Java NIO (Reactor or Leader/Followers)
 \end{itemize}
 http://www.kircher-schwanninger.de/michael/publications/lf.pdf
-
 \end{frame}
+
 
 \begin{frame}
 \frametitle{Client to Broker Communication}
@@ -92,7 +92,20 @@ http://docs.oracle.com/javase/6/docs/jre/api/net/httpserver/
 spec/com/sun/net/httpserver/HttpExchange.html
 
 -> Problem: no keep-alive -> bad...?
+\end{frame}
 
+
+\begin{frame}
+\frametitle{Client to Broker Communication (new)}
+
+Describe Communication between clients and broker
+\begin{itemize}
+\item Serialize POJO's and send it over the network
+\item Header: length of the Java object
+\item Body: serialized Java object
+\item Connection: keep alive, connection pool
+\item Security: no authentication
+\end{itemize}
 \end{frame}
 
 
@@ -104,6 +117,25 @@ But: cannot do many requests and measure them?
 \begin{itemize}
 \item May be implemented as a simple html page running in any browser
 \item Management console in HTTP?
+\end{itemize}
+\end{frame}
+
+
+\section{Client (new)}
+\begin{frame}
+\frametitle{Client}
+\begin{itemize}
+\item Different clients are implemented in Java
+\begin{itemize}
+\item{Only send messages}
+\item{Only read messages}
+\item{Only do request/response}
+\end{itemize}
+\item Management console in HTTP
+\begin{itemize}
+\item{To start/stop the current action}
+\item{To collect statistics}
+\end{itemize}
 \end{itemize}
 \end{frame}
 

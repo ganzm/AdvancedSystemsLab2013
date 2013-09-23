@@ -2,7 +2,8 @@
 \beamer@sectionintoc {1}{Overview}{3}{0}{1}
 \beamer@sectionintoc {2}{Database}{4}{0}{2}
 \beamer@sectionintoc {3}{Messaging System}{5}{0}{3}
-\beamer@sectionintoc {4}{Client}{7}{0}{4}
-\beamer@sectionintoc {5}{Communication Protocol}{8}{0}{5}
-\beamer@sectionintoc {6}{Management Interface}{9}{0}{6}
-\beamer@sectionintoc {7}{Measurements}{10}{0}{7}
+\beamer@sectionintoc {4}{Client}{8}{0}{4}
+\beamer@sectionintoc {5}{Client (new)}{9}{0}{5}
+\beamer@sectionintoc {6}{Communication Protocol}{10}{0}{6}
+\beamer@sectionintoc {7}{Management Interface}{11}{0}{7}
+\beamer@sectionintoc {8}{Measurements}{12}{0}{8}
