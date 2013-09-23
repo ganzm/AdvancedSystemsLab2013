@@ -1,4 +1,4 @@
-package ch.ethz.yamq.test;
+package ch.ethz.mlmq.test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
