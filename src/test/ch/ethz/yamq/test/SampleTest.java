@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class SampleTest {
+	private String userName = "postgres";
+	private String password = "postgres";
 
 	@Test
 	public void testDbConnection() throws Exception {
@@ -14,8 +16,7 @@ public class SampleTest {
 		Class.forName("org.postgresql.Driver");
 		Connection connection = null;
 		connection = DriverManager.getConnection(
-				"jdbc:postgresql://localhost:5432/dbname", "username",
-				"password");
+				"jdbc:postgresql://localhost:5432/yams", userName, password);
 		connection.close();
 
 	}
