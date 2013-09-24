@@ -8,6 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
@@ -130,24 +131,30 @@ public class SelectorTest {
 			// switch to write mode
 			key.interestOps(SelectionKey.OP_WRITE);
 
-			String htmlContent = "<html><body><h1>" + new Date() + "</h1></body></html>";
+			Charset cs = Charset.forName("UTF-8");
+			String htmlContent = "<html><body><h1>" + new Date() + "</h1></body></html>\r\n";
+			byte[] htmlContentRaw = htmlContent.getBytes(cs);
+
 			// @formatter:off
 			String response = "HTTP/1.1 200 OK\r\n" 
 					+ "Content-Type: text/html; charset=UTF-8\r\n" 
 					+ "Content-Lenght: "
-					+ (htmlContent.getBytes(Charset.forName("UTF-8")).length) 
+					+ htmlContentRaw.length 
 					+ "\r\n"
 					+ "Connection: keep-alive\r\n"
 					+ "\r\n" 
 					+ htmlContent;
 			// @formatter:on
 
+			byte[] responseBytes = response.getBytes(cs);
+
 			logger.info("Prepared Response: " + response);
-			logger.info("Response total length: " + response.getBytes(Charset.forName("UTF-8")).length);
+			logger.info("Response total length: " + responseBytes.length);
+			logger.info("Response binary " + Arrays.toString(responseBytes));
 
 			// dirty abuse rx buffer
 			rxBuffer.clear();
-			rxBuffer.put(response.getBytes(Charset.forName("UTF-8")));
+			rxBuffer.put(responseBytes);
 			rxBuffer.flip();
 		} else if (byteCount <= 0) {
 
