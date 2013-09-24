@@ -138,7 +138,7 @@ public class SelectorTest {
 			// @formatter:off
 			String response = "HTTP/1.1 200 OK\r\n" 
 					+ "Content-Type: text/html; charset=UTF-8\r\n" 
-					+ "Content-Lenght: "
+					+ "Content-Length: "
 					+ htmlContentRaw.length 
 					+ "\r\n"
 					+ "Connection: keep-alive\r\n"
