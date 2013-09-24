@@ -45,6 +45,28 @@ The messaging system utilizes a single database instance. On the logic tier mult
 
 \end{frame}
 
+\section{Messaging System}
+
+\begin{frame}
+\frametitle{Broker Internals}
+\begin{itemize}
+\item each broker is responsible for certain queues
+\item clients may ask any broker about who handles requests for a specific queue
+\item a client may connect to any server number of brokers depending on which target queue it wants to send messages
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Server networking}
+\begin{itemize}
+\item Threading (add fancy image here)
+\item Java NIO (Reactor or Leader/Followers)
+\end{itemize}
+http://www.kircher-schwanninger.de/michael/publications/lf.pdf
+\end{frame}
+
+
+
 \section{Database}
 \begin{frame}
 \frametitle{Database Schema}
@@ -56,22 +78,11 @@ The messaging system utilizes a single database instance. On the logic tier mult
   \caption{Database Schema}
   \label{fig:db-schema}
 \end{figure}
-
-
-
 \end{frame}
 
 
 
-\section{Messaging System}
-\begin{frame}
-\frametitle{Server}
-\begin{itemize}
-\item Threading
-\item Java NIO (Reactor or Leader/Followers)
-\end{itemize}
-http://www.kircher-schwanninger.de/michael/publications/lf.pdf
-\end{frame}
+
 
 
 \begin{frame}
@@ -143,7 +154,13 @@ But: cannot do many requests and measure them?
 \section{Communication Protocol}
 \begin{frame}
 \frametitle{Communication Protocol}
-Communication Protocol used by client and server
+\begin{enumerate}
+
+\item Communication Protocol used by client and server
+\item Exception handling
+
+\end{enumerate}
+
 \end{frame}
 
 
@@ -152,6 +169,14 @@ Communication Protocol used by client and server
 \begin{frame}
 \frametitle{Management Interface}
 Use JMX?
+
+\begin{itemize}
+
+\item + little implementation effort
+\item - jmx uses rmi (networking, routing issues)
+\item - using a jmx gui client on the cloud might be difficult (though it's possible)
+
+\end{itemize}
 \end{frame}
 
 

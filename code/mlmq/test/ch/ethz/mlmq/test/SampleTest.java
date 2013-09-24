@@ -1,9 +1,8 @@
-package ch.ethz.yamq.test;
+package ch.ethz.mlmq.test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 public class SampleTest {
@@ -15,8 +14,7 @@ public class SampleTest {
 
 		Class.forName("org.postgresql.Driver");
 		Connection connection = null;
-		connection = DriverManager.getConnection(
-				"jdbc:postgresql://localhost:5432/yams", userName, password);
+		connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/yams", userName, password);
 		connection.close();
 
 	}

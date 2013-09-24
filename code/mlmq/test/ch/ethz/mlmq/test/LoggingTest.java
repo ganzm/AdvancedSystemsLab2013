@@ -1,4 +1,4 @@
-package ch.ethz.yamq.test;
+package ch.ethz.mlmq.test;
 
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -15,6 +15,6 @@ public class LoggingTest {
 		LogManager mgr = LogManager.getLogManager();
 		mgr.addLogger(logger);
 		
-		logger.info("Hello Logger");
+		logger.info("Hello Logger"); 
 	}
 }
