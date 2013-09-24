@@ -19,7 +19,7 @@ public interface Client {
 	 * @return
 	 */
 	ClientDto register();
-	
+
 	/**
 	 * Creates a queue.
 	 * 
@@ -30,17 +30,18 @@ public interface Client {
 	/**
 	 * Deletes a queue.
 	 * 
-	 * @param queue
+	 * @param id
 	 */
-	void deleteQueue(QueueDto queue);
+	void deleteQueue(long id);
 
 	/**
 	 * Sends a message to a specific queue.
 	 * 
-	 * @param queue
-	 * @param message
+	 * @param queueId
+	 * @param content
+	 * @param prio
 	 */
-	void sendMessage(QueueDto queue, MessageDto message);
+	void sendMessage(long queueId, byte[] content, int prio);
 
 	/**
 	 * Sends a message to multiple queues.
@@ -48,15 +49,7 @@ public interface Client {
 	 * @param queues
 	 * @param message
 	 */
-	void sendMessage(List<QueueDto> queues, MessageDto message);
-
-	/**
-	 * Gets the host which is responsible for a specific queue.
-	 * 
-	 * @param queue
-	 * @return
-	 */
-	BrokerDto getHostForQueue(QueueDto queue);
+	void sendMessage(long[] queueIds, byte[] content, int prio);
 
 	/**
 	 * Reads the first message without removing it.
