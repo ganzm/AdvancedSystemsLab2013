@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.ethz.mlmq.nio.ConnectedClient;
@@ -23,7 +24,7 @@ public class SelectorTest {
 
 	private static Logger logger = TestLogger.getLogger();
 
-	@Test
+	@Test @Ignore
 	public void testSelector() throws IOException {
 
 		logger.info("Start Test");
