@@ -6,7 +6,22 @@ package ch.ethz.mlmq.dto;
  * used to filter incoming messages.
  */
 public class MessageQueryInfoDto {
-	private boolean orderByPriority;
-	private QueueDto queueFilter;
-	private ClientDto clientFilter;
+	private QueueDto queue;
+	private ClientDto sender;
+	private boolean shouldOrderByPriority;
+
+	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender,
+			boolean shouldOrderByPriority) {
+		this.queue = queueFilter;
+		this.sender = sender;
+		this.shouldOrderByPriority = shouldOrderByPriority;
+	}
+
+	/**
+	 * @return the queue
+	 */
+	public QueueDto getQueue() {
+		return queue;
+	}
+
 }

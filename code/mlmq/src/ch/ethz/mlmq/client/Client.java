@@ -52,6 +52,14 @@ public interface Client {
 	void sendMessage(long[] queueIds, byte[] content, int prio);
 
 	/**
+	 * Query for queues with pending messages.
+	 * 
+	 * @param queues
+	 * @param message
+	 */
+	List<QueueDto> queuesWithPendingMessages();
+
+	/**
 	 * Reads the first message without removing it.
 	 * 
 	 * @param messageQueryInfo
