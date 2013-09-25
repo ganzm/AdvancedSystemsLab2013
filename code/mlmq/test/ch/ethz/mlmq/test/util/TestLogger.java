@@ -14,19 +14,15 @@ import java.util.logging.StreamHandler;
  */
 public class TestLogger {
 
-	private static Logger singleton;
+	private static Logger instance = initTestLogger();
 
 	/**
-	 * yesss, it's not thread safe. Know that - don't care
+	 * It's thread safe now, right?
 	 * 
 	 * @return
 	 */
 	public static Logger getLogger() {
-		if (singleton == null) {
-			singleton = initTestLogger();
-		}
-
-		return singleton;
+		return instance;
 	}
 
 	private static Logger initTestLogger() {
