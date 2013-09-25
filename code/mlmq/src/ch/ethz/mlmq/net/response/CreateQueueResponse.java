@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.http.response;
+package ch.ethz.mlmq.net.response;
 
 import ch.ethz.mlmq.dto.QueueDto;
 

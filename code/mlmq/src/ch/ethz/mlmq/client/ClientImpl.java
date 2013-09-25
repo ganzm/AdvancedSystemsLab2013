@@ -8,41 +8,65 @@ import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
-import ch.ethz.mlmq.http.request.CreateQueueRequest;
-import ch.ethz.mlmq.http.request.DeleteQueueRequest;
-import ch.ethz.mlmq.http.request.DequeueMessageRequest;
-import ch.ethz.mlmq.http.request.HostForQueueRequest;
-import ch.ethz.mlmq.http.request.PeekMessageRequest;
-import ch.ethz.mlmq.http.request.QueueRequest;
-import ch.ethz.mlmq.http.request.QueuesWithPendingMessagesRequest;
-import ch.ethz.mlmq.http.request.RegistrationRequest;
-import ch.ethz.mlmq.http.request.Request;
-import ch.ethz.mlmq.http.request.SendMessageRequest;
-import ch.ethz.mlmq.http.response.CreateQueueResponse;
-import ch.ethz.mlmq.http.response.HostForQueueResponse;
-import ch.ethz.mlmq.http.response.MessageResponse;
-import ch.ethz.mlmq.http.response.QueuesWithPendingMessagesResponse;
-import ch.ethz.mlmq.http.response.RegistrationResponse;
-import ch.ethz.mlmq.http.response.Response;
+import ch.ethz.mlmq.net.Connection;
+import ch.ethz.mlmq.net.ConnectionPool;
+import ch.ethz.mlmq.net.request.CreateQueueRequest;
+import ch.ethz.mlmq.net.request.DeleteQueueRequest;
+import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.HostForQueueRequest;
+import ch.ethz.mlmq.net.request.PeekMessageRequest;
+import ch.ethz.mlmq.net.request.QueueRequest;
+import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
+import ch.ethz.mlmq.net.request.RegistrationRequest;
+import ch.ethz.mlmq.net.request.Request;
+import ch.ethz.mlmq.net.request.SendMessageRequest;
+import ch.ethz.mlmq.net.response.CreateQueueResponse;
+import ch.ethz.mlmq.net.response.ExceptionResponse;
+import ch.ethz.mlmq.net.response.HostForQueueResponse;
+import ch.ethz.mlmq.net.response.MessageResponse;
+import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
+import ch.ethz.mlmq.net.response.RegistrationResponse;
+import ch.ethz.mlmq.net.response.Response;
 
 class ClientImpl implements Client {
 
 	private ClientDto registeredAs;
 	private HashMap<Long, BrokerDto> hostCache = new HashMap<Long, BrokerDto>();
+	private ConnectionPool brokerConnections;
+	private BrokerDto defaultBroker;
 
-	public ClientImpl() {
+	public ClientImpl(BrokerDto defaultBroker) {
+		this.defaultBroker = defaultBroker;
 		registeredAs = register();
 	}
 
 	private Response sendRequest(QueueRequest request) {
-		BrokerDto broker = hostForQueue(request.getQueueId());
-		// TODO: implement this
-		return null;
+		return sendRequestToBroker(request, hostForQueue(request.getQueueId()));
 	}
-	
+
 	private Response sendRequest(Request request) {
-		// TODO: implement this
-		return null;
+		return sendRequestToBroker(request, defaultBroker);
+	}
+
+	/**
+	 * Sends a request to a specific broker.
+	 * 
+	 * @param request
+	 * @param broker
+	 * @return
+	 */
+	private Response sendRequestToBroker(Request request, BrokerDto broker) {
+		Connection c = brokerConnections.getConnection(broker);
+		Response response = c.submitRequest(request);
+
+		if (response instanceof ExceptionResponse) {
+			ExceptionResponse r = (ExceptionResponse) response;
+			Exception e = r.getException();
+			// TBD: Exception Handling
+			// throw e;
+		}
+
+		return response;
 	}
 
 	private BrokerDto hostForQueue(long queueId) {

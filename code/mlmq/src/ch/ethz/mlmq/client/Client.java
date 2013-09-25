@@ -2,7 +2,6 @@ package ch.ethz.mlmq.client;
 
 import java.util.List;
 
-import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;

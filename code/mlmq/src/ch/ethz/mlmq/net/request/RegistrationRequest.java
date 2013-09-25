@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.http.request;
+package ch.ethz.mlmq.net.request;
 
 public class RegistrationRequest implements Request {
 
