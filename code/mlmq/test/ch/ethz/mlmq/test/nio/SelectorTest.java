@@ -41,12 +41,6 @@ public class SelectorTest {
 
 		boolean running = true;
 		while (running) {
-
-			try {
-				Thread.sleep(200);
-			} catch (InterruptedException e) {
-			}
-
 			logger.info("before select");
 			selector.select();
 			logger.info("after select");
@@ -55,11 +49,9 @@ public class SelectorTest {
 			Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 			while (keyIterator.hasNext()) {
 				try {
-
 					SelectionKey key = keyIterator.next();
 
 					logger.info("Interested Ops of " + key.attachment() + " is " + key.interestOps());
-
 					if (key.isAcceptable()) {
 						logger.info(key.channel() + " channel is " + "acceptable");
 						ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();
@@ -87,13 +79,11 @@ public class SelectorTest {
 						logger.info(key.channel() + " " + key.attachment() + " channel is " + "isWritable");
 						write(selector, key);
 					}
-
 				} catch (Exception ex) {
 					logger.info("Exception " + ex);
 				} finally {
 					keyIterator.remove();
 				}
-
 			}
 		}
 	}
