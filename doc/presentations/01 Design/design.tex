@@ -1,6 +1,5 @@
 
 
-
 \documentclass{beamer}
 \title{Advanced Systems Lab - Design} 
 \author{Lukas Elmer, Matthias Ganz} 
@@ -34,13 +33,13 @@
 
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=0.2]{../../drawings/system-overview.eps}
+  
+    \includegraphics[scale=0.3]{../../drawings/system-overview.eps}
+    
   \end{center}
   \caption{System Overview}
   \label{fig:system-overview}
 \end{figure}
-
-The messaging system utilizes a single database instance. On the logic tier multiple broker instances may be running. Each broker serves a certain number of clients.
 
 
 \end{frame}
@@ -48,11 +47,13 @@ The messaging system utilizes a single database instance. On the logic tier mult
 \section{Messaging System}
 
 \begin{frame}
-\frametitle{Broker Internals}
+\frametitle{System Overview}
 \begin{itemize}
-\item each broker is responsible for certain queues
-\item clients may ask any broker about who handles requests for a specific queue
-\item a client may connect to any server number of brokers depending on which target queue it wants to send messages
+\item The messaging system utilizes a single database instance. 
+\item On the logic tier multiple broker instances may be running. 
+\item Each broker is responsible for certain queues.
+\item Clients may ask any broker about who handles requests for a specific queue.
+\item A client may connect to any number of brokers depending on which target queue it wants to send messages.
 \end{itemize}
 \end{frame}
 
@@ -63,7 +64,7 @@ The messaging system utilizes a single database instance. On the logic tier mult
 \frametitle{Broker Threading}
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=0.2]{../../drawings/broker-threading.eps}
+    \includegraphics[scale=0.42]{../../drawings/broker-threading.eps}
   \end{center}
   \caption{Broker Threading}
   \label{fig:broker-threading}
@@ -73,14 +74,13 @@ The messaging system utilizes a single database instance. On the logic tier mult
 \end{frame}
 
 
-\begin{frame}
-\frametitle{Server networking}
-\begin{itemize}
-\item Threading (add fancy image here)
-\item Java NIO (Reactor or Leader/Followers)
-\end{itemize}
-http://www.kircher-schwanninger.de/michael/publications/lf.pdf
-\end{frame}
+%% \begin{frame}
+%% \frametitle{Server networking}
+%% \begin{itemize}
+%% \item Java NIO (Reactor or Leader/Followers)
+%% \end{itemize}
+%% http://www.kircher-schwanninger.de/michael/publications/lf.pdf
+%% \end{frame}
 
 
 
@@ -90,7 +90,7 @@ http://www.kircher-schwanninger.de/michael/publications/lf.pdf
 
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=1.0]{../../database/db-schema.png}
+    \includegraphics[scale=0.42]{../../database/db-schema.png}
   \end{center}
   \caption{Database Schema}
   \label{fig:db-schema}
@@ -99,116 +99,40 @@ http://www.kircher-schwanninger.de/michael/publications/lf.pdf
 
 
 
-
-
-
 \begin{frame}
 \frametitle{Client to Broker Communication}
 
-Describe Communication between clients and broker
 \begin{itemize}
-\item simplified http, only http post
-\item xml over http with fixed content-length
-\end{itemize}
-
-Are we allowed to use this:
-http://docs.oracle.com/javase/7/docs/jre/api/net/httpserver/
-spec/com/sun/net/httpserver/HttpServer.html
-
-HTTP in Java:
-http://docs.oracle.com/javase/6/docs/jre/api/net/httpserver/
-spec/com/sun/net/httpserver/HttpExchange.html
-
--> Problem: no keep-alive -> bad...?
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Client to Broker Communication (new)}
-
-Describe Communication between clients and broker
-\begin{itemize}
+\item Header: Length of the Java object in bytes.
+\item Body: Serialized Java object (Request, Response).
 \item Serialize POJO's and send it over the network
-\item Header: length of the Java object
-\item Body: serialized Java object
 \item Connection: keep alive, connection pool
-\item Security: no authentication
+\item Security: no authentication, no encryption
 \end{itemize}
 \end{frame}
+
 
 
 \section{Client}
 \begin{frame}
 \frametitle{Client}
-Browser: good idea for development and management console.
-But: cannot do many requests and measure them?
 \begin{itemize}
-\item May be implemented as a simple html page running in any browser
-\item Management console in HTTP?
-\end{itemize}
-\end{frame}
-
-
-\section{Client (new)}
-\begin{frame}
-\frametitle{Client}
-\begin{itemize}
-\item Different clients are implemented in Java
+\item Clients may have different configurations depending on the test case currently performed.
 \begin{itemize}
 \item{Only send messages}
 \item{Only read messages}
 \item{Only do request/response}
 \end{itemize}
-\item Management console in HTTP
+
+\item Management interface in HTTP
 \begin{itemize}
 \item{To start/stop the current action}
 \item{To collect statistics}
 \end{itemize}
+\item Use any Browser as Management Interface
 \end{itemize}
 \end{frame}
 
-
-\section{Communication Protocol}
-\begin{frame}
-\frametitle{Communication Protocol}
-\begin{enumerate}
-
-\item Communication Protocol used by client and server
-\item Exception handling
-
-\end{enumerate}
-
-\end{frame}
-
-
-
-\section{Management Interface}
-\begin{frame}
-\frametitle{Management Interface}
-Use JMX?
-
-\begin{itemize}
-
-\item + little implementation effort
-\item - jmx uses rmi (networking, routing issues)
-\item - using a jmx gui client on the cloud might be difficult (though it's possible)
-
-\end{itemize}
-\end{frame}
-
-
-\section{Measurements}
-\begin{frame}
-\frametitle{What experiments are performed}
-
-
-\begin{enumerate}
-\item what kind of experiments are performed
-\item how to perform measurements
-\item where to store measurement results (Format, Use DB, etc)
-\end{enumerate}
-
-\end{frame}
 
 
 \end{document}
