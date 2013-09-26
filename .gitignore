@@ -1,3 +1,9 @@
 .metadata
 code/mlmq/target/classes/META-INF/
 *.class
+*.aux
+*.nav
+*.log
+*.snm
+*.synctex.gz
+*.toc
