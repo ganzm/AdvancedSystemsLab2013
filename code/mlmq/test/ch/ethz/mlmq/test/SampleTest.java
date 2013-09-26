@@ -14,7 +14,7 @@ public class SampleTest {
 
 		Class.forName("org.postgresql.Driver");
 		Connection connection = null;
-		connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/yams", userName, password);
+		connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432", userName, password);
 		connection.close();
 
 	}

@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.test.nio;
+package ch.ethz.mlmq.samle.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,18 +14,18 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
 import ch.ethz.mlmq.nio.ConnectedClient;
 import ch.ethz.mlmq.test.util.TestLogger;
 
-public class SelectorTest {
+public class SelectorSample {
 
 	private static Logger logger = TestLogger.getLogger();
 
-	@Test @Ignore
-	public void testSelector() throws IOException {
+	public static void main(String[] args) throws IOException {
+		new SelectorSample().run();
+	}
+
+	public void run() throws IOException {
 
 		logger.info("Start Test");
 		Selector selector = Selector.open();

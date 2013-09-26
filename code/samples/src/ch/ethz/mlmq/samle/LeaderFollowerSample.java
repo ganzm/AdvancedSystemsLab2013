@@ -1,14 +1,16 @@
-package ch.ethz.mlmq.test;
+package ch.ethz.mlmq.samle;
 
+import java.io.IOException;
 import java.util.Random;
 
-import org.junit.Test;
-
-public class LeaderFollowerTest {
+public class LeaderFollowerSample {
 
 	private ThreadPool threadPool;
 
-	@Test
+	public static void main(String[] args) throws IOException, InterruptedException {
+		new LeaderFollowerSample().testLeaderFollower();
+	}
+
 	public void testLeaderFollower() throws InterruptedException {
 		threadPool = new ThreadPool();
 
