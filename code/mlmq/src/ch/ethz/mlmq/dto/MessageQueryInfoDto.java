@@ -24,4 +24,12 @@ public class MessageQueryInfoDto {
 		return queue;
 	}
 
+	public ClientDto getSender() {
+		return sender;
+	}
+
+	public boolean shouldOrderByPriority() {
+		return shouldOrderByPriority;
+	}
+
 }

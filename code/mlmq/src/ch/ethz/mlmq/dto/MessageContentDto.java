@@ -8,9 +8,13 @@ package ch.ethz.mlmq.dto;
  */
 public class MessageContentDto {
 
+	@SuppressWarnings("unused")
 	private long id;
+	@SuppressWarnings("unused")
 	private byte[] content;
+	@SuppressWarnings("unused")
 	private int prio;
+	@SuppressWarnings("unused")
 	private ClientDto sender;
 
 }

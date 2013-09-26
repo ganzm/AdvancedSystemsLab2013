@@ -38,6 +38,8 @@ class ClientImpl implements Client {
 	public ClientImpl(BrokerDto defaultBroker) {
 		this.defaultBroker = defaultBroker;
 		registeredAs = register();
+		if (registeredAs == null)
+			throw new RuntimeException("W00t");
 	}
 
 	private Response sendRequest(QueueRequest request) {
@@ -62,6 +64,8 @@ class ClientImpl implements Client {
 		if (response instanceof ExceptionResponse) {
 			ExceptionResponse r = (ExceptionResponse) response;
 			Exception e = r.getException();
+			if (e != null)
+				throw new RuntimeException("W00t");
 			// TBD: Exception Handling
 			// throw e;
 		}

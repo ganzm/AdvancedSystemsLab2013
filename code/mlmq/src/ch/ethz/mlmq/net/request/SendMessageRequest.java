@@ -1,10 +1,9 @@
 package ch.ethz.mlmq.net.request;
 
-import java.util.List;
-
-import ch.ethz.mlmq.dto.QueueDto;
 
 public class SendMessageRequest implements QueueRequest {
+
+	private static final long serialVersionUID = 5365826671308061202L;
 
 	private long queueId;
 

@@ -7,6 +7,7 @@ package ch.ethz.mlmq.dto;
  * 
  */
 public class ClientDto {
+	@SuppressWarnings("unused")
 	private long id;
 
 }

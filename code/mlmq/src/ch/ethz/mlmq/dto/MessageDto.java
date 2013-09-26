@@ -8,8 +8,11 @@ package ch.ethz.mlmq.dto;
  */
 public class MessageDto {
 
+	@SuppressWarnings("unused")
 	private long id;
+	@SuppressWarnings("unused")
 	private MessageContentDto messageContent;
+	@SuppressWarnings("unused")
 	private QueueDto queue;
 
 }
