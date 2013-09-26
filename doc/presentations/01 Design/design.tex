@@ -134,6 +134,22 @@
 \end{frame}
 
 
+\section{Design Choices}
+\begin{frame}
+\frametitle{Design Choices}
+
+\begin{itemize}
+\item{Every client has a private queue}
+\item{Private messages can only be sent to private queues}
+\item{Every queue is handled by a specific host, this allows caching}
+\item{A message sent to multiple queues is equal to sending multiple messages with the same content to specific queues}
+\end{itemize}
+
+\end{frame}
+
+
+
+
 \section{Request}
 \begin{frame}
 \frametitle{Request}
