@@ -26,7 +26,8 @@ CREATE TABLE message (
   queue_id INTEGER NOT NULL REFERENCES queue (id),
   client_sender_id INTEGER NOT NULL REFERENCES client (id),
   content VARCHAR,
-  prio SMALLINT
+  prio SMALLINT,
+  sent_at time without time zone NOT NULL DEFAULT now()
 );
 
 
