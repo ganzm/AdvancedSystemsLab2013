@@ -1,5 +1,7 @@
 package ch.ethz.mlmq.db;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,12 +11,14 @@ import java.util.logging.Logger;
 /**
  * Helper to initialize, update and drop a Database Schema
  * 
- * 
  */
 public class DatabaseInitializer {
 
 	private static final Logger logger = Logger.getLogger("default");
 
+	/**
+	 * DB connection string for examle jdbc:postgresql://localhost:5432/
+	 */
 	private final String url;
 	private final String userName;
 	private final String password;
@@ -80,6 +84,24 @@ public class DatabaseInitializer {
 		try (Statement stmt = connection.createStatement()) {
 			logger.info("Executing " + sqlStatement);
 			stmt.execute(sqlStatement);
+		}
+	}
+
+	public void createTables() throws SQLException {
+		String scriptFile = "db/001_table_create.sql";
+		logger.info("Create Tables - exec " + scriptFile);
+
+		String urlToSchema = url + schemaName;
+		logger.info("Connect to Schema with URL: " + urlToSchema);
+
+		try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile);
+				Connection createTableConnection = DriverManager.getConnection(url, userName, password);
+
+		) {
+			ScriptRunner runner = new ScriptRunner();
+			runner.execute(scriptStream, createTableConnection);
+		} catch (IOException e) {
+			throw new SQLException("Eror reading " + scriptFile, e);
 		}
 	}
 }

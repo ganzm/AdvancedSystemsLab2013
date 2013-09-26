@@ -19,6 +19,7 @@ public class DatabaseSetupTest {
 
 		dbInitializer.connect();
 		dbInitializer.createSchema();
+
 		dbInitializer.deleteSchema();
 	}
 }
