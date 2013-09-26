@@ -22,18 +22,18 @@ public class DatabaseInitializer {
 	private final String url;
 	private final String userName;
 	private final String password;
-	private final String schemaName;
+	private final String databaseName;
 
 	/**
 	 * This Initializer maintains it's own database connection
 	 */
 	private Connection connection = null;
 
-	public DatabaseInitializer(String url, String userName, String password, String schemaName) {
+	public DatabaseInitializer(String url, String userName, String password, String databaseName) {
 		this.password = password;
 		this.userName = userName;
 		this.url = url;
-		this.schemaName = schemaName;
+		this.databaseName = databaseName.toLowerCase();
 	}
 
 	/**
@@ -56,10 +56,10 @@ public class DatabaseInitializer {
 		}
 	}
 
-	public void createSchema() throws SQLException {
+	public void createDatabase() throws SQLException {
 		//@formatter:off
 		String sqlStatement = "" 
-				+ " CREATE DATABASE " + schemaName 
+				+ " CREATE DATABASE " + databaseName 
 				+ " WITH OWNER = " + userName
 				+ " ENCODING = 'UTF8'"
 				+ " TABLESPACE = pg_default"
@@ -74,10 +74,10 @@ public class DatabaseInitializer {
 		}
 	}
 
-	public void deleteSchema() throws SQLException {
+	public void deleteDatabase() throws SQLException {
 		//@formatter:off
 		String sqlStatement = "" 
-				+ " DROP DATABASE " + schemaName
+				+ " DROP DATABASE " + databaseName
 				+ ";";
 		//@formatter:on
 
@@ -91,11 +91,11 @@ public class DatabaseInitializer {
 		String scriptFile = "db/001_table_create.sql";
 		logger.info("Create Tables - exec " + scriptFile);
 
-		String urlToSchema = url + schemaName;
-		logger.info("Connect to Schema with URL: " + urlToSchema);
+		String urlToDatabase = url + "/" + databaseName;
+		logger.info("Connect to Database with URL: " + urlToDatabase);
 
 		try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile);
-				Connection createTableConnection = DriverManager.getConnection(url, userName, password);
+				Connection createTableConnection = DriverManager.getConnection(urlToDatabase, userName, password);
 
 		) {
 			ScriptRunner runner = new ScriptRunner();

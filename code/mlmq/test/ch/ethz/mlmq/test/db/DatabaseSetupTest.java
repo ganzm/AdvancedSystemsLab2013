@@ -18,8 +18,9 @@ public class DatabaseSetupTest {
 		DatabaseInitializer dbInitializer = new DatabaseInitializer(url, userName, password, "mlmqUnitTest" + System.currentTimeMillis());
 
 		dbInitializer.connect();
-		dbInitializer.createSchema();
+		dbInitializer.createDatabase();
 
-		dbInitializer.deleteSchema();
+		dbInitializer.createTables();
+		// dbInitializer.deleteSchema();
 	}
 }

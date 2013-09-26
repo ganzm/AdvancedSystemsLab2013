@@ -1,7 +1,4 @@
 
--- --------------------------------
--- Create Tables
--- --------------------------------
 
 CREATE TABLE broker (
   id INTEGER PRIMARY KEY,
@@ -15,6 +12,7 @@ CREATE TABLE client (
   sessiont_token VARCHAR,
   connected BOOLEAN
 );
+
 
 CREATE TABLE queue (
   id INTEGER PRIMARY KEY,
@@ -31,8 +29,10 @@ CREATE TABLE message (
   prio SMALLINT
 );
 
+
 CREATE TABLE request_response (
   id INTEGER PRIMARY KEY,
   message_request_id INTEGER NOT NULL REFERENCES client (id),
   message_response_id INTEGER REFERENCES client (id)
 );
+
