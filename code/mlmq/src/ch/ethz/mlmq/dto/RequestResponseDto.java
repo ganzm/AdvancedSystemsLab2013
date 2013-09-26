@@ -11,4 +11,16 @@ public class RequestResponseDto {
 	private MessageDto request;
 	private MessageDto response;
 
+	public long getId() {
+		return id;
+	}
+
+	public MessageDto getRequest() {
+		return request;
+	}
+
+	public MessageDto getResponse() {
+		return response;
+	}
+
 }

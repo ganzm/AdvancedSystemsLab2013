@@ -1,7 +1,7 @@
 package ch.ethz.mlmq.net.request;
 
-import ch.ethz.mlmq.dto.QueueDto;
-
 public class QueuesWithPendingMessagesRequest implements Request {
+
+	private static final long serialVersionUID = -4299769935652705291L;
 
 }

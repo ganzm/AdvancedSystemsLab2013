@@ -7,7 +7,10 @@ package ch.ethz.mlmq.dto;
  * 
  */
 public class BrokerDto {
+	@SuppressWarnings("unused")
 	private long id;
+	@SuppressWarnings("unused")
 	private String host;
+	@SuppressWarnings("unused")
 	private int port;
 }

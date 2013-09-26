@@ -1,6 +1,5 @@
 package ch.ethz.mlmq.net;
 
-import ch.ethz.mlmq.net.request.QueueRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.response.Response;
 
