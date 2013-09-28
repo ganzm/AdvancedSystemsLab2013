@@ -12,20 +12,8 @@ import java.util.logging.StreamHandler;
  */
 public class TestLogger {
 
-	private static Logger instance = initConsoleLogger();
-	public static String CONSOLE_LOGGER = "ConsoleLogger";
-
-	/**
-	 * It's thread safe now, right?
-	 * 
-	 * @return
-	 */
-	public static Logger getLogger() {
-		return instance;
-	}
-
-	private static Logger initConsoleLogger() {
-		Logger logger = Logger.getLogger(CONSOLE_LOGGER);
+	public static void initConsoleLogging() {
+		Logger logger = Logger.getGlobal();
 
 		Formatter formatter = new SimpleFormatter();
 
@@ -41,8 +29,8 @@ public class TestLogger {
 
 		logger.setUseParentHandlers(false);
 		logger.addHandler(streamHandler);
-		logger.info("TestLogger initialized");
+		logger.info("TestLogger " + logger.getName() + " initialized");
 
-		return logger;
 	}
+
 }

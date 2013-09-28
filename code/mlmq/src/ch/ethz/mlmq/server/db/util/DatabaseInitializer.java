@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class DatabaseInitializer {
 
-	private static final Logger logger = Logger.getLogger("default");
+	private final Logger logger = Logger.getLogger("DatabaseInitializer");
 
 	/**
 	 * DB connection string for examle jdbc:postgresql://localhost:5432/

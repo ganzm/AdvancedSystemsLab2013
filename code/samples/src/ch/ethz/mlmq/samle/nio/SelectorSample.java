@@ -19,9 +19,11 @@ import ch.ethz.mlmq.test.util.TestLogger;
 
 public class SelectorSample {
 
-	private static Logger logger = TestLogger.getLogger();
+	private static Logger logger = Logger.getLogger("SelectorSample");
 
 	public static void main(String[] args) throws IOException {
+		TestLogger.initConsoleLogging();
+
 		new SelectorSample().run();
 	}
 

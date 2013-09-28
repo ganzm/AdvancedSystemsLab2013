@@ -1,6 +1,5 @@
 package ch.ethz.mlmq.server.db;
 
-import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
@@ -58,11 +57,7 @@ public class DbConnectionPool {
 		logger.info("Closing DbConnectionPool...");
 
 		for (DbConnection conn : connections) {
-			try {
-				conn.close();
-			} catch (IOException e) {
-				logger.severe("IOException while closing connection " + e);
-			}
+			conn.close();
 		}
 
 		logger.info("DbConnectionPool closed");
