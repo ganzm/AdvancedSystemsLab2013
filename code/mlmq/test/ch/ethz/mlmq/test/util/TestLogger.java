@@ -9,12 +9,11 @@ import java.util.logging.StreamHandler;
 /**
  * Creates a simple java.util.Logger for UnitTests
  * 
- * @author ganzm
- * 
  */
 public class TestLogger {
 
-	private static Logger instance = initTestLogger();
+	private static Logger instance = initConsoleLogger();
+	public static String CONSOLE_LOGGER = "ConsoleLogger";
 
 	/**
 	 * It's thread safe now, right?
@@ -25,8 +24,8 @@ public class TestLogger {
 		return instance;
 	}
 
-	private static Logger initTestLogger() {
-		Logger logger = Logger.getLogger("TestLogger");
+	private static Logger initConsoleLogger() {
+		Logger logger = Logger.getLogger(CONSOLE_LOGGER);
 
 		Formatter formatter = new SimpleFormatter();
 
@@ -43,8 +42,6 @@ public class TestLogger {
 		logger.setUseParentHandlers(false);
 		logger.addHandler(streamHandler);
 		logger.info("TestLogger initialized");
-
-		streamHandler.flush();
 
 		return logger;
 	}

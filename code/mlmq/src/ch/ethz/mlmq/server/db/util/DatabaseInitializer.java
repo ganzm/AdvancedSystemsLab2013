@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.db;
+package ch.ethz.mlmq.server.db.util;
 
 import java.io.IOException;
 import java.io.InputStream;

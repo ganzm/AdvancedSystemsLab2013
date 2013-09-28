@@ -32,10 +32,11 @@ class ClientImpl implements Client {
 
 	private ClientDto registeredAs;
 	private HashMap<Long, BrokerDto> hostCache = new HashMap<Long, BrokerDto>();
-	private ConnectionPool brokerConnections;
+	private final ConnectionPool brokerConnections;
 	private BrokerDto defaultBroker;
 
 	public ClientImpl(BrokerDto defaultBroker) {
+		this.brokerConnections = new ConnectionPool();
 		this.defaultBroker = defaultBroker;
 		registeredAs = register();
 		if (registeredAs == null)
@@ -77,8 +78,7 @@ class ClientImpl implements Client {
 		if (hostCache.containsKey(queueId))
 			return hostCache.get(queueId);
 
-		HostForQueueResponse response = (HostForQueueResponse) sendRequest(new HostForQueueRequest(
-				queueId));
+		HostForQueueResponse response = (HostForQueueResponse) sendRequest(new HostForQueueRequest(queueId));
 		hostCache.put(queueId, response.getBrokerDto());
 
 		return hostForQueue(queueId);
@@ -115,15 +115,13 @@ class ClientImpl implements Client {
 
 	@Override
 	public MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) {
-		MessageResponse response = (MessageResponse) sendRequest(new PeekMessageRequest(
-				messageQueryInfo));
+		MessageResponse response = (MessageResponse) sendRequest(new PeekMessageRequest(messageQueryInfo));
 		return response.getMessageDto();
 	}
 
 	@Override
 	public MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) {
-		MessageResponse response = (MessageResponse) sendRequest(new DequeueMessageRequest(
-				messageQueryInfo));
+		MessageResponse response = (MessageResponse) sendRequest(new DequeueMessageRequest(messageQueryInfo));
 		return response.getMessageDto();
 	}
 

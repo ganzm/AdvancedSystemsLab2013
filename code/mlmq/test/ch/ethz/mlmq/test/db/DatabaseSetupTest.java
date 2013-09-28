@@ -4,7 +4,7 @@ import java.sql.SQLException;
 
 import org.junit.Test;
 
-import ch.ethz.mlmq.db.DatabaseInitializer;
+import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 
 public class DatabaseSetupTest {
 
@@ -19,8 +19,7 @@ public class DatabaseSetupTest {
 
 		dbInitializer.connect();
 		dbInitializer.createDatabase();
-
 		dbInitializer.createTables();
-		// dbInitializer.deleteSchema();
+		dbInitializer.deleteDatabase();
 	}
 }

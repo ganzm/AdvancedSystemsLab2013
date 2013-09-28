@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.db;
+package ch.ethz.mlmq.server.db.util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;

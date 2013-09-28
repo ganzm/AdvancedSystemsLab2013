@@ -8,16 +8,14 @@ CREATE TABLE broker (
 
 
 CREATE TABLE client (
-  id INTEGER PRIMARY KEY,
-  sessiont_token VARCHAR,
-  connected BOOLEAN
+  id INTEGER PRIMARY KEY
 );
 
 
 CREATE TABLE queue (
   id INTEGER PRIMARY KEY,
   client_id INTEGER REFERENCES client (id),
-  broker_id INTEGER NOT NULL REFERENCES broker (id)
+  broker_id INTEGER NULL REFERENCES broker (id)
 );
 
 
