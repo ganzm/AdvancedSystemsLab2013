@@ -34,8 +34,7 @@ public class DbConnection implements Closeable {
 		this.connection = DriverManager.getConnection(url, userName, password);
 
 		queueDao = new QueueDao();
-		queueDao.init();
-
+		queueDao.init(connection);
 	}
 
 	@Override

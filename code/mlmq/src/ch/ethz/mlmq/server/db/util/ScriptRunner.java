@@ -26,7 +26,8 @@ public class ScriptRunner {
 
 		String fileContentString = streamToString(scriptStream);
 
-		String[] sqlCommands = fileContentString.split(";");
+		// hack - we simplify sql script parsing here
+		String[] sqlCommands = split(fileContentString);
 
 		for (String sqlCommand : sqlCommands) {
 			String sqlCommandTrimed = sqlCommand.trim();
@@ -36,6 +37,10 @@ public class ScriptRunner {
 				stmt.execute(sqlCommandTrimed);
 			}
 		}
+	}
+
+	protected String[] split(String fileContentString) {
+		return fileContentString.split(";");
 	}
 
 	private String streamToString(InputStream scriptStream) throws IOException {

@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.test;
+package ch.ethz.mlmq.test.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,18 +9,14 @@ import ch.ethz.mlmq.server.BrokerConfiguration;
 
 public class DBConnectionTest {
 
-	private String userName;
-	private String password;
-	private String url;
-
 	@Test
 	public void testDbConnection() throws Exception {
 
 		BrokerConfiguration config = BrokerConfiguration.load("unittestconfig.properties");
 
-		userName = config.getDbUserName();
-		password = config.getDbPassword();
-		url = config.getDbUrl();
+		String userName = config.getDbUserName();
+		String password = config.getDbPassword();
+		String url = config.getDbUrl();
 
 		Class.forName("org.postgresql.Driver");
 		Connection connection = DriverManager.getConnection(url, userName, password);

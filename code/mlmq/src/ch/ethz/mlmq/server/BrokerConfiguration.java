@@ -18,6 +18,7 @@ public final class BrokerConfiguration {
 	private static final String DB_USERNAME = "db.username";
 	private static final String DB_PASSWORD = "db.password";
 	private static final String DB_URL = "db.url";
+	private static final String DB_NAME = "db.name";
 
 	private int listenPort = 8099;
 	private int workerThreadCount = 5;
@@ -25,8 +26,11 @@ public final class BrokerConfiguration {
 	private String dbUserName = "postgres";
 	private String dbPassword = "postgres";
 	private String dbUrl = "jdbc:postgresql://localhost:5432";
+	private String dbName = "mlmq";
 
 	public static BrokerConfiguration load(String fileName) throws IOException {
+		logger.info("Load BrokerConfiguration from " + fileName);
+
 		try (InputStream inStream = BrokerConfiguration.class.getClassLoader().getResourceAsStream(fileName)) {
 			return load(inStream);
 		}
@@ -45,6 +49,7 @@ public final class BrokerConfiguration {
 		config.dbUserName = props.getProperty(DB_USERNAME);
 		config.dbPassword = props.getProperty(DB_PASSWORD);
 		config.dbUrl = props.getProperty(DB_URL);
+		config.dbName = props.getProperty(DB_NAME);
 
 		return config;
 	}
@@ -71,6 +76,17 @@ public final class BrokerConfiguration {
 
 	public String getDbUrl() {
 		return dbUrl;
+	}
+
+	public String getDbName() {
+		return dbName;
+	}
+
+	public String getDbUrlWithDbName() {
+		if (dbUrl.endsWith("/")) {
+			return dbUrl + dbName;
+		}
+		return dbUrl + "/" + dbName;
 	}
 
 }
