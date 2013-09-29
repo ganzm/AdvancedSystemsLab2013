@@ -14,15 +14,15 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.nio.ConnectedClient;
-import ch.ethz.mlmq.test.util.TestLogger;
 
 public class SelectorSample {
 
-	private static Logger logger = Logger.getLogger("SelectorSample");
+	private Logger logger = Logger.getLogger("SelectorSample");
 
 	public static void main(String[] args) throws IOException {
-		TestLogger.initConsoleLogging();
+		LoggerUtil.initConsoleDebug();
 
 		new SelectorSample().run();
 	}

@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
-import ch.ethz.mlmq.test.util.TestLogger;
 
 public class DatabaseSetupTest {
 
@@ -17,7 +17,7 @@ public class DatabaseSetupTest {
 
 	@BeforeClass
 	public static void beforeClass() {
-		TestLogger.initConsoleLogging();
+		LoggerUtil.initConsoleDebug();
 	}
 
 	@Test
