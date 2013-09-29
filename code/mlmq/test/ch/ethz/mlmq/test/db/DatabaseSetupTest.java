@@ -1,28 +1,31 @@
 package ch.ethz.mlmq.test.db;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 
 public class DatabaseSetupTest {
 
-	private String userName = "postgres";
-	private String password = "postgres";
-
-	private String url = "jdbc:postgresql://localhost:5432";
+	private static BrokerConfiguration config;
 
 	@BeforeClass
-	public static void beforeClass() {
+	public static void beforeClass() throws IOException {
 		LoggerUtil.initConsoleDebug();
+
+		config = BrokerConfiguration.load("unittestconfig.properties");
 	}
 
 	@Test
 	public void testSetup() throws SQLException {
-		DatabaseInitializer dbInitializer = new DatabaseInitializer(url, userName, password, "mlmqUnitTest" + System.currentTimeMillis());
+
+		String dbName = "mlmqUnitTest" + System.currentTimeMillis();
+		DatabaseInitializer dbInitializer = new DatabaseInitializer(config.getDbUrl(), config.getDbUserName(), config.getDbPassword(), dbName);
 
 		dbInitializer.connect();
 		dbInitializer.createDatabase();
