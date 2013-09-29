@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.test.jmx;
+package ch.ethz.mlmq.sample.jmx;
 
 import java.lang.management.ManagementFactory;
 

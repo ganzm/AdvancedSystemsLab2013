@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.samle;
+package ch.ethz.mlmq.sample;
 
 import java.io.IOException;
 import java.util.Random;

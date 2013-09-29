@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.samle.nio;
+package ch.ethz.mlmq.sample.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
