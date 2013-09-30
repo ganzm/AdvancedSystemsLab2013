@@ -35,9 +35,12 @@ public class ClientConnection implements Closeable {
 	private ByteBuffer ioBuffer = ByteBuffer.allocate(CLIENT_IO_BUFFER_CAPACITY);
 
 	public ClientConnection(String host, int port) {
+
 		this.host = host;
 		this.port = port;
 		this.reqRespFactory = new RequestResponseFactory();
+
+		logger.info("Created new ClientConnection to " + host + ":" + port);
 	}
 
 	public Response submitRequest(Request request) throws IOException {
@@ -98,10 +101,10 @@ public class ClientConnection implements Closeable {
 		reqRespFactory.serializeRequest(request, ioBuffer);
 
 		int numBytes = ioBuffer.position() - startPayload;
-		ioBuffer.mark();
+		int endPosition = ioBuffer.position();
 		ioBuffer.position(startPosition);
 		ioBuffer.putInt(numBytes);
-		ioBuffer.reset();
+		ioBuffer.position(endPosition);
 
 		// write message to the socket
 		ioBuffer.flip();
@@ -112,6 +115,8 @@ public class ClientConnection implements Closeable {
 
 	public void connect() throws UnknownHostException, IOException {
 
+		logger.info("Try connect to " + host + ":" + port + "...");
+
 		// Create client SocketChannel
 		clientSocket = SocketChannel.open();
 
@@ -120,6 +125,8 @@ public class ClientConnection implements Closeable {
 		if (!clientSocket.connect(adr)) {
 			throw new IOException("Could not connect to " + host + ":" + port);
 		}
+
+		logger.info("Connection established");
 	}
 
 	public void close() {

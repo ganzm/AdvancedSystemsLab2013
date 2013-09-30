@@ -5,13 +5,14 @@ import java.nio.ByteBuffer;
 /**
  * Represents a connected client
  * 
- * @author mat
  * 
  */
 public class ConnectedClient {
+
 	private final String name;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(2000000);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(5000);
+	private ByteBuffer txBuffer = ByteBuffer.allocate(5000);
 
 	public ConnectedClient(String name) {
 		this.name = name;
@@ -24,5 +25,14 @@ public class ConnectedClient {
 
 	public ByteBuffer getRxBuffer() {
 		return rxBuffer;
+	}
+
+	/**
+	 * Checks the client's protocl state. Returns true if there is data to send
+	 * 
+	 * @return
+	 */
+	public boolean isProtocolStateWriting() {
+		return true;
 	}
 }
