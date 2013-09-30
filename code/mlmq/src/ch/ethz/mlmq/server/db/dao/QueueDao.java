@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
 
@@ -16,6 +17,7 @@ public class QueueDao implements Closeable {
 	private static final Logger logger = Logger.getLogger("QueueDao");
 
 	private PreparedStatement createQueueStmt;
+	private PreparedStatement deleteQueueStmt;
 
 	public QueueDao() {
 
@@ -25,6 +27,8 @@ public class QueueDao implements Closeable {
 
 		// prepare statements
 		createQueueStmt = connection.prepareStatement("SELECT createQueue(?)");
+
+		deleteQueueStmt = connection.prepareStatement("DELETE FROM queue WHERE id = ?");
 
 	}
 
@@ -37,8 +41,16 @@ public class QueueDao implements Closeable {
 	}
 
 	public QueueDto createQueue() throws SQLException {
+		return createClientQueue(null);
+	}
 
-		createQueueStmt.setNull(1, Types.INTEGER);
+	public QueueDto createClientQueue(ClientDto client) throws SQLException {
+
+		if (client == null) {
+			createQueueStmt.setNull(1, Types.INTEGER);
+		} else {
+			createQueueStmt.setLong(1, client.getId());
+		}
 
 		try (ResultSet rs = createQueueStmt.executeQuery()) {
 			if (!rs.next()) {
@@ -51,8 +63,14 @@ public class QueueDao implements Closeable {
 		}
 	}
 
-	public void deleteQueue(QueueDto queueToDelete) {
-		throw new UnsupportedOperationException("TODO");
+	/**
+	 * Deletes a Queue on the database
+	 * 
+	 * @param queueToDelete
+	 * @throws SQLException
+	 */
+	public void deleteQueue(QueueDto queueToDelete) throws SQLException {
+		deleteQueueStmt.setLong(1, queueToDelete.getId());
+		deleteQueueStmt.execute();
 	}
-
 }
