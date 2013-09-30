@@ -7,6 +7,8 @@ package ch.ethz.mlmq.dto;
  * 
  */
 public class QueueDto {
+	private long id;
+
 	public QueueDto(long id) {
 		this.setId(id);
 	}
@@ -19,5 +21,4 @@ public class QueueDto {
 		this.id = id;
 	}
 
-	private long id;
 }

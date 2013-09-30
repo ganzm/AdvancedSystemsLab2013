@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.client;
 
+import java.io.IOException;
 import java.util.List;
 
 import ch.ethz.mlmq.dto.ClientDto;
@@ -16,22 +17,23 @@ public interface Client {
 	 * Registers a new client.
 	 * 
 	 * @return
+	 * @throws IOException
 	 */
-	ClientDto register();
+	ClientDto register() throws IOException;
 
 	/**
 	 * Creates a queue.
 	 * 
 	 * @return
 	 */
-	QueueDto createQueue();
+	QueueDto createQueue() throws IOException;
 
 	/**
 	 * Deletes a queue.
 	 * 
 	 * @param id
 	 */
-	void deleteQueue(long id);
+	void deleteQueue(long id) throws IOException;
 
 	/**
 	 * Sends a message to a specific queue.
@@ -40,37 +42,41 @@ public interface Client {
 	 * @param content
 	 * @param prio
 	 */
-	void sendMessage(long queueId, byte[] content, int prio);
+	void sendMessage(long queueId, byte[] content, int prio) throws IOException;
 
 	/**
 	 * Sends a message to multiple queues.
 	 * 
 	 * @param queues
 	 * @param message
+	 * @throws IOException
 	 */
-	void sendMessage(long[] queueIds, byte[] content, int prio);
+	void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException;
 
 	/**
 	 * Query for queues with pending messages.
 	 * 
 	 * @param queues
 	 * @param message
+	 * @throws IOException
 	 */
-	List<QueueDto> queuesWithPendingMessages();
+	List<QueueDto> queuesWithPendingMessages() throws IOException;
 
 	/**
 	 * Reads the first message without removing it.
 	 * 
 	 * @param messageQueryInfo
 	 * @return
+	 * @throws IOException
 	 */
-	MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo);
+	MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException;
 
 	/**
 	 * Reads the first message and removes it.
 	 * 
 	 * @param messageQueryInfo
 	 * @return
+	 * @throws IOException
 	 */
-	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo);
+	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException;
 }

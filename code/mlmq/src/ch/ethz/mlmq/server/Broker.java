@@ -2,6 +2,7 @@ package ch.ethz.mlmq.server;
 
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.nio.BrokerNetworkInterface;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
 
 /**

@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.client;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
-import ch.ethz.mlmq.net.Connection;
+import ch.ethz.mlmq.net.ClientConnection;
 import ch.ethz.mlmq.net.ConnectionPool;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
@@ -28,14 +29,14 @@ import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
 
-class ClientImpl implements Client {
+public class ClientImpl implements Client {
 
 	private ClientDto registeredAs;
 	private HashMap<Long, BrokerDto> hostCache = new HashMap<Long, BrokerDto>();
 	private final ConnectionPool brokerConnections;
 	private BrokerDto defaultBroker;
 
-	public ClientImpl(BrokerDto defaultBroker) {
+	public ClientImpl(BrokerDto defaultBroker) throws IOException {
 		this.brokerConnections = new ConnectionPool();
 		this.defaultBroker = defaultBroker;
 		registeredAs = register();
@@ -43,11 +44,11 @@ class ClientImpl implements Client {
 			throw new RuntimeException("W00t");
 	}
 
-	private Response sendRequest(QueueRequest request) {
+	private Response sendRequest(QueueRequest request) throws IOException {
 		return sendRequestToBroker(request, hostForQueue(request.getQueueId()));
 	}
 
-	private Response sendRequest(Request request) {
+	private Response sendRequest(Request request) throws IOException {
 		return sendRequestToBroker(request, defaultBroker);
 	}
 
@@ -56,10 +57,12 @@ class ClientImpl implements Client {
 	 * 
 	 * @param request
 	 * @param broker
+	 * @param timeout
 	 * @return
+	 * @throws IOException
 	 */
-	private Response sendRequestToBroker(Request request, BrokerDto broker) {
-		Connection c = brokerConnections.getConnection(broker);
+	private Response sendRequestToBroker(Request request, BrokerDto broker) throws IOException {
+		ClientConnection c = brokerConnections.getConnection(broker);
 		Response response = c.submitRequest(request);
 
 		if (response instanceof ExceptionResponse) {
@@ -74,7 +77,7 @@ class ClientImpl implements Client {
 		return response;
 	}
 
-	private BrokerDto hostForQueue(long queueId) {
+	private BrokerDto hostForQueue(long queueId) throws IOException {
 		if (hostCache.containsKey(queueId))
 			return hostCache.get(queueId);
 
@@ -85,48 +88,48 @@ class ClientImpl implements Client {
 	}
 
 	@Override
-	public ClientDto register() {
+	public ClientDto register() throws IOException {
 		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest());
 		return repsonse.getClientDto();
 	}
 
 	@Override
-	public QueueDto createQueue() {
+	public QueueDto createQueue() throws IOException {
 		CreateQueueResponse repsonse = (CreateQueueResponse) sendRequest(new CreateQueueRequest());
 		return repsonse.getQueueDto();
 	}
 
 	@Override
-	public void deleteQueue(long id) {
+	public void deleteQueue(long id) throws IOException {
 		sendRequest(new DeleteQueueRequest(id));
 	}
 
 	@Override
-	public void sendMessage(long queueId, byte[] content, int prio) {
+	public void sendMessage(long queueId, byte[] content, int prio) throws IOException {
 		sendRequest(new SendMessageRequest(queueId, content, prio));
 	}
 
 	@Override
-	public void sendMessage(long[] queueIds, byte[] content, int prio) {
+	public void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException {
 		for (long q : queueIds) {
 			sendMessage(q, content, prio);
 		}
 	}
 
 	@Override
-	public MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) {
+	public MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException {
 		MessageResponse response = (MessageResponse) sendRequest(new PeekMessageRequest(messageQueryInfo));
 		return response.getMessageDto();
 	}
 
 	@Override
-	public MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) {
+	public MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException {
 		MessageResponse response = (MessageResponse) sendRequest(new DequeueMessageRequest(messageQueryInfo));
 		return response.getMessageDto();
 	}
 
 	@Override
-	public List<QueueDto> queuesWithPendingMessages() {
+	public List<QueueDto> queuesWithPendingMessages() throws IOException {
 		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) sendRequest(new QueuesWithPendingMessagesRequest());
 		return response.getQueues();
 	}
