@@ -8,6 +8,7 @@ import java.io.PrintStream;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
 
@@ -79,7 +80,13 @@ public class LoggerUtil {
 				ConsoleHandler cHandler = (ConsoleHandler) handler;
 
 				// create new handler
-				StreamHandler stdOutHandler = new StreamHandler(System.out, cHandler.getFormatter());
+				StreamHandler stdOutHandler = new StreamHandler(System.out, cHandler.getFormatter()) {
+					@Override
+					public synchronized void publish(LogRecord record) {
+						super.publish(record);
+						flush();
+					}
+				};
 				stdOutHandler.setLevel(rootLogger.getLevel());
 
 				// replace handler
