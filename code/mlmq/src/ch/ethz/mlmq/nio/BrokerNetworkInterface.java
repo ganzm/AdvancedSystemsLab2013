@@ -105,6 +105,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 				selector.select();
 
+				// check keys
 				Set<SelectionKey> selectedKeys = selector.selectedKeys();
 				Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 				while (keyIterator.hasNext()) {
@@ -117,6 +118,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 						keyIterator.remove();
 					}
 				}
+
+				// check Queue
+				selectQueue();
 			}
 		} catch (IOException ex) {
 			logger.severe("IOException in NetworkInterface " + LoggerUtil.getStackTraceString(ex));
@@ -132,6 +136,11 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 			}
 			logger.info("NetworkInterface closed");
 		}
+	}
+
+	private void selectQueue() {
+
+		// TODO
 	}
 
 	private void selectKey(SelectionKey key) {
@@ -207,10 +216,14 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		logger.info(newClientChannel + " new connection established");
 
 		++clientCounter;
+
 		ConnectedClient clientInstance = new ConnectedClient(clientCounter, newClientChannel.getRemoteAddress().toString());
 		connectedClients.put(clientCounter, clientInstance);
 
-		newClientChannel.register(selector, SelectionKey.OP_READ, clientInstance);
+		SelectionKey selectionKey = newClientChannel.register(selector, SelectionKey.OP_READ, clientInstance);
+
+		// ögli häck - zörkälär dipändenzi
+		clientInstance.setSelectionKey(selectionKey);
 	}
 
 	private void onMessage(ConnectedClient clientInstance, ByteBuffer messageBuffer) {
@@ -220,6 +233,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	}
 
 	private void teardown() throws IOException {
+
+		responseQueue.setWakeupReactorRunnable(null);
 
 		logger.info("Close ServerSocket");
 		if (serverSocketChannel.isOpen()) {
@@ -243,6 +258,13 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
 		logger.info("ServerSocketChannel bound to " + listenPort);
+
+		responseQueue.setWakeupReactorRunnable(new Runnable() {
+			@Override
+			public void run() {
+				selector.wakeup();
+			}
+		});
 	}
 
 	/**

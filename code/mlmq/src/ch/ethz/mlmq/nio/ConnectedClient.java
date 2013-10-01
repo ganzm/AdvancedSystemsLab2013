@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.nio;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.net.Protocol;
@@ -19,9 +20,15 @@ public class ConnectedClient {
 	private ByteBuffer rxBuffer = ByteBuffer.allocate(5000);
 	private ByteBuffer txBuffer = ByteBuffer.allocate(5000);
 
+	private SelectionKey selectionKey;
+
 	public ConnectedClient(int clientId, String name) {
 		this.clientId = clientId;
 		this.name = name;
+	}
+
+	public void setSelectionKey(SelectionKey selectionKey) {
+		this.selectionKey = selectionKey;
 	}
 
 	@Override
