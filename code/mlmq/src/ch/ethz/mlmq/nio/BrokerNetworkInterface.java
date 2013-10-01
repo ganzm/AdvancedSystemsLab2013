@@ -9,17 +9,21 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.processing.ResponseQueue;
+import ch.ethz.mlmq.server.processing.WorkerTask;
+import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
 public class BrokerNetworkInterface implements Runnable, Closeable {
 
-	private static final Logger logger = Logger.getLogger("BrokerNetworkInterface");
+	private static final Logger logger = Logger.getLogger(BrokerNetworkInterface.class.getSimpleName());
 
 	private Selector selector;
 
@@ -44,15 +48,33 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	private final NetworkIntefaceResponseQueue responseQueue;
 
 	/**
+	 * Queue where the reactor puts requests
+	 */
+	private final WorkerTaskQueue workerTaskQueue;
+	/**
 	 * Thread which handles networking on the broker
 	 */
 	private Thread networkingThread;
 
-	public BrokerNetworkInterface(BrokerConfiguration config) {
+	/**
+	 * Maps unique client ids to ConnectedClient objects
+	 */
+	private final Map<Integer, ConnectedClient> connectedClients = new HashMap<Integer, ConnectedClient>();
+
+	private int clientCounter = 0;
+
+	private final ByteBufferPool byteBufferPool;
+
+	public BrokerNetworkInterface(BrokerConfiguration config, WorkerTaskQueue workerTaskQueue) {
 		this.listenPort = config.getListenPort();
 		this.responseQueue = new NetworkIntefaceResponseQueue();
+		this.workerTaskQueue = workerTaskQueue;
+		this.byteBufferPool = new ByteBufferPool(config);
 	}
 
+	/**
+	 * startup the network interface
+	 */
 	public void init() {
 
 		if (networkingThread != null) {
@@ -139,7 +161,6 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	}
 
 	private void selectWrite(SelectionKey key) {
-
 		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
 		logger.finer("Write " + clientInstance);
 
@@ -156,13 +177,27 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	private void selectRead(SelectionKey key) throws IOException {
 
 		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
-
 		SocketChannel clientChannel = (SocketChannel) key.channel();
 
 		ByteBuffer rxBuffer = clientInstance.getRxBuffer();
 		int byteCount = clientChannel.read(rxBuffer);
 		logger.info("reading num bytes " + byteCount);
 
+		if (clientInstance.hasReceivedMessage()) {
+
+			ByteBuffer replacementBuffer = byteBufferPool.aquire();
+			ByteBuffer messageBuffer = clientInstance.swapRxBuffer(replacementBuffer);
+
+			onMessage(clientInstance, messageBuffer);
+		}
+
+		if (byteCount <= 0) {
+			logger.info("Socket remotely closed " + clientChannel);
+			key.cancel();
+			clientInstance.close();
+			connectedClients.remove(clientInstance.getId());
+			return;
+		}
 	}
 
 	private void selectAccept(SelectionKey key) throws IOException, ClosedChannelException {
@@ -171,8 +206,17 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		logger.info(newClientChannel + " new connection established");
 
-		ConnectedClient clientInstance = new ConnectedClient(newClientChannel.getRemoteAddress().toString());
+		++clientCounter;
+		ConnectedClient clientInstance = new ConnectedClient(clientCounter, newClientChannel.getRemoteAddress().toString());
+		connectedClients.put(clientCounter, clientInstance);
+
 		newClientChannel.register(selector, SelectionKey.OP_READ, clientInstance);
+	}
+
+	private void onMessage(ConnectedClient clientInstance, ByteBuffer messageBuffer) {
+		logger.info("onmessage " + clientInstance + " " + messageBuffer);
+
+		workerTaskQueue.enqueue(new WorkerTask(clientInstance.getId(), messageBuffer));
 	}
 
 	private void teardown() throws IOException {
@@ -199,7 +243,6 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
 		logger.info("ServerSocketChannel bound to " + listenPort);
-
 	}
 
 	/**

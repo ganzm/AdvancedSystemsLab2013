@@ -63,7 +63,7 @@ public class SelectorSample {
 
 						logger.info(newClientChannel + " new connection established");
 
-						ConnectedClient clientInstance = new ConnectedClient(newClientChannel.getRemoteAddress().toString());
+						ConnectedClient clientInstance = new ConnectedClient(1, newClientChannel.getRemoteAddress().toString());
 						newClientChannel.register(selector, SelectionKey.OP_READ, clientInstance);
 
 					}

@@ -28,14 +28,11 @@ public class ClientConnection implements Closeable {
 	private RequestResponseFactory reqRespFactory;
 
 	/**
-	 * Assume a messige is 2kbytes at max, add some extra memory
+	 * TODO Allocate via ByteBufferPool
 	 */
-	private int CLIENT_IO_BUFFER_CAPACITY = 4000;
-
-	private ByteBuffer ioBuffer = ByteBuffer.allocate(CLIENT_IO_BUFFER_CAPACITY);
+	private ByteBuffer ioBuffer = ByteBuffer.allocate(Protocol.CLIENT_IO_BUFFER_CAPACITY);
 
 	public ClientConnection(String host, int port) {
-
 		this.host = host;
 		this.port = port;
 		this.reqRespFactory = new RequestResponseFactory();
@@ -55,11 +52,11 @@ public class ClientConnection implements Closeable {
 		int responseLenght = -1;
 		while ((numBytes = clientSocket.read(ioBuffer)) > 0) {
 
-			if (ioBuffer.position() >= 4 && responseLenght == -1) {
+			if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT && responseLenght == -1) {
 				// there is enough data to read an int
 				responseLenght = ioBuffer.getInt();
 				logger.fine("Read ResponseLenght " + responseLenght);
-			} else if (ioBuffer.position() >= 4 + responseLenght) {
+			} else if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT + responseLenght) {
 				// enough data received to deserialize the response message
 
 				ioBuffer.flip();
@@ -69,6 +66,7 @@ public class ClientConnection implements Closeable {
 				if (ioBuffer.position() != 0) {
 					logger.warning("Discarding " + ioBuffer.position() + " bytes from inputbuffer");
 				}
+
 				break;
 			}
 		}
@@ -103,6 +101,8 @@ public class ClientConnection implements Closeable {
 		int numBytes = ioBuffer.position() - startPayload;
 		int endPosition = ioBuffer.position();
 		ioBuffer.position(startPosition);
+
+		// write payload lenght to position 0-3
 		ioBuffer.putInt(numBytes);
 		ioBuffer.position(endPosition);
 

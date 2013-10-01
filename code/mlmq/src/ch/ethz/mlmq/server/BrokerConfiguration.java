@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Holds configuration like database connection information, tuning parameters, etc
+ * Holds configuration like database connection information, tuning parameters, etc for one single broker
  */
 public final class BrokerConfiguration {
 

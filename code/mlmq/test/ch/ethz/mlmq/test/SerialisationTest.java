@@ -109,7 +109,8 @@ public class SerialisationTest {
 
 	@Test
 	public void testCreateQueueResponse() {
-		CreateQueueResponse response = new CreateQueueResponse();
+		QueueDto queue = new QueueDto(42);
+		CreateQueueResponse response = new CreateQueueResponse(queue);
 		testResponse(response);
 	}
 

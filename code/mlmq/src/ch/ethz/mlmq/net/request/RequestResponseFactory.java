@@ -14,6 +14,9 @@ import ch.ethz.mlmq.net.response.Response;
  */
 public class RequestResponseFactory {
 
+	public RequestResponseFactory() {
+	}
+
 	/**
 	 * TODO Performance - refactor serialisation/deserialisation - memory allocation is not necessary
 	 * 

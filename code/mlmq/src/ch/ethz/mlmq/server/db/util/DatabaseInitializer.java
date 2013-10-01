@@ -102,7 +102,7 @@ public class DatabaseInitializer {
 
 		) {
 
-			String scriptFile = "db/001_table_create.sql";
+			String scriptFile;
 
 			scriptFile = "db/001_table_create.sql";
 			logger.info("Create Tables - exec " + scriptFile);

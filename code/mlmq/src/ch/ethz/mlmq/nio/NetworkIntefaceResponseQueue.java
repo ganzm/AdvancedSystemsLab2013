@@ -13,11 +13,18 @@ import ch.ethz.mlmq.server.processing.ResponseQueue;
  */
 public class NetworkIntefaceResponseQueue implements ResponseQueue {
 
+	protected NetworkIntefaceResponseQueue() {
+	}
+
 	private ArrayBlockingQueue<Response> queue = new ArrayBlockingQueue<Response>(100);
 
 	@Override
 	public void enqueue(Response response) {
 		queue.add(response);
+
+		// wake up reactor
+
+		// reactor
 	}
 
 }

@@ -14,8 +14,12 @@ import ch.ethz.mlmq.client.ClientImpl;
 import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.net.response.CreateQueueResponse;
+import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.nio.BrokerNetworkInterface;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.server.processing.WorkerTask;
+import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
 public class NetworkInterfaceTest {
 
@@ -24,6 +28,7 @@ public class NetworkInterfaceTest {
 	private BrokerNetworkInterface networkInterface;
 	private BrokerConfiguration config;
 	private Client client;
+	private WorkerTaskQueue taskQueue;
 
 	@BeforeClass
 	public static void beforeClass() throws IOException {
@@ -48,8 +53,16 @@ public class NetworkInterfaceTest {
 	}
 
 	private void setupNetworkInterface() {
+		taskQueue = new WorkerTaskQueue() {
+			@Override
+			public void enqueue(WorkerTask workerTask) {
+				doEnqueue(workerTask);
+			}
+
+		};
+
 		logger.info("Create network interface");
-		networkInterface = new BrokerNetworkInterface(config);
+		networkInterface = new BrokerNetworkInterface(config, taskQueue);
 
 		logger.info("Init network interface");
 		networkInterface.init();
@@ -69,4 +82,35 @@ public class NetworkInterfaceTest {
 
 		client.deleteQueue(response.getId());
 	}
+
+	/**
+	 * called by networking thread (reactor)
+	 * 
+	 * @param workerTask
+	 */
+	private void doEnqueue(WorkerTask workerTask) {
+
+		Thread workerMock = new Thread() {
+			public void run() {
+
+				logger.info("MockWorker doing his work...");
+
+				// simuliert db select/update/delete
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					logger.severe("InterruptedException in MockWorker");
+				}
+
+				QueueDto queue = new QueueDto(007);
+				Response response = new CreateQueueResponse(queue);
+				networkInterface.getResponseQueue().enqueue(response);
+				logger.info("MockWorker finished");
+			};
+		};
+
+		workerMock.setDaemon(true);
+		workerMock.start();
+	}
+
 }
