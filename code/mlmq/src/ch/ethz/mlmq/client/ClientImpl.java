@@ -32,16 +32,16 @@ import ch.ethz.mlmq.net.response.Response;
 public class ClientImpl implements Client {
 
 	private ClientDto registeredAs;
-	private HashMap<Long, BrokerDto> hostCache = new HashMap<Long, BrokerDto>();
+	private HashMap<Long, BrokerDto> brokerCache = new HashMap<Long, BrokerDto>();
 	private final ConnectionPool brokerConnections;
 	private BrokerDto defaultBroker;
 
-	public ClientImpl(BrokerDto defaultBroker) throws IOException {
+	private final boolean forceUseDefaultBroker;
+
+	public ClientImpl(BrokerDto defaultBroker, boolean forceUseDefaultBroker) throws IOException {
 		this.brokerConnections = new ConnectionPool();
 		this.defaultBroker = defaultBroker;
-		registeredAs = register();
-		if (registeredAs == null)
-			throw new RuntimeException("W00t");
+		this.forceUseDefaultBroker = forceUseDefaultBroker;
 	}
 
 	private Response sendRequest(QueueRequest request) throws IOException {
@@ -68,8 +68,9 @@ public class ClientImpl implements Client {
 		if (response instanceof ExceptionResponse) {
 			ExceptionResponse r = (ExceptionResponse) response;
 			Exception e = r.getException();
-			if (e != null)
+			if (e != null) {
 				throw new RuntimeException("W00t");
+			}
 			// TBD: Exception Handling
 			// throw e;
 		}
@@ -78,11 +79,16 @@ public class ClientImpl implements Client {
 	}
 
 	private BrokerDto hostForQueue(long queueId) throws IOException {
-		if (hostCache.containsKey(queueId))
-			return hostCache.get(queueId);
+		if (forceUseDefaultBroker) {
+			return defaultBroker;
+		}
+
+		if (brokerCache.containsKey(queueId)) {
+			return brokerCache.get(queueId);
+		}
 
 		HostForQueueResponse response = (HostForQueueResponse) sendRequest(new HostForQueueRequest(queueId));
-		hostCache.put(queueId, response.getBrokerDto());
+		brokerCache.put(queueId, response.getBrokerDto());
 
 		return hostForQueue(queueId);
 	}
@@ -90,7 +96,8 @@ public class ClientImpl implements Client {
 	@Override
 	public ClientDto register() throws IOException {
 		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest());
-		return repsonse.getClientDto();
+		registeredAs = repsonse.getClientDto();
+		return registeredAs;
 	}
 
 	@Override

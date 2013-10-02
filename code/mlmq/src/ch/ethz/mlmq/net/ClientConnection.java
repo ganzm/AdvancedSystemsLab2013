@@ -54,14 +54,20 @@ public class ClientConnection implements Closeable {
 
 			if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT && responseLenght == -1) {
 				// there is enough data to read an int
-				responseLenght = ioBuffer.getInt();
+
+				// read BufferPosition 0 to 3
+				responseLenght = ioBuffer.getInt(0);
+
 				logger.fine("Read ResponseLenght " + responseLenght);
 			}
 
 			if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT + responseLenght && responseLenght != -1) {
 				// enough data received to deserialize the response message
 
+				// switch to read-mode
 				ioBuffer.flip();
+				// consume header int-value
+				ioBuffer.getInt();
 				response = reqRespFactory.deserializeResponse(ioBuffer);
 				ioBuffer.compact();
 
@@ -71,6 +77,7 @@ public class ClientConnection implements Closeable {
 
 				break;
 			}
+
 		}
 
 		if (numBytes <= 0) {
@@ -89,24 +96,7 @@ public class ClientConnection implements Closeable {
 	 */
 	private void writeToSocket(Request request) throws IOException {
 
-		// startPosition (should be 0)
-		int startPosition = ioBuffer.position();
-
-		// write 4 bytes as placeholder
-		ioBuffer.putInt(0);
-
-		int startPayload = ioBuffer.position(); // should be startPosition + 4
-
-		// serialize the message to the buffer
-		reqRespFactory.serializeRequest(request, ioBuffer);
-
-		int numBytes = ioBuffer.position() - startPayload;
-		int endPosition = ioBuffer.position();
-		ioBuffer.position(startPosition);
-
-		// write payload lenght to position 0-3
-		ioBuffer.putInt(numBytes);
-		ioBuffer.position(endPosition);
+		reqRespFactory.serializeRequestWithHeader(request, ioBuffer);
 
 		// write message to the socket
 		ioBuffer.flip();

@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.test.nio;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import org.junit.After;
@@ -51,7 +52,7 @@ public class NetworkInterfaceTest {
 		defaultBroker.setHost("localhost");
 		defaultBroker.setPort(config.getListenPort());
 
-		client = new ClientImpl(defaultBroker);
+		client = new ClientImpl(defaultBroker, true);
 	}
 
 	private void setupNetworkInterface() {
@@ -110,7 +111,9 @@ public class NetworkInterfaceTest {
 
 				// serialize resonse
 				CloseableByteBufferMock responseBuffer = new CloseableByteBufferMock(4000);
-				reqRespFactory.serializeResponse(response, responseBuffer.getByteBuffer());
+				ByteBuffer interalBuffer = responseBuffer.getByteBuffer();
+				reqRespFactory.serializeResponseWithHeader(response, interalBuffer);
+				interalBuffer.flip();
 				workerTask.setResponseBuffer(responseBuffer);
 
 				networkInterface.getResponseQueue().enqueue(workerTask);

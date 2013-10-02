@@ -74,4 +74,50 @@ public class RequestResponseFactory {
 			throw new RuntimeException(e);
 		}
 	}
+
+	/**
+	 * writes the lengtht field and serialized request to the buffer
+	 * 
+	 * @param request
+	 * @param buffer
+	 */
+	public void serializeRequestWithHeader(Request request, ByteBuffer buffer) {
+		int startPosition = buffer.position();
+
+		// write 4 bytes as placeholder
+		buffer.putInt(0);
+
+		int startPayload = buffer.position(); // should be startPosition + 4
+
+		// serialize the message to the buffer
+		serializeRequest(request, buffer);
+
+		int numBytes = buffer.position() - startPayload;
+		int endPosition = buffer.position();
+		buffer.position(startPosition);
+
+		// write payload lenght to position 0-3
+		buffer.putInt(numBytes);
+		buffer.position(endPosition);
+	}
+
+	public void serializeResponseWithHeader(Response response, ByteBuffer buffer) {
+		int startPosition = buffer.position();
+
+		// write 4 bytes as placeholder
+		buffer.putInt(0);
+
+		int startPayload = buffer.position(); // should be startPosition + 4
+
+		// serialize the message to the buffer
+		serializeResponse(response, buffer);
+
+		int numBytes = buffer.position() - startPayload;
+		int endPosition = buffer.position();
+		buffer.position(startPosition);
+
+		// write payload lenght to position 0-3
+		buffer.putInt(numBytes);
+		buffer.position(endPosition);
+	}
 }
