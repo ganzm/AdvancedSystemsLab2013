@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
@@ -137,8 +138,30 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		}
 	}
 
+	/**
+	 * empties the response queue and multiplex WorkerTask to their corresponding ConnectedClients
+	 */
 	private void selectQueue() {
-		throw new UnsupportedOperationException("TODO");
+		WorkerTask task;
+		while ((task = responseQueue.dequeue()) != null) {
+			try {
+				int clientId = task.getClientId();
+
+				logger.fine("Enqueue Response for Client " + clientId + " Task: " + task);
+
+				ConnectedClient connectedClient = connectedClients.get(clientId);
+
+				if (connectedClient == null) {
+					logger.severe("Response for unknown clientId " + clientId + " discarded - maybe client disconnected " + task);
+					break;
+				}
+
+				connectedClient.setResponse(task.getAndRemoveResponseBuffer());
+			} finally {
+				// dispose task
+				task.close();
+			}
+		}
 	}
 
 	private void selectKey(SelectionKey key) {
@@ -164,34 +187,36 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 				logger.severe("Exception while writing " + LoggerUtil.getStackTraceString(ex));
 			}
 		}
-
 	}
 
-	private void selectWrite(SelectionKey key) {
-		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
-		logger.finer("Write " + clientInstance);
-
-		boolean isWriting = clientInstance.isProtocolStateWriting();
-		// TODO Auto-generated method stub
-
-		if (isWriting) {
-			key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-		} else {
-			key.interestOps(SelectionKey.OP_READ);
-		}
-	}
-
-	private void selectRead(SelectionKey key) throws IOException {
-
+	private void selectWrite(SelectionKey key) throws IOException {
 		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
 		SocketChannel clientChannel = (SocketChannel) key.channel();
 
+		if (logger.isLoggable(Level.FINER)) {
+			logger.finer("Write " + clientInstance);
+		}
+
+		ByteBuffer txBuffer = clientInstance.getTxBuffer();
+		int byteCount = clientChannel.write(txBuffer);
+		logger.fine("writing to Client " + clientInstance + " num bytes " + byteCount);
+
+		clientInstance.afterWrite();
+	}
+
+	private void selectRead(SelectionKey key) throws IOException {
+		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
+		SocketChannel clientChannel = (SocketChannel) key.channel();
+
+		if (logger.isLoggable(Level.FINER)) {
+			logger.finer("Write " + clientInstance);
+		}
+
 		ByteBuffer rxBuffer = clientInstance.getRxBuffer();
 		int byteCount = clientChannel.read(rxBuffer);
-		logger.info("reading num bytes " + byteCount);
+		logger.fine("reading from Client " + clientInstance + " num bytes " + byteCount);
 
 		if (clientInstance.hasReceivedMessage()) {
-
 			CloseableByteBuffer replacementBuffer = byteBufferPool.aquire();
 			CloseableByteBuffer messageBuffer = clientInstance.swapRxBuffer(replacementBuffer);
 
@@ -200,7 +225,6 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		if (byteCount <= 0) {
 			logger.info("Socket remotely closed " + clientChannel);
-			key.cancel();
 			clientInstance.close();
 			connectedClients.remove(clientInstance.getId());
 			return;
@@ -264,6 +288,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		responseQueue.setWakeupReactorRunnable(new Runnable() {
 			@Override
 			public void run() {
+				if (logger.isLoggable(Level.FINE)) {
+					logger.fine("Wake up Selector");
+				}
 				selector.wakeup();
 			}
 		});

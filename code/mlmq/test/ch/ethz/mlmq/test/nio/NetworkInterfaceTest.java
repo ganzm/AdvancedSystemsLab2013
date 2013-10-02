@@ -99,7 +99,7 @@ public class NetworkInterfaceTest {
 
 				// simuliert db select/update/delete
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					logger.severe("InterruptedException in MockWorker");
 				}

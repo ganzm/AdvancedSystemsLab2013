@@ -12,6 +12,7 @@ import ch.ethz.mlmq.net.Protocol;
  */
 public class ConnectedClient {
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = Logger.getLogger(ConnectedClient.class.getSimpleName());
 
 	private final String name;
@@ -45,13 +46,8 @@ public class ConnectedClient {
 		return rxBuffer.getByteBuffer();
 	}
 
-	/**
-	 * Checks the client's protocol state. Returns true if there is data to send
-	 * 
-	 * @return
-	 */
-	public boolean isProtocolStateWriting() {
-		return true;
+	public ByteBuffer getTxBuffer() {
+		return txBuffer.getByteBuffer();
 	}
 
 	/**
@@ -66,6 +62,8 @@ public class ConnectedClient {
 		if (txBuffer != null) {
 			txBuffer.close();
 		}
+
+		selectionKey.cancel();
 	}
 
 	public boolean hasReceivedMessage() {
@@ -96,5 +94,31 @@ public class ConnectedClient {
 		CloseableByteBuffer tmp = rxBuffer;
 		rxBuffer = replacementBuffer;
 		return tmp;
+	}
+
+	/**
+	 * sets the Respponse Buffer and switches to socket write mode
+	 * 
+	 * @param newTxBuffer
+	 */
+	public void setResponse(CloseableByteBuffer newTxBuffer) {
+		if (txBuffer != null) {
+			txBuffer.close();
+		}
+
+		txBuffer = newTxBuffer;
+
+		selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+	}
+
+	public void afterWrite() {
+		if (!txBuffer.getByteBuffer().hasRemaining()) {
+
+			selectionKey.interestOps(SelectionKey.OP_READ);
+
+			// give by transmission buffer
+			txBuffer.close();
+			txBuffer = null;
+		}
 	}
 }

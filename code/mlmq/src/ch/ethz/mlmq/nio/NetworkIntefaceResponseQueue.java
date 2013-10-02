@@ -1,7 +1,6 @@
 package ch.ethz.mlmq.nio;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
@@ -42,20 +41,17 @@ public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
 		}
 	}
 
-	public WorkerTask peek() {
-		return queue.peek();
-	}
-
 	/**
-	 * TODO
+	 * Tries to remove the head of the queue, returns null if the queue is empty. Does not wait
 	 * 
-	 * returns ClientIds of messages which have been enqueue since our last call
-	 * 
-	 * @return
+	 * @return null if queue is empty
 	 */
-	public List<Integer> getNewIds() {
-		return new ArrayList<>();
-
+	public WorkerTask dequeue() {
+		try {
+			return queue.remove();
+		} catch (NoSuchElementException ex) {
+			// queue empty
+			return null;
+		}
 	}
-
 }
