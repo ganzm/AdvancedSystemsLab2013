@@ -18,7 +18,7 @@ import ch.ethz.mlmq.net.response.Response;
  */
 public class ClientConnection implements Closeable {
 
-	private static final Logger logger = Logger.getLogger("ClientConnection");
+	private static final Logger logger = Logger.getLogger(ClientConnection.class.getSimpleName());
 
 	private final String host;
 	private final int port;
@@ -56,7 +56,9 @@ public class ClientConnection implements Closeable {
 				// there is enough data to read an int
 				responseLenght = ioBuffer.getInt();
 				logger.fine("Read ResponseLenght " + responseLenght);
-			} else if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT + responseLenght) {
+			}
+
+			if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT + responseLenght && responseLenght != -1) {
 				// enough data received to deserialize the response message
 
 				ioBuffer.flip();

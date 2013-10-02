@@ -24,7 +24,7 @@ import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
 public class NetworkInterfaceTest {
 
-	private Logger logger = Logger.getLogger("NetworkInterfaceTest");
+	private Logger logger = Logger.getLogger(NetworkInterfaceTest.class.getSimpleName());
 
 	private BrokerNetworkInterface networkInterface;
 	private BrokerConfiguration config;
