@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.BrokerConfiguration;
-import ch.ethz.mlmq.server.processing.ResponseQueue;
 import ch.ethz.mlmq.server.processing.WorkerTask;
 import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
@@ -139,8 +138,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	}
 
 	private void selectQueue() {
-
-		// TODO
+		throw new UnsupportedOperationException("TODO");
 	}
 
 	private void selectKey(SelectionKey key) {
@@ -194,8 +192,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		if (clientInstance.hasReceivedMessage()) {
 
-			ByteBuffer replacementBuffer = byteBufferPool.aquire();
-			ByteBuffer messageBuffer = clientInstance.swapRxBuffer(replacementBuffer);
+			CloseableByteBuffer replacementBuffer = byteBufferPool.aquire();
+			CloseableByteBuffer messageBuffer = clientInstance.swapRxBuffer(replacementBuffer);
 
 			onMessage(clientInstance, messageBuffer);
 		}
@@ -222,11 +220,15 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		SelectionKey selectionKey = newClientChannel.register(selector, SelectionKey.OP_READ, clientInstance);
 
+		CloseableByteBuffer rxBuffer = byteBufferPool.aquire();
+		CloseableByteBuffer txBuffer = byteBufferPool.aquire();
+		clientInstance.initBuffers(rxBuffer, txBuffer);
+
 		// ögli häck - zörkälär dipändenzi
 		clientInstance.setSelectionKey(selectionKey);
 	}
 
-	private void onMessage(ConnectedClient clientInstance, ByteBuffer messageBuffer) {
+	private void onMessage(ConnectedClient clientInstance, CloseableByteBuffer messageBuffer) {
 		logger.info("onmessage " + clientInstance + " " + messageBuffer);
 
 		workerTaskQueue.enqueue(new WorkerTask(clientInstance.getId(), messageBuffer));
@@ -272,7 +274,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	 * 
 	 * @return
 	 */
-	public ResponseQueue getResponseQueue() {
+	public WorkerTaskQueue getResponseQueue() {
 		return responseQueue;
 	}
 }

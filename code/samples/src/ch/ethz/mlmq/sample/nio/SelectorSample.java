@@ -15,7 +15,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
-import ch.ethz.mlmq.nio.ConnectedClient;
 
 public class SelectorSample {
 

@@ -19,7 +19,7 @@ public class ByteBufferPool {
 
 	}
 
-	public ByteBuffer aquire() {
-		return ByteBuffer.allocate(defaultBufferCapacity);
+	public CloseableByteBuffer aquire() {
+		return new CloseableByteBuffer(ByteBuffer.allocate(defaultBufferCapacity), this);
 	}
 }

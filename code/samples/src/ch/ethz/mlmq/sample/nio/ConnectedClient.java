@@ -1,8 +1,6 @@
-package ch.ethz.mlmq.nio;
+package ch.ethz.mlmq.sample.nio;
 
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.util.logging.Logger;
 
 import ch.ethz.mlmq.net.Protocol;
 
@@ -12,28 +10,14 @@ import ch.ethz.mlmq.net.Protocol;
  */
 public class ConnectedClient {
 
-	private static final Logger logger = Logger.getLogger(ConnectedClient.class.getSimpleName());
-
 	private final String name;
 	private final int clientId;
 
-	private CloseableByteBuffer rxBuffer;
-	private CloseableByteBuffer txBuffer;
-
-	private SelectionKey selectionKey;
+	private ByteBuffer rxBuffer;
 
 	public ConnectedClient(int clientId, String name) {
 		this.clientId = clientId;
 		this.name = name;
-	}
-
-	public void initBuffers(CloseableByteBuffer rxBuffer, CloseableByteBuffer txBuffer) {
-		this.rxBuffer = rxBuffer;
-		this.txBuffer = txBuffer;
-	}
-
-	public void setSelectionKey(SelectionKey selectionKey) {
-		this.selectionKey = selectionKey;
 	}
 
 	@Override
@@ -42,7 +26,7 @@ public class ConnectedClient {
 	}
 
 	public ByteBuffer getRxBuffer() {
-		return rxBuffer.getByteBuffer();
+		return rxBuffer;
 	}
 
 	/**
@@ -59,18 +43,12 @@ public class ConnectedClient {
 	 * 
 	 */
 	public void close() {
-		if (rxBuffer != null) {
-			rxBuffer.close();
-		}
 
-		if (txBuffer != null) {
-			txBuffer.close();
-		}
 	}
 
 	public boolean hasReceivedMessage() {
 
-		ByteBuffer buffer = rxBuffer.getByteBuffer();
+		ByteBuffer buffer = rxBuffer;
 
 		if (buffer.position() >= Protocol.LENGH_FIELD_LENGHT) {
 			// enough data to read first lenght-int
@@ -92,9 +70,4 @@ public class ConnectedClient {
 		return clientId;
 	}
 
-	public CloseableByteBuffer swapRxBuffer(CloseableByteBuffer replacementBuffer) {
-		CloseableByteBuffer tmp = rxBuffer;
-		rxBuffer = replacementBuffer;
-		return tmp;
-	}
 }

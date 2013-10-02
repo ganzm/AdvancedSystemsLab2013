@@ -14,6 +14,7 @@ import ch.ethz.mlmq.client.ClientImpl;
 import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.nio.BrokerNetworkInterface;
@@ -29,6 +30,7 @@ public class NetworkInterfaceTest {
 	private BrokerConfiguration config;
 	private Client client;
 	private WorkerTaskQueue taskQueue;
+	private RequestResponseFactory reqRespFactory = new RequestResponseFactory();
 
 	@BeforeClass
 	public static void beforeClass() throws IOException {
@@ -88,7 +90,7 @@ public class NetworkInterfaceTest {
 	 * 
 	 * @param workerTask
 	 */
-	private void doEnqueue(WorkerTask workerTask) {
+	private void doEnqueue(final WorkerTask workerTask) {
 
 		Thread workerMock = new Thread() {
 			public void run() {
@@ -102,9 +104,16 @@ public class NetworkInterfaceTest {
 					logger.severe("InterruptedException in MockWorker");
 				}
 
+				// create response
 				QueueDto queue = new QueueDto(007);
 				Response response = new CreateQueueResponse(queue);
-				networkInterface.getResponseQueue().enqueue(response);
+
+				// serialize resonse
+				CloseableByteBufferMock responseBuffer = new CloseableByteBufferMock(4000);
+				reqRespFactory.serializeResponse(response, responseBuffer.getByteBuffer());
+				workerTask.setResponseBuffer(responseBuffer);
+
+				networkInterface.getResponseQueue().enqueue(workerTask);
 				logger.info("MockWorker finished");
 			};
 		};
@@ -112,5 +121,4 @@ public class NetworkInterfaceTest {
 		workerMock.setDaemon(true);
 		workerMock.start();
 	}
-
 }

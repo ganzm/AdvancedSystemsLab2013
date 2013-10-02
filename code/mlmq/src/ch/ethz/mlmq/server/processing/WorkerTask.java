@@ -1,23 +1,40 @@
 package ch.ethz.mlmq.server.processing;
 
-import java.nio.ByteBuffer;
+import ch.ethz.mlmq.nio.CloseableByteBuffer;
+import ch.ethz.mlmq.nio.ConnectedClient;
 
 public class WorkerTask {
 
-	private final int id;
-	private final ByteBuffer messageBuffer;
+	/**
+	 * indicates the clientId this Request
+	 * 
+	 * @see ConnectedClient#getId()
+	 */
+	private final int cleintId;
 
-	public WorkerTask(int id, ByteBuffer messageBuffer) {
-		this.id = id;
-		this.messageBuffer = messageBuffer;
+	private final CloseableByteBuffer requestBuffer;
+
+	private CloseableByteBuffer responseBuffer = null;
+
+	public WorkerTask(int id, CloseableByteBuffer requestMessageBuffer) {
+		this.cleintId = id;
+		this.requestBuffer = requestMessageBuffer;
 	}
 
 	public int getId() {
-		return id;
+		return cleintId;
 	}
 
-	public ByteBuffer getMessageBuffer() {
-		return messageBuffer;
+	public CloseableByteBuffer getMessageBuffer() {
+		return requestBuffer;
+	}
+
+	public CloseableByteBuffer getResponseBuffer() {
+		return responseBuffer;
+	}
+
+	public void setResponseBuffer(CloseableByteBuffer responseBuffer) {
+		this.responseBuffer = responseBuffer;
 	}
 
 }

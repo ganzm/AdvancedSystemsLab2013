@@ -1,7 +1,6 @@
 package ch.ethz.mlmq.nio;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class CloseableByteBuffer implements Closeable {
@@ -15,9 +14,11 @@ public class CloseableByteBuffer implements Closeable {
 	}
 
 	@Override
-	public void close() throws IOException {
-
+	public void close() {
 		pool.release(buffer);
 	}
 
+	public ByteBuffer getByteBuffer() {
+		return buffer;
+	}
 }

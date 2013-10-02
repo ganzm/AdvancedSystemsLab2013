@@ -1,20 +1,26 @@
 package ch.ethz.mlmq.nio;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Logger;
 
-import ch.ethz.mlmq.net.response.Response;
-import ch.ethz.mlmq.server.processing.ResponseQueue;
+import ch.ethz.mlmq.server.processing.WorkerTask;
+import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
 /**
- * Used by BrokerNetworkInterface
  * 
- * thats where works on the broker post their responses
+ * Belongs to BrokerNetworkInterface
+ * 
+ * thats where works on the broker post their responses.
  * 
  */
-public class NetworkIntefaceResponseQueue implements ResponseQueue {
+public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
+
+	private static final int QUEUE_SIZE = 100;
+
 	private final Logger logger = Logger.getLogger(NetworkIntefaceResponseQueue.class.getSimpleName());
-	private ArrayBlockingQueue<Response> queue = new ArrayBlockingQueue<Response>(100);
+	private ArrayBlockingQueue<WorkerTask> queue = new ArrayBlockingQueue<WorkerTask>(QUEUE_SIZE);
 	private Runnable wakeupReactorRunnable;
 
 	protected NetworkIntefaceResponseQueue() {
@@ -25,8 +31,8 @@ public class NetworkIntefaceResponseQueue implements ResponseQueue {
 	}
 
 	@Override
-	public void enqueue(Response response) {
-		queue.add(response);
+	public void enqueue(WorkerTask workerTask) {
+		queue.add(workerTask);
 
 		// wake up reactor
 		if (wakeupReactorRunnable == null) {
@@ -35,4 +41,21 @@ public class NetworkIntefaceResponseQueue implements ResponseQueue {
 			wakeupReactorRunnable.run();
 		}
 	}
+
+	public WorkerTask peek() {
+		return queue.peek();
+	}
+
+	/**
+	 * TODO
+	 * 
+	 * returns ClientIds of messages which have been enqueue since our last call
+	 * 
+	 * @return
+	 */
+	public List<Integer> getNewIds() {
+		return new ArrayList<>();
+
+	}
+
 }
