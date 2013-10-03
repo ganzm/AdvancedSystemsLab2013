@@ -8,3 +8,4 @@ code/mlmq/target/classes/META-INF/
 *.synctex.gz
 *.toc
 *eps-converted-to.pdf
+unittestconfig.properties
