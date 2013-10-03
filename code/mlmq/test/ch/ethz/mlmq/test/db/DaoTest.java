@@ -49,7 +49,7 @@ public class DaoTest {
 	@Test
 	public void testQueueDao() throws SQLException {
 
-		String url = config.getDbUrl() + dbName;
+		String url = config.getDbUrl() + "/" + dbName;
 		String userName = config.getDbUserName();
 		String password = config.getDbPassword();
 
