@@ -2,6 +2,7 @@ package ch.ethz.mlmq.server;
 
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.nio.BrokerNetworkInterface;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
 import ch.ethz.mlmq.server.processing.WorkerPool;
@@ -32,7 +33,7 @@ public class Broker {
 		this.requestQueue = new WorkerTaskQueueImpl(config.getRequestQueueSize());
 	}
 
-	public void startup() {
+	public void startup() throws MlmqException {
 		logger.info("Starting broker...");
 
 		logger.info("Starting ConnectionPool");

@@ -14,6 +14,7 @@ import ch.ethz.mlmq.client.Client;
 import ch.ethz.mlmq.client.ClientImpl;
 import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
@@ -39,7 +40,7 @@ public class NetworkInterfaceTest {
 	}
 
 	@Before
-	public void before() throws IOException {
+	public void before() throws IOException, MlmqException {
 		config = new BrokerConfiguration();
 
 		setupNetworkInterface();
@@ -55,7 +56,7 @@ public class NetworkInterfaceTest {
 		client = new ClientImpl(defaultBroker, true);
 	}
 
-	private void setupNetworkInterface() {
+	private void setupNetworkInterface() throws MlmqException {
 		taskQueue = new WorkerTaskQueue() {
 			@Override
 			public boolean enqueue(WorkerTask workerTask) {

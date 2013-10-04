@@ -7,4 +7,8 @@ public class MlmqException extends Exception {
 	public MlmqException(String message, Throwable t) {
 		super(message, t);
 	}
+
+	public MlmqException(String message) {
+		super(message);
+	}
 }

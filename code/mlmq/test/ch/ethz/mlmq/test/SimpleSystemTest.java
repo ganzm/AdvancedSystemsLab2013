@@ -11,6 +11,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ch.ethz.mlmq.client.ClientImpl;
+import ch.ethz.mlmq.dto.BrokerDto;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.Broker;
 import ch.ethz.mlmq.server.BrokerConfiguration;
@@ -47,9 +50,9 @@ public class SimpleSystemTest {
 	}
 
 	@Before
-	public void before() {
+	public void before() throws MlmqException {
 		broker = new Broker(config);
-
+		broker.startup();
 	}
 
 	@After
@@ -58,10 +61,17 @@ public class SimpleSystemTest {
 	}
 
 	@Test
-	public void testSimple() {
+	public void testSimple() throws IOException {
 		logger.info("Start SimpleTest");
 
-		broker.startup();
+		BrokerDto defaultBroker = new BrokerDto();
 
+		defaultBroker.setHost("localhost");
+		defaultBroker.setPort(config.getListenPort());
+		try (ClientImpl client = new ClientImpl(defaultBroker, true)) {
+
+			client.register();
+
+		}
 	}
 }

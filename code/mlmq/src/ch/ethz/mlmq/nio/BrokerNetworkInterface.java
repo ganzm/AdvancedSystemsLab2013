@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.processing.WorkerTask;
@@ -74,8 +75,10 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 	/**
 	 * startup the network interface
+	 * 
+	 * @throws IOException
 	 */
-	public void init() {
+	public void init() throws MlmqException {
 
 		if (networkingThread != null) {
 			throw new RuntimeException("BrokerNetworkInterface already running");
@@ -88,11 +91,15 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		networkingThread.start();
 
 		// busy wait for startup
-		while (!running) {
+		while (!running && networkingThread.isAlive()) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException e) {
 			}
+		}
+
+		if (!networkingThread.isAlive()) {
+			throw new MlmqException("Error while starting NetworkInterface");
 		}
 	}
 
@@ -136,8 +143,6 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 			logger.severe("IOException in NetworkInterface " + LoggerUtil.getStackTraceString(ex));
 		} finally {
 			running = false;
-			networkingThread = null;
-
 			logger.info("NetworkInterface closing...");
 			try {
 				teardown();
