@@ -8,50 +8,74 @@ import java.util.logging.Logger;
 /**
  * Holds configuration like database connection information, tuning parameters, etc for one single broker
  */
-public final class BrokerConfiguration {
+public class BrokerConfiguration {
 
 	private static final Logger logger = Logger.getLogger("BrokerConfiguration");
 
-	private static final String LISTENPORT2 = "listenport";
-	private static final String WORKERTHREAD_COUNT = "workerthread.count";
-	private static final String DB_CONNECTIONPOOL_SIZE = "db.connectionpool.size";
-	private static final String DB_USERNAME = "db.username";
-	private static final String DB_PASSWORD = "db.password";
-	private static final String DB_URL = "db.url";
-	private static final String DB_NAME = "db.name";
+	public static final String LISTENPORT2 = "listenport";
+	public static final String WORKERTHREAD_COUNT = "workerthread.count";
+	public static final String DB_CONNECTIONPOOL_SIZE = "db.connectionpool.size";
+	public static final String DB_USERNAME = "db.username";
+	public static final String DB_PASSWORD = "db.password";
+	public static final String DB_URL = "db.url";
+	public static final String DB_NAME = "db.name";
+	public static final String REQUESTQUEUE_SIZE = "requestqueue.size";
+	public static final String MAX_MESSAGE_SIZE = "message.maxsize";
 
-	private int listenPort = 8099;
-	private int workerThreadCount = 5;
-	private int dbConnectionPoolSize = 3;
-	private String dbUserName = "postgres";
-	private String dbPassword = "postgres";
-	private String dbUrl = "jdbc:postgresql://localhost:5432";
-	private String dbName = "mlmq";
+	protected int listenPort = 8099;
+	protected int workerThreadCount = 5;
+	protected int dbConnectionPoolSize = 3;
+	protected String dbUserName = "postgres";
+	protected String dbPassword = "postgres";
+	protected String dbUrl = "jdbc:postgresql://localhost:5432";
+	protected String dbName = "mlmq";
+	protected int requestQueueSize;
+	protected int maxMessageSize;
 
-	public static BrokerConfiguration load(String fileName) throws IOException {
+	public BrokerConfiguration() {
+	}
+
+	public BrokerConfiguration(Properties props) {
+		initFromProps(props);
+	}
+
+	public static Properties loadProperties(String fileName) throws IOException {
 		logger.info("Load BrokerConfiguration from " + fileName);
 
 		try (InputStream inStream = BrokerConfiguration.class.getClassLoader().getResourceAsStream(fileName)) {
-			return load(inStream);
+			if (inStream == null) {
+				throw new IOException("FileNotFound " + fileName);
+			}
+			Properties props = new Properties();
+			props.load(inStream);
+
+			return props;
 		}
 	}
 
-	public static BrokerConfiguration load(InputStream inStream) throws IOException {
+	public static BrokerConfiguration load(String fileName) throws IOException {
+		return new BrokerConfiguration(loadProperties(fileName));
+	}
 
+	public static BrokerConfiguration load(InputStream inStream) throws IOException {
 		Properties props = new Properties();
 		props.load(inStream);
 
 		BrokerConfiguration config = new BrokerConfiguration();
-
-		config.listenPort = Integer.parseInt(props.getProperty(LISTENPORT2));
-		config.workerThreadCount = Integer.parseInt(props.getProperty(WORKERTHREAD_COUNT));
-		config.dbConnectionPoolSize = Integer.parseInt(props.getProperty(DB_CONNECTIONPOOL_SIZE));
-		config.dbUserName = props.getProperty(DB_USERNAME);
-		config.dbPassword = props.getProperty(DB_PASSWORD);
-		config.dbUrl = props.getProperty(DB_URL);
-		config.dbName = props.getProperty(DB_NAME);
-
+		config.initFromProps(props);
 		return config;
+	}
+
+	private void initFromProps(Properties props) {
+		listenPort = Integer.parseInt(props.getProperty(LISTENPORT2));
+		workerThreadCount = Integer.parseInt(props.getProperty(WORKERTHREAD_COUNT));
+		dbConnectionPoolSize = Integer.parseInt(props.getProperty(DB_CONNECTIONPOOL_SIZE));
+		dbUserName = props.getProperty(DB_USERNAME);
+		dbPassword = props.getProperty(DB_PASSWORD);
+		dbUrl = props.getProperty(DB_URL);
+		dbName = props.getProperty(DB_NAME);
+		requestQueueSize = Integer.parseInt(props.getProperty(REQUESTQUEUE_SIZE));
+		maxMessageSize = Integer.parseInt(props.getProperty(MAX_MESSAGE_SIZE));
 	}
 
 	public int getListenPort() {
@@ -87,6 +111,14 @@ public final class BrokerConfiguration {
 			return dbUrl + dbName;
 		}
 		return dbUrl + "/" + dbName;
+	}
+
+	public int getRequestQueueSize() {
+		return requestQueueSize;
+	}
+
+	public int getMaxMessageSize() {
+		return maxMessageSize;
 	}
 
 }

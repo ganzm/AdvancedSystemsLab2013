@@ -50,7 +50,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	/**
 	 * Queue where the reactor puts requests
 	 */
-	private final WorkerTaskQueue workerTaskQueue;
+	private final WorkerTaskQueue requestQueue;
 	/**
 	 * Thread which handles networking on the broker
 	 */
@@ -65,10 +65,10 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 	private final ByteBufferPool byteBufferPool;
 
-	public BrokerNetworkInterface(BrokerConfiguration config, WorkerTaskQueue workerTaskQueue) {
+	public BrokerNetworkInterface(BrokerConfiguration config, WorkerTaskQueue requstQueue) {
 		this.listenPort = config.getListenPort();
 		this.responseQueue = new NetworkIntefaceResponseQueue();
-		this.workerTaskQueue = workerTaskQueue;
+		this.requestQueue = requstQueue;
 		this.byteBufferPool = new ByteBufferPool(config);
 	}
 
@@ -86,6 +86,14 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		networkingThread = new Thread(this);
 		networkingThread.setName("NetworkInterface");
 		networkingThread.start();
+
+		// busy wait for startup
+		while (!running) {
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
+		}
 	}
 
 	@Override
@@ -93,14 +101,16 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		running = false;
 
 		logger.info("Wakeup selector");
-		selector.wakeup();
+		if (selector != null) {
+			selector.wakeup();
+		}
 	}
 
 	@Override
 	public void run() {
-		running = true;
 		try {
 			setup();
+			running = true;
 			while (running) {
 
 				selector.select();
@@ -255,7 +265,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	private void onMessage(ConnectedClient clientInstance, CloseableByteBuffer messageBuffer) {
 		logger.info("onmessage " + clientInstance + " " + messageBuffer);
 
-		workerTaskQueue.enqueue(new WorkerTask(clientInstance.getId(), messageBuffer));
+		if (!requestQueue.enqueue(new WorkerTask(clientInstance.getId(), messageBuffer))) {
+			logger.severe("WorkerTaskQueue full dropping Message from Client " + clientInstance);
+		}
 	}
 
 	private void teardown() throws IOException {

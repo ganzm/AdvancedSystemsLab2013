@@ -23,13 +23,13 @@ public class Broker {
 
 	private DbConnectionPool connectionPool;
 
-	private WorkerTaskQueue requestQueue;
+	private WorkerTaskQueueImpl requestQueue;
 
 	private WorkerPool workerPool;
 
 	public Broker(BrokerConfiguration config) {
 		this.config = config;
-		this.requestQueue = new WorkerTaskQueueImpl();
+		this.requestQueue = new WorkerTaskQueueImpl(config.getRequestQueueSize());
 	}
 
 	public void startup() {
@@ -39,13 +39,15 @@ public class Broker {
 		connectionPool = new DbConnectionPool(config.getDbConnectionPoolSize());
 		connectionPool.init();
 
-		logger.info("Starting WorkerPool");
-		workerPool = new WorkerPool(config);
-		workerPool.init();
-
 		logger.info("Starting Networking");
 		networkInterface = new BrokerNetworkInterface(config, requestQueue);
 		networkInterface.init();
+
+		WorkerTaskQueue responseQueue = networkInterface.getResponseQueue();
+
+		logger.info("Starting WorkerPool");
+		workerPool = new WorkerPool(config, requestQueue, responseQueue, connectionPool);
+		workerPool.init();
 
 		logger.info("Broker started");
 	}

@@ -30,7 +30,7 @@ public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
 	}
 
 	@Override
-	public void enqueue(WorkerTask workerTask) {
+	public boolean enqueue(WorkerTask workerTask) {
 		queue.add(workerTask);
 
 		// wake up reactor
@@ -39,6 +39,8 @@ public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
 		} else {
 			wakeupReactorRunnable.run();
 		}
+
+		return true;
 	}
 
 	/**

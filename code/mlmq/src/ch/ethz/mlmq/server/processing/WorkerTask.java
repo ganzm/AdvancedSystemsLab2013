@@ -14,7 +14,7 @@ public class WorkerTask implements Closeable {
 	 */
 	private final int clientId;
 
-	private final CloseableByteBuffer requestBuffer;
+	private CloseableByteBuffer requestBuffer;
 
 	private CloseableByteBuffer responseBuffer = null;
 
@@ -32,8 +32,18 @@ public class WorkerTask implements Closeable {
 		return clientId;
 	}
 
-	public CloseableByteBuffer getMessageBuffer() {
+	public CloseableByteBuffer getRequestBuffer() {
 		return requestBuffer;
+	}
+
+	public CloseableByteBuffer getResponseBuffer() {
+		return responseBuffer;
+	}
+
+	public CloseableByteBuffer getAndRemoveRequestBuffer() {
+		CloseableByteBuffer tmp = requestBuffer;
+		requestBuffer = null;
+		return tmp;
 	}
 
 	public CloseableByteBuffer getAndRemoveResponseBuffer() {

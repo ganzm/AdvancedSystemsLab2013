@@ -50,4 +50,8 @@ public class DbConnection implements Closeable {
 			logger.severe("Errorwhile closing DBConnection " + LoggerUtil.getStackTraceString(e));
 		}
 	}
+
+	public QueueDao getQueueDao() {
+		return queueDao;
+	}
 }

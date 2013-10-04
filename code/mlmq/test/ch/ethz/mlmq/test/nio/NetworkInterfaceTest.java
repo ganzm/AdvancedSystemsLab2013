@@ -58,8 +58,9 @@ public class NetworkInterfaceTest {
 	private void setupNetworkInterface() {
 		taskQueue = new WorkerTaskQueue() {
 			@Override
-			public void enqueue(WorkerTask workerTask) {
-				doEnqueue(workerTask);
+			public boolean enqueue(WorkerTask workerTask) {
+				return doEnqueue(workerTask);
+
 			}
 
 		};
@@ -91,7 +92,7 @@ public class NetworkInterfaceTest {
 	 * 
 	 * @param workerTask
 	 */
-	private void doEnqueue(final WorkerTask workerTask) {
+	private boolean doEnqueue(final WorkerTask workerTask) {
 
 		Thread workerMock = new Thread() {
 			public void run() {
@@ -123,5 +124,7 @@ public class NetworkInterfaceTest {
 
 		workerMock.setDaemon(true);
 		workerMock.start();
+
+		return true;
 	}
 }

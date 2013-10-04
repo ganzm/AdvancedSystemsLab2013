@@ -14,7 +14,7 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 
 public class QueueDao implements Closeable {
 
-	private static final Logger logger = Logger.getLogger("QueueDao");
+	private static final Logger logger = Logger.getLogger(QueueDao.class.getSimpleName());
 
 	private PreparedStatement createQueueStmt;
 	private PreparedStatement deleteQueueStmt;
@@ -29,7 +29,6 @@ public class QueueDao implements Closeable {
 		createQueueStmt = connection.prepareStatement("SELECT createQueue(?)");
 
 		deleteQueueStmt = connection.prepareStatement("DELETE FROM queue WHERE id = ?");
-
 	}
 
 	public void close() {

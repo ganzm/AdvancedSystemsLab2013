@@ -8,7 +8,6 @@ public class CloseableByteBufferMock extends CloseableByteBuffer {
 
 	public CloseableByteBufferMock(int capacity) {
 		super(ByteBuffer.allocate(capacity), null);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

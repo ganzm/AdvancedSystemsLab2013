@@ -15,7 +15,7 @@ public class CloseableByteBuffer implements Closeable {
 
 	@Override
 	public void close() {
-		pool.release(buffer);
+		pool.release(this);
 	}
 
 	public ByteBuffer getByteBuffer() {
