@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.client;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import ch.ethz.mlmq.dto.QueueDto;
 /**
  * The client interface
  */
-public interface Client {
+public interface Client extends Closeable {
 
 	/**
 	 * Registers a new client.

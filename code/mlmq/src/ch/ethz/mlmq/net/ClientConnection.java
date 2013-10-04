@@ -6,6 +6,8 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
@@ -27,16 +29,25 @@ public class ClientConnection implements Closeable {
 
 	private RequestResponseFactory reqRespFactory;
 
+	private final Timer requestTimeoutTimer;
+
+	/**
+	 * Defines how much time our server has to respond to our request in milliseconds
+	 */
+	private final long responseTimeoutTime;
+
 	/**
 	 * TODO Allocate via ByteBufferPool
 	 */
 	private ByteBuffer ioBuffer = ByteBuffer.allocate(Protocol.CLIENT_IO_BUFFER_CAPACITY);
 
-	public ClientConnection(String host, int port) {
+	public ClientConnection(String host, int port, long responseTimeoutTime) {
+		this.responseTimeoutTime = responseTimeoutTime;
 		this.host = host;
 		this.port = port;
 		this.reqRespFactory = new RequestResponseFactory();
 
+		this.requestTimeoutTimer = new Timer("ClientTimerTo" + host, true);
 		logger.info("Created new ClientConnection to " + host + ":" + port);
 	}
 
@@ -50,34 +61,43 @@ public class ClientConnection implements Closeable {
 
 		int numBytes = -1;
 		int responseLenght = -1;
-		while ((numBytes = clientSocket.read(ioBuffer)) > 0) {
 
-			if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT && responseLenght == -1) {
-				// there is enough data to read an int
+		// schedule TimeouTimer
+		TimeoutTimerTask timeoutTask = new TimeoutTimerTask();
+		requestTimeoutTimer.schedule(timeoutTask, responseTimeoutTime);
 
-				// read BufferPosition 0 to 3
-				responseLenght = ioBuffer.getInt(0);
+		try {
+			while ((numBytes = clientSocket.read(ioBuffer)) > 0) {
+				if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT && responseLenght == -1) {
+					// there is enough data to read an int
 
-				logger.fine("Read ResponseLenght " + responseLenght);
-			}
+					// read BufferPosition 0 to 3
+					responseLenght = ioBuffer.getInt(0);
 
-			if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT + responseLenght && responseLenght != -1) {
-				// enough data received to deserialize the response message
-
-				// switch to read-mode
-				ioBuffer.flip();
-				// consume header int-value
-				ioBuffer.getInt();
-				response = reqRespFactory.deserializeResponse(ioBuffer);
-				ioBuffer.compact();
-
-				if (ioBuffer.position() != 0) {
-					logger.warning("Discarding " + ioBuffer.position() + " bytes from inputbuffer");
+					logger.fine("Read ResponseLenght " + responseLenght);
 				}
 
-				break;
-			}
+				if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT + responseLenght && responseLenght != -1) {
+					// enough data received to deserialize the response message
 
+					// switch to read-mode
+					ioBuffer.flip();
+					// consume header int-value
+					ioBuffer.getInt();
+					response = reqRespFactory.deserializeResponse(ioBuffer);
+					ioBuffer.compact();
+
+					if (ioBuffer.position() != 0) {
+						logger.warning("Discarding " + ioBuffer.position() + " bytes from inputbuffer");
+					}
+
+					break;
+				}
+
+			}
+		} finally {
+			// cancel TimeoutTimer
+			timeoutTask.cancel();
 		}
 
 		if (numBytes <= 0) {
@@ -132,4 +152,16 @@ public class ClientConnection implements Closeable {
 			}
 		}
 	}
+
+	private class TimeoutTimerTask extends TimerTask {
+		@Override
+		public void run() {
+			try {
+				logger.severe("Request Timeout - closing connection");
+				clientSocket.close();
+			} catch (IOException e) {
+				logger.severe("Error while closing timeouted Socket " + LoggerUtil.getStackTraceString(e));
+			}
+		}
+	};
 }

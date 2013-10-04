@@ -44,6 +44,11 @@ public class ClientImpl implements Client {
 		this.forceUseDefaultBroker = forceUseDefaultBroker;
 	}
 
+	@Override
+	public void close() throws IOException {
+		brokerConnections.close();
+	}
+
 	private Response sendRequest(QueueRequest request) throws IOException {
 		return sendRequestToBroker(request, hostForQueue(request.getQueueId()));
 	}

@@ -34,7 +34,10 @@ public class ConnectionPool implements Closeable {
 
 	private ClientConnection createConnection(BrokerDto broker) throws IOException {
 		try {
-			ClientConnection connection = new ClientConnection(broker.getHost(), broker.getPort());
+			// TODO CONFIG - move to config
+			long responseTimeoutTime = 2000;
+
+			ClientConnection connection = new ClientConnection(broker.getHost(), broker.getPort(), responseTimeoutTime);
 			connection.connect();
 			return connection;
 		} catch (UnknownHostException e) {
