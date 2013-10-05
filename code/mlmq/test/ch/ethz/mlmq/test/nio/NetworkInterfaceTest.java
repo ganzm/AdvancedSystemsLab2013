@@ -113,7 +113,6 @@ public class NetworkInterfaceTest {
 				CloseableByteBufferMock responseBuffer = new CloseableByteBufferMock(4000);
 				ByteBuffer interalBuffer = responseBuffer.getByteBuffer();
 				reqRespFactory.serializeResponseWithHeader(response, interalBuffer);
-				interalBuffer.flip();
 				workerTask.setResponseBuffer(responseBuffer);
 
 				networkInterface.getResponseQueue().enqueue(workerTask);

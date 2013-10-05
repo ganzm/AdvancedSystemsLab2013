@@ -18,7 +18,7 @@ public class DatabaseSetupTest {
 	public static void beforeClass() throws IOException {
 		LoggerUtil.initConsoleDebug();
 
-		config = BrokerConfiguration.load("unittestconfig.properties");
+		config = BrokerConfiguration.load("unittestconfig.example.properties");
 	}
 
 	@Test
