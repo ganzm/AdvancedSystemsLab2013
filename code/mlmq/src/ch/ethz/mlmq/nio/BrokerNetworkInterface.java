@@ -296,8 +296,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		logger.info("Open ServerSocket");
 		serverSocketChannel = ServerSocketChannel.open();
-		serverSocketChannel.configureBlocking(false);
 		serverSocketChannel.bind(new InetSocketAddress(listenPort));
+		serverSocketChannel.configureBlocking(false);
 		serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
 		logger.info("ServerSocketChannel bound to " + listenPort);

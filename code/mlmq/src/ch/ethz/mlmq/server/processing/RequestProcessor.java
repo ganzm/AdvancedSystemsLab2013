@@ -9,8 +9,7 @@ public class RequestProcessor {
 
 	public Response process(Request request, DbConnectionPool pool) throws MlmqException {
 
-		// TODO
-		return null;
+		throw new MlmqException("Unexpected Request to process " + request.getClass().getSimpleName() + " - " + request);
 	}
 
 }

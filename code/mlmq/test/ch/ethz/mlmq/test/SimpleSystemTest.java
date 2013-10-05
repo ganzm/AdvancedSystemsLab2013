@@ -70,6 +70,13 @@ public class SimpleSystemTest {
 		defaultBroker.setPort(config.getListenPort());
 		try (ClientImpl client = new ClientImpl(defaultBroker, true)) {
 
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			client.register();
 
 		}

@@ -61,9 +61,7 @@ public class NetworkInterfaceTest {
 			@Override
 			public boolean enqueue(WorkerTask workerTask) {
 				return doEnqueue(workerTask);
-
 			}
-
 		};
 
 		logger.info("Create network interface");

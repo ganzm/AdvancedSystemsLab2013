@@ -120,7 +120,8 @@ public class ClientConnection implements Closeable {
 
 		// write message to the socket
 		ioBuffer.flip();
-		clientSocket.write(ioBuffer);
+		int numBytes = clientSocket.write(ioBuffer);
+		logger.fine("Client wrote " + numBytes + " bytes");
 
 		ioBuffer.clear();
 	}
@@ -138,7 +139,9 @@ public class ClientConnection implements Closeable {
 			throw new IOException("Could not connect to " + host + ":" + port);
 		}
 
-		logger.info("Connection established");
+		boolean result = clientSocket.finishConnect();
+
+		logger.info("Connection established " + result);
 	}
 
 	public void close() {

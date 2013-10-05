@@ -29,8 +29,8 @@ public class BrokerConfiguration {
 	protected String dbPassword = "postgres";
 	protected String dbUrl = "jdbc:postgresql://localhost:5432";
 	protected String dbName = "mlmq";
-	protected int requestQueueSize;
-	protected int maxMessageSize;
+	protected int requestQueueSize = 10;
+	protected int maxMessageSize = 4000;
 
 	public BrokerConfiguration() {
 	}
