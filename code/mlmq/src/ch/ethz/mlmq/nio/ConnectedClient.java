@@ -108,6 +108,9 @@ public class ConnectedClient {
 
 		txBuffer = newTxBuffer;
 
+		// switch to buffer read mode
+		newTxBuffer.getByteBuffer().flip();
+
 		selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 	}
 

@@ -171,7 +171,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 					break;
 				}
 
-				connectedClient.setResponse(task.getAndRemoveResponseBuffer());
+				CloseableByteBuffer buffer = task.getAndRemoveResponseBuffer();
+				connectedClient.setResponse(buffer);
 			} finally {
 				// dispose task
 				task.close();

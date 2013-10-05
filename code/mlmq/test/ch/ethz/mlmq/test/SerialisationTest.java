@@ -141,7 +141,8 @@ public class SerialisationTest {
 
 	@Test
 	public void testRegistrationResponse() {
-		RegistrationResponse response = new RegistrationResponse();
+		ClientDto clientDto = new ClientDto(27);
+		RegistrationResponse response = new RegistrationResponse(clientDto);
 		testResponse(response);
 	}
 

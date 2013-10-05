@@ -53,7 +53,7 @@ public class NetworkInterfaceTest {
 		defaultBroker.setHost("localhost");
 		defaultBroker.setPort(config.getListenPort());
 
-		client = new ClientImpl(defaultBroker, true);
+		client = new ClientImpl(defaultBroker, true, 3000);
 	}
 
 	private void setupNetworkInterface() throws MlmqException {

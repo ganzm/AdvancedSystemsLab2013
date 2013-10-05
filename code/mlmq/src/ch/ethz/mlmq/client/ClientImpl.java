@@ -9,6 +9,7 @@ import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.net.ClientConnection;
 import ch.ethz.mlmq.net.ConnectionPool;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
@@ -38,8 +39,8 @@ public class ClientImpl implements Client {
 
 	private final boolean forceUseDefaultBroker;
 
-	public ClientImpl(BrokerDto defaultBroker, boolean forceUseDefaultBroker) throws IOException {
-		this.brokerConnections = new ConnectionPool();
+	public ClientImpl(BrokerDto defaultBroker, boolean forceUseDefaultBroker, long responseTimeoutTime) throws IOException {
+		this.brokerConnections = new ConnectionPool(responseTimeoutTime);
 		this.defaultBroker = defaultBroker;
 		this.forceUseDefaultBroker = forceUseDefaultBroker;
 	}
@@ -65,6 +66,7 @@ public class ClientImpl implements Client {
 	 * @param timeout
 	 * @return
 	 * @throws IOException
+	 * @throws MlmqException
 	 */
 	private Response sendRequestToBroker(Request request, BrokerDto broker) throws IOException {
 		ClientConnection c = brokerConnections.getConnection(broker);
@@ -74,10 +76,8 @@ public class ClientImpl implements Client {
 			ExceptionResponse r = (ExceptionResponse) response;
 			Exception e = r.getException();
 			if (e != null) {
-				throw new RuntimeException("W00t");
+				throw new IOException("Go ExceptionResponse from Server " + e.getMessage(), e);
 			}
-			// TBD: Exception Handling
-			// throw e;
 		}
 
 		return response;

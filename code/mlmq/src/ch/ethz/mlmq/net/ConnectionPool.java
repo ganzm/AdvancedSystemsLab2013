@@ -21,22 +21,25 @@ public class ConnectionPool implements Closeable {
 
 	private final Map<BrokerDto, ClientConnection> connections = new HashMap<>();
 
+	private long responseTimeoutTime = 2000;
+
+	public ConnectionPool(long responseTimeoutTime) {
+		this.responseTimeoutTime = responseTimeoutTime;
+	}
+
 	public ClientConnection getConnection(BrokerDto broker) throws IOException {
 
 		ClientConnection connection = connections.get(broker);
 		if (connection == null) {
 
-			connection = createConnection(broker);
+			connection = createConnection(broker, responseTimeoutTime);
 			connections.put(broker, connection);
 		}
 		return connection;
 	}
 
-	private ClientConnection createConnection(BrokerDto broker) throws IOException {
+	private ClientConnection createConnection(BrokerDto broker, long responseTimeoutTime) throws IOException {
 		try {
-			// TODO CONFIG - move to config
-			long responseTimeoutTime = 2000;
-
 			ClientConnection connection = new ClientConnection(broker.getHost(), broker.getPort(), responseTimeoutTime);
 			connection.connect();
 			return connection;

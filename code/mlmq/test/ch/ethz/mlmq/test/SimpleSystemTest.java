@@ -68,17 +68,8 @@ public class SimpleSystemTest {
 
 		defaultBroker.setHost("localhost");
 		defaultBroker.setPort(config.getListenPort());
-		try (ClientImpl client = new ClientImpl(defaultBroker, true)) {
-
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+		try (ClientImpl client = new ClientImpl(defaultBroker, true, Integer.MAX_VALUE)) {
 			client.register();
-
 		}
 	}
 }
