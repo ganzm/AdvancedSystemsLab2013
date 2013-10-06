@@ -30,7 +30,9 @@ import ch.ethz.mlmq.net.response.HostForQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
+import ch.ethz.mlmq.net.response.SendMessageResponse;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.server.ClientApplicationContext;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 import ch.ethz.mlmq.server.processing.RequestProcessor;
@@ -45,6 +47,8 @@ public class RequestProcessorTest {
 	private static String dbName = "mlmqunittest" + System.currentTimeMillis();
 
 	private static DbConnectionPool pool;
+
+	private final ClientApplicationContext context = new ClientApplicationContext(1);
 
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException, MlmqException {
@@ -78,53 +82,54 @@ public class RequestProcessorTest {
 
 	@Test
 	public void doTest() throws MlmqException {
+		testRegistrationRequest();
 		testCreateQueueRequest();
 		testHostForQueueRequest();
 		testSendMessageRequest();
-		testQueuesWithPendingMessagesRequest();
-		testRegistrationRequest();
 		testDequeueMessageRequest();
 		testPeekMessageRequest();
+		testQueuesWithPendingMessagesRequest();
 		testDeleteQueueRequest();
 	}
 
 	public void testCreateQueueRequest() throws MlmqException {
+
 		Request request = new CreateQueueRequest();
-		CreateQueueResponse response = (CreateQueueResponse) processor.process(1, request, pool);
+		CreateQueueResponse response = (CreateQueueResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueueDto());
 	}
 
 	public void testHostForQueueRequest() throws MlmqException {
 		Request request = new HostForQueueRequest(1);
-		HostForQueueResponse response = (HostForQueueResponse) processor.process(1, request, pool);
+		HostForQueueResponse response = (HostForQueueResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getBrokerDto());
 	}
 
 	public void testQueuesWithPendingMessagesRequest() throws MlmqException {
 		Request request = new QueuesWithPendingMessagesRequest();
-		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) processor.process(1, request, pool);
+		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueues());
 	}
 
 	public void testRegistrationRequest() throws MlmqException {
-		Request request = new RegistrationRequest();
-		RegistrationResponse response = (RegistrationResponse) processor.process(1, request, pool);
+		Request request = new RegistrationRequest("ClientName");
+		RegistrationResponse response = (RegistrationResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getClientDto());
 	}
 
 	public void testDeleteQueueRequest() throws MlmqException {
 		Request request = new DeleteQueueRequest(1);
-		DeleteQueueResponse response = (DeleteQueueResponse) processor.process(1, request, pool);
+		DeleteQueueResponse response = (DeleteQueueResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 	}
 
 	public void testDequeueMessageRequest() throws MlmqException {
 		Request request = new DequeueMessageRequest(createTestMessageQueryInfoDto());
-		MessageResponse response = (MessageResponse) processor.process(1, request, pool);
+		MessageResponse response = (MessageResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 	}
 
@@ -139,7 +144,7 @@ public class RequestProcessorTest {
 
 	public void testPeekMessageRequest() throws MlmqException {
 		Request request = new PeekMessageRequest(createTestMessageQueryInfoDto());
-		MessageResponse response = (MessageResponse) processor.process(1, request, pool);
+		MessageResponse response = (MessageResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 	}
 
@@ -148,7 +153,7 @@ public class RequestProcessorTest {
 		byte[] content = "Hallo Welt".getBytes();
 		int prio = 10;
 		Request request = new SendMessageRequest(queueId, content, prio);
-		MessageResponse response = (MessageResponse) processor.process(1, request, pool);
+		SendMessageResponse response = (SendMessageResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 	}
 }

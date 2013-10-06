@@ -23,8 +23,10 @@ import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.net.response.SendMessageResponse;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.server.ClientApplicationContext;
 import ch.ethz.mlmq.server.db.DbConnection;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
+import ch.ethz.mlmq.server.db.dao.ClientDao;
 import ch.ethz.mlmq.server.db.dao.MessageDao;
 import ch.ethz.mlmq.server.db.dao.QueueDao;
 
@@ -37,7 +39,7 @@ public class RequestProcessor {
 		this.config = config;
 	}
 
-	public Response process(int clientId, Request request, DbConnectionPool pool) throws MlmqException {
+	public Response process(ClientApplicationContext clientApplicationContext, Request request, DbConnectionPool pool) throws MlmqException {
 
 		logger.info("Process Request " + request);
 
@@ -51,32 +53,58 @@ public class RequestProcessor {
 			throw new MlmqException("TODO - not yet implemented");
 
 		} else if (request instanceof RegistrationRequest) {
-			return processRegistrationRequest(clientId);
+			return processRegistrationRequest((RegistrationRequest) request, clientApplicationContext, pool);
 
 		} else if (request instanceof DeleteQueueRequest) {
 			return processDeleteQueueRequest((DeleteQueueRequest) request, pool);
 
 		} else if (request instanceof DequeueMessageRequest) {
-			throw new MlmqException("TODO - not yet implemented");
+			return processDequeueMessageRequest((DequeueMessageRequest) request, clientApplicationContext, pool);
 
 		} else if (request instanceof PeekMessageRequest) {
 			throw new MlmqException("TODO - not yet implemented");
 
 		} else if (request instanceof SendMessageRequest) {
-			return processSendMessageRequest((SendMessageRequest) request, pool);
+			return processSendMessageRequest((SendMessageRequest) request, clientApplicationContext, pool);
 
 		} else {
 			throw new MlmqException("Unexpected Request to process " + request.getClass().getSimpleName() + " - " + request);
 		}
 	}
 
-	private Response processSendMessageRequest(SendMessageRequest request, DbConnectionPool pool) throws MlmqException {
-		try (DbConnection connection = pool.getConnection()) {
+	private Response processDequeueMessageRequest(DequeueMessageRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+			MessageDao messageDao = connection.getMessageDao();
+
+			return messageDao.dequeueMessage(request);
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			pool.returnConnection(connection);
+		}
+	}
+
+	private Response processSendMessageRequest(SendMessageRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
 
 			MessageDao messageDao = connection.getMessageDao();
-			messageDao.blub(request);
+			messageDao.insertMessage(request, clientApplicationContext);
 			SendMessageResponse response = new SendMessageResponse();
 			return response;
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			pool.returnConnection(connection);
 		}
 	}
 
@@ -92,33 +120,69 @@ public class RequestProcessor {
 	}
 
 	private Response processDeleteQueueRequest(DeleteQueueRequest request, DbConnectionPool pool) throws MlmqException {
-		try (DbConnection connection = pool.getConnection()) {
+
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
 			QueueDao queueDao = connection.getQueueDao();
 
 			long queueIdToDelete = request.getQueueId();
 			queueDao.deleteQueue(queueIdToDelete);
 
 			return new DeleteQueueResponse();
-		} catch (SQLException e) {
-			throw new MlmqException("Error processing CreateQueueRequest", e);
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			pool.returnConnection(connection);
 		}
+
 	}
 
 	private Response processCreateQueueRequest(CreateQueueRequest request, DbConnectionPool pool) throws MlmqException {
-		try (DbConnection connection = pool.getConnection()) {
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
 			QueueDao queueDao = connection.getQueueDao();
 			QueueDto queue = queueDao.createQueue();
 
 			CreateQueueResponse response = new CreateQueueResponse(queue);
 			return response;
-		} catch (SQLException e) {
-			throw new MlmqException("Error processing CreateQueueRequest", e);
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			pool.returnConnection(connection);
 		}
 	}
 
-	private Response processRegistrationRequest(int clientId) {
-		ClientDto clientDto = new ClientDto(clientId);
-		RegistrationResponse response = new RegistrationResponse(clientDto);
-		return response;
+	private Response processRegistrationRequest(RegistrationRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
+			ClientDao clientDao = connection.getClientDao();
+
+			int newClientId = clientDao.insertNewClient(request.getClientName());
+
+			clientApplicationContext.setClientId(newClientId);
+			clientApplicationContext.setClientName(request.getClientName());
+
+			ClientDto clientDto = new ClientDto(newClientId);
+			RegistrationResponse response = new RegistrationResponse(clientDto);
+			return response;
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			pool.returnConnection(connection);
+		}
 	}
 }

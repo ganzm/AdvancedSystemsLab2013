@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.server.db.dao.ClientDao;
 import ch.ethz.mlmq.server.db.dao.MessageDao;
 import ch.ethz.mlmq.server.db.dao.QueueDao;
 
@@ -27,6 +28,7 @@ public class DbConnection implements Closeable {
 
 	private QueueDao queueDao = null;
 	private MessageDao messageDao = null;
+	private ClientDao clientDao = null;
 
 	public DbConnection(String url, String userName, String password) {
 		this.url = url;
@@ -43,6 +45,9 @@ public class DbConnection implements Closeable {
 
 		messageDao = new MessageDao();
 		messageDao.init(connection);
+
+		clientDao = new ClientDao();
+		clientDao.init(connection);
 	}
 
 	@Override
@@ -50,6 +55,7 @@ public class DbConnection implements Closeable {
 		logger.info("Closing DAO");
 		queueDao.close();
 		messageDao.close();
+		clientDao.close();
 
 		try {
 			logger.info("Closing DbConnection");
@@ -71,5 +77,9 @@ public class DbConnection implements Closeable {
 
 	public MessageDao getMessageDao() {
 		return messageDao;
+	}
+
+	public ClientDao getClientDao() {
+		return clientDao;
 	}
 }

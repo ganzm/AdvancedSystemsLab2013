@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.exception;
 
+
 public class MlmqException extends Exception {
 
 	private static final long serialVersionUID = 1062440408012876553L;
@@ -10,6 +11,10 @@ public class MlmqException extends Exception {
 
 	public MlmqException(String message) {
 		super(message);
+	}
+
+	public MlmqException(Throwable t) {
+		super(t);
 	}
 
 	@Override

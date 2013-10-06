@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.server.ClientApplicationContext;
 import ch.ethz.mlmq.server.processing.WorkerTask;
 import ch.ethz.mlmq.server.processing.WorkerTaskQueueImpl;
 
@@ -15,6 +16,11 @@ public class WorkerTaskQueueTest {
 	private static final Logger logger = Logger.getLogger(WorkerTaskQueueTest.class.getSimpleName());
 
 	private volatile boolean returnedFlag = false;
+
+	private final ClientApplicationContext context1 = new ClientApplicationContext(1);
+	private final ClientApplicationContext context2 = new ClientApplicationContext(2);
+	private final ClientApplicationContext context3 = new ClientApplicationContext(3);
+	private final ClientApplicationContext context4 = new ClientApplicationContext(4);
 
 	@BeforeClass
 	public static void beforeClass() throws IOException {
@@ -25,10 +31,10 @@ public class WorkerTaskQueueTest {
 	public void testQueueFull() {
 		WorkerTaskQueueImpl queue = new WorkerTaskQueueImpl(3);
 
-		try (WorkerTask t1 = new WorkerTask(1, null);
-				WorkerTask t2 = new WorkerTask(2, null);
-				WorkerTask t3 = new WorkerTask(3, null);
-				WorkerTask t4 = new WorkerTask(4, null);) {
+		try (WorkerTask t1 = new WorkerTask(context1, null);
+				WorkerTask t2 = new WorkerTask(context2, null);
+				WorkerTask t3 = new WorkerTask(context3, null);
+				WorkerTask t4 = new WorkerTask(context4, null);) {
 
 			Assert.assertTrue(queue.enqueue(t1));
 			Assert.assertTrue(queue.enqueue(t2));
@@ -41,7 +47,7 @@ public class WorkerTaskQueueTest {
 	@Test
 	public void testBlockingRead() {
 		final WorkerTaskQueueImpl queue = new WorkerTaskQueueImpl(3);
-		final WorkerTask expectedTask = new WorkerTask(1, null);
+		final WorkerTask expectedTask = new WorkerTask(context1, null);
 
 		Thread t = new Thread() {
 

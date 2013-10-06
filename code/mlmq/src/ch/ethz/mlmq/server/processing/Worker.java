@@ -74,7 +74,7 @@ public class Worker extends Thread {
 		Request request = factory.deserializeRequest(rawRequest);
 		Response response = null;
 		try {
-			response = processor.process(task.getClientId(), request, connectionPool);
+			response = processor.process(task.getClientContext(), request, connectionPool);
 		} catch (MlmqException ex) {
 			response = new ExceptionResponse(ex);
 		}

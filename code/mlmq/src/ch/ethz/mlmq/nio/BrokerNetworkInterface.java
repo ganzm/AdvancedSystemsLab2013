@@ -58,7 +58,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	private Thread networkingThread;
 
 	/**
-	 * Maps unique client ids to ConnectedClient objects
+	 * Maps unique clientNetworkHandle to ConnectedClient objects
 	 */
 	private final Map<Integer, ConnectedClient> connectedClients = new HashMap<Integer, ConnectedClient>();
 
@@ -160,14 +160,14 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		WorkerTask task;
 		while ((task = responseQueue.dequeue()) != null) {
 			try {
-				int clientId = task.getClientId();
+				int clientNetworkHandle = task.getClientContext().getClientNetworkHandle();
 
-				logger.fine("Enqueue Response for Client " + clientId + " Task: " + task);
+				logger.fine("Enqueue Response for Client " + clientNetworkHandle + " Task: " + task);
 
-				ConnectedClient connectedClient = connectedClients.get(clientId);
+				ConnectedClient connectedClient = connectedClients.get(clientNetworkHandle);
 
 				if (connectedClient == null) {
-					logger.severe("Response for unknown clientId " + clientId + " discarded - maybe client disconnected " + task);
+					logger.severe("Response for unknown clientId " + clientNetworkHandle + " discarded - maybe client disconnected " + task);
 					break;
 				}
 
@@ -242,7 +242,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		if (byteCount <= 0) {
 			logger.info("Socket remotely closed " + clientChannel);
 			clientInstance.close();
-			connectedClients.remove(clientInstance.getId());
+			connectedClients.remove(clientInstance.getClientContext().getClientNetworkHandle());
 			return;
 		}
 	}
@@ -271,7 +271,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	private void onMessage(ConnectedClient clientInstance, CloseableByteBuffer messageBuffer) {
 		logger.info("onmessage " + clientInstance + " " + messageBuffer);
 
-		if (!requestQueue.enqueue(new WorkerTask(clientInstance.getId(), messageBuffer))) {
+		if (!requestQueue.enqueue(new WorkerTask(clientInstance.getClientContext(), messageBuffer))) {
 			logger.severe("WorkerTaskQueue full dropping Message from Client " + clientInstance);
 		}
 	}

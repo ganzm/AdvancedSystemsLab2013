@@ -12,7 +12,8 @@ CREATE TABLE broker (
 
 
 CREATE TABLE client (
-  id INTEGER PRIMARY KEY DEFAULT nextval('client_id')
+  id INTEGER PRIMARY KEY DEFAULT nextval('client_id'),
+  name VARCHAR
 );
 
 

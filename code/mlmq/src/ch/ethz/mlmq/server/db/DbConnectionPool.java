@@ -92,7 +92,7 @@ public class DbConnectionPool {
 			}
 		}
 
-		throw new OutOfConnectionsException("No more connections available - try again later" + poolSize);
+		throw new OutOfConnectionsException("No more connections available - try again later - PoolSize is " + poolSize);
 	}
 
 	/**

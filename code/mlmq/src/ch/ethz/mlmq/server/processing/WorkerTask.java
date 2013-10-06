@@ -3,33 +3,23 @@ package ch.ethz.mlmq.server.processing;
 import java.io.Closeable;
 
 import ch.ethz.mlmq.nio.CloseableByteBuffer;
-import ch.ethz.mlmq.nio.ConnectedClient;
+import ch.ethz.mlmq.server.ClientApplicationContext;
 
 public class WorkerTask implements Closeable {
-
-	/**
-	 * indicates the clientId which performed this Request
-	 * 
-	 * @see ConnectedClient#getId()
-	 */
-	private final int clientId;
 
 	private CloseableByteBuffer requestBuffer;
 
 	private CloseableByteBuffer responseBuffer = null;
 
-	public WorkerTask(int id, CloseableByteBuffer requestMessageBuffer) {
-		this.clientId = id;
+	private ClientApplicationContext clientContext;
+
+	public WorkerTask(ClientApplicationContext clientContext, CloseableByteBuffer requestMessageBuffer) {
+		this.clientContext = clientContext;
 		this.requestBuffer = requestMessageBuffer;
 	}
 
-	/**
-	 * indicates the clientId which performed this Request
-	 * 
-	 * @return
-	 */
-	public int getClientId() {
-		return clientId;
+	public ClientApplicationContext getClientContext() {
+		return clientContext;
 	}
 
 	public CloseableByteBuffer getRequestBuffer() {
@@ -66,4 +56,5 @@ public class WorkerTask implements Closeable {
 			responseBuffer.close();
 		}
 	}
+
 }

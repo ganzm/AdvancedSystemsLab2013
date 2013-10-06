@@ -38,8 +38,10 @@ public class ClientImpl implements Client {
 	private BrokerDto defaultBroker;
 
 	private final boolean forceUseDefaultBroker;
+	private final String name;
 
-	public ClientImpl(BrokerDto defaultBroker, boolean forceUseDefaultBroker, long responseTimeoutTime) throws IOException {
+	public ClientImpl(String name, BrokerDto defaultBroker, boolean forceUseDefaultBroker, long responseTimeoutTime) throws IOException {
+		this.name = name;
 		this.brokerConnections = new ConnectionPool(responseTimeoutTime);
 		this.defaultBroker = defaultBroker;
 		this.forceUseDefaultBroker = forceUseDefaultBroker;
@@ -100,7 +102,7 @@ public class ClientImpl implements Client {
 
 	@Override
 	public ClientDto register() throws IOException {
-		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest());
+		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest(name));
 		registeredAs = repsonse.getClientDto();
 		return registeredAs;
 	}

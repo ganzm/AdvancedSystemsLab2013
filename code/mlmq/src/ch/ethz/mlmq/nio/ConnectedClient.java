@@ -5,6 +5,7 @@ import java.nio.channels.SelectionKey;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.net.Protocol;
+import ch.ethz.mlmq.server.ClientApplicationContext;
 
 /**
  * Represents a connected client
@@ -16,15 +17,16 @@ public class ConnectedClient {
 	private static final Logger logger = Logger.getLogger(ConnectedClient.class.getSimpleName());
 
 	private final String name;
-	private final int clientId;
 
 	private CloseableByteBuffer rxBuffer;
 	private CloseableByteBuffer txBuffer;
 
 	private SelectionKey selectionKey;
 
-	public ConnectedClient(int clientId, String name) {
-		this.clientId = clientId;
+	private final ClientApplicationContext clientApplicationContext;
+
+	public ConnectedClient(int clientNetworkHandle, String name) {
+		this.clientApplicationContext = new ClientApplicationContext(clientNetworkHandle);
 		this.name = name;
 	}
 
@@ -48,6 +50,10 @@ public class ConnectedClient {
 
 	public ByteBuffer getTxBuffer() {
 		return txBuffer.getByteBuffer();
+	}
+
+	public ClientApplicationContext getClientContext() {
+		return clientApplicationContext;
 	}
 
 	/**
@@ -84,10 +90,6 @@ public class ConnectedClient {
 		}
 
 		return false;
-	}
-
-	public int getId() {
-		return clientId;
 	}
 
 	public CloseableByteBuffer swapRxBuffer(CloseableByteBuffer replacementBuffer) {

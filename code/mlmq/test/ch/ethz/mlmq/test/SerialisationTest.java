@@ -62,8 +62,7 @@ public class SerialisationTest {
 
 	@Test
 	public void testRegistrationRequest() {
-		RegistrationRequest request = new RegistrationRequest();
-
+		RegistrationRequest request = new RegistrationRequest("Test");
 		testRequest(request);
 	}
 
