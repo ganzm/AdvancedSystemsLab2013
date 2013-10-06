@@ -1,12 +1,16 @@
 package ch.ethz.mlmq.dto;
 
+import java.io.Serializable;
+
 /**
  * Data Transfer Object
  * 
  * used for data transport between Database and broker
  * 
  */
-public class BrokerDto {
+public class BrokerDto implements Serializable {
+	private static final long serialVersionUID = 2397258276459710559L;
+
 	private long id;
 	private String host;
 	private int port;
