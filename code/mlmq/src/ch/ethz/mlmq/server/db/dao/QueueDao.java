@@ -68,8 +68,8 @@ public class QueueDao implements Closeable {
 	 * @param queueToDelete
 	 * @throws SQLException
 	 */
-	public void deleteQueue(QueueDto queueToDelete) throws SQLException {
-		deleteQueueStmt.setLong(1, queueToDelete.getId());
+	public void deleteQueue(long queueIdToDelete) throws SQLException {
+		deleteQueueStmt.setLong(1, queueIdToDelete);
 		deleteQueueStmt.execute();
 	}
 }

@@ -17,7 +17,10 @@ public class WorkerPool {
 	private final WorkerTaskQueueImpl requestQueue;
 	private final DbConnectionPool connectionPool;
 
+	private final BrokerConfiguration config;
+
 	public WorkerPool(BrokerConfiguration config, WorkerTaskQueueImpl requestQueue, WorkerTaskQueue responseQueue, DbConnectionPool connectionPool) {
+		this.config = config;
 		this.requestQueue = requestQueue;
 		this.responseQueue = responseQueue;
 		this.connectionPool = connectionPool;
@@ -28,7 +31,7 @@ public class WorkerPool {
 	public void init() {
 		logger.info("Init WorkerPool - Number of workers " + workerThreadCount);
 		for (int i = 0; i < workerThreadCount; i++) {
-			Worker worker = new Worker("Worker" + i, requestQueue, responseQueue, connectionPool);
+			Worker worker = new Worker("Worker" + i, requestQueue, responseQueue, connectionPool, config);
 			worker.start();
 			workers.add(worker);
 		}

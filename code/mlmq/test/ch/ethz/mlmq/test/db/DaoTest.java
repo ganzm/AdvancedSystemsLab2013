@@ -64,7 +64,7 @@ public class DaoTest {
 			Assert.assertNotNull(queue);
 			logger.info("Created Queue with id " + queue.getId());
 
-			queueDao.deleteQueue(queue);
+			queueDao.deleteQueue(queue.getId());
 			int afterDelete = getQueueCount(connection);
 
 			Assert.assertEquals(beforeCreate + 1, afterCreate);

@@ -7,7 +7,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.ClientDto;
+import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
@@ -123,13 +125,15 @@ public class SerialisationTest {
 
 	@Test
 	public void testHostForQueueResponse() {
-		HostForQueueResponse response = new HostForQueueResponse();
+		BrokerDto broker = new BrokerDto();
+		HostForQueueResponse response = new HostForQueueResponse(broker);
 		testResponse(response);
 	}
 
 	@Test
 	public void testMessageResponse() {
-		MessageResponse response = new MessageResponse();
+		MessageDto messageDto = new MessageDto();
+		MessageResponse response = new MessageResponse(messageDto);
 		testResponse(response);
 	}
 

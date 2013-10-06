@@ -15,8 +15,13 @@ public class BrokerDto implements Serializable {
 	private String host;
 	private int port;
 
-	public BrokerDto() {
+	public BrokerDto(long id, String host, int port) {
+		this.id = id;
+		this.host = host;
+		this.port = port;
+	}
 
+	public BrokerDto() {
 	}
 
 	public long getId() {

@@ -68,16 +68,26 @@ public class RequestProcessorTest {
 	@AfterClass
 	public static void afterClass() throws SQLException {
 		pool.close();
-
 		dbInitializer.deleteDatabase();
 	}
 
 	@Before
 	public void before() {
-		processor = new RequestProcessor();
+		processor = new RequestProcessor(config);
 	}
 
 	@Test
+	public void doTest() throws MlmqException {
+		testCreateQueueRequest();
+		testHostForQueueRequest();
+		testSendMessageRequest();
+		testQueuesWithPendingMessagesRequest();
+		testRegistrationRequest();
+		testDequeueMessageRequest();
+		testPeekMessageRequest();
+		testDeleteQueueRequest();
+	}
+
 	public void testCreateQueueRequest() throws MlmqException {
 		Request request = new CreateQueueRequest();
 		CreateQueueResponse response = (CreateQueueResponse) processor.process(1, request, pool);
@@ -85,7 +95,6 @@ public class RequestProcessorTest {
 		Assert.assertNotNull(response.getQueueDto());
 	}
 
-	@Test
 	public void testHostForQueueRequest() throws MlmqException {
 		Request request = new HostForQueueRequest(1);
 		HostForQueueResponse response = (HostForQueueResponse) processor.process(1, request, pool);
@@ -93,7 +102,6 @@ public class RequestProcessorTest {
 		Assert.assertNotNull(response.getBrokerDto());
 	}
 
-	@Test
 	public void testQueuesWithPendingMessagesRequest() throws MlmqException {
 		Request request = new QueuesWithPendingMessagesRequest();
 		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) processor.process(1, request, pool);
@@ -101,7 +109,6 @@ public class RequestProcessorTest {
 		Assert.assertNotNull(response.getQueues());
 	}
 
-	@Test
 	public void testRegistrationRequest() throws MlmqException {
 		Request request = new RegistrationRequest();
 		RegistrationResponse response = (RegistrationResponse) processor.process(1, request, pool);
@@ -109,14 +116,12 @@ public class RequestProcessorTest {
 		Assert.assertNotNull(response.getClientDto());
 	}
 
-	@Test
 	public void testDeleteQueueRequest() throws MlmqException {
 		Request request = new DeleteQueueRequest(1);
 		DeleteQueueResponse response = (DeleteQueueResponse) processor.process(1, request, pool);
 		Assert.assertNotNull(response);
 	}
 
-	@Test
 	public void testDequeueMessageRequest() throws MlmqException {
 		Request request = new DequeueMessageRequest(createTestMessageQueryInfoDto());
 		MessageResponse response = (MessageResponse) processor.process(1, request, pool);
@@ -132,14 +137,12 @@ public class RequestProcessorTest {
 		return messageQueryInfoDto;
 	}
 
-	@Test
 	public void testPeekMessageRequest() throws MlmqException {
 		Request request = new PeekMessageRequest(createTestMessageQueryInfoDto());
 		MessageResponse response = (MessageResponse) processor.process(1, request, pool);
 		Assert.assertNotNull(response);
 	}
 
-	@Test
 	public void testSendMessageRequest() throws MlmqException {
 		long queueId = 1;
 		byte[] content = "Hallo Welt".getBytes();

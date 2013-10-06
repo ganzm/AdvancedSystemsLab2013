@@ -9,6 +9,7 @@ import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.nio.CloseableByteBuffer;
+import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
 
 public class Worker extends Thread {
@@ -21,14 +22,15 @@ public class Worker extends Thread {
 
 	private final RequestResponseFactory factory = new RequestResponseFactory();
 
-	private final RequestProcessor processor = new RequestProcessor();
+	private final RequestProcessor processor;
 
 	private final DbConnectionPool connectionPool;
 
-	public Worker(String name, WorkerTaskQueueImpl requestQueue, WorkerTaskQueue responseQueue, DbConnectionPool connectionPool) {
+	public Worker(String name, WorkerTaskQueueImpl requestQueue, WorkerTaskQueue responseQueue, DbConnectionPool connectionPool, BrokerConfiguration config) {
 		this.requestQueue = requestQueue;
 		this.responseQueue = responseQueue;
 		this.connectionPool = connectionPool;
+		this.processor = new RequestProcessor(config);
 		setName(name);
 	}
 

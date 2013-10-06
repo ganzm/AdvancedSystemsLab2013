@@ -8,6 +8,10 @@ public class MessageResponse implements Response {
 
 	private MessageDto messageDto;
 
+	public MessageResponse(MessageDto messageDto) {
+		this.messageDto = messageDto;
+	}
+
 	public MessageDto getMessageDto() {
 		return messageDto;
 	}
