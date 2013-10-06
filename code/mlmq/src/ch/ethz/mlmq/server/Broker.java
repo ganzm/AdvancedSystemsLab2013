@@ -37,7 +37,7 @@ public class Broker {
 		logger.info("Starting broker...");
 
 		logger.info("Starting ConnectionPool");
-		connectionPool = new DbConnectionPool(config.getDbConnectionPoolSize());
+		connectionPool = new DbConnectionPool(config);
 		connectionPool.init();
 
 		logger.info("Starting Networking");

@@ -24,6 +24,8 @@ public class DbConnection implements Closeable {
 
 	private QueueDao queueDao = null;
 
+	private boolean closed = true;
+
 	public DbConnection(String url, String userName, String password) {
 		this.url = url;
 		this.userName = userName;
@@ -32,6 +34,7 @@ public class DbConnection implements Closeable {
 
 	public void init() throws SQLException {
 		this.connection = DriverManager.getConnection(url, userName, password);
+		closed = false;
 
 		queueDao = new QueueDao();
 		queueDao.init(connection);
@@ -39,7 +42,6 @@ public class DbConnection implements Closeable {
 
 	@Override
 	public void close() {
-
 		logger.info("Closing DAO");
 		queueDao.close();
 
@@ -48,7 +50,13 @@ public class DbConnection implements Closeable {
 			connection.close();
 		} catch (SQLException e) {
 			logger.severe("Errorwhile closing DBConnection " + LoggerUtil.getStackTraceString(e));
+		} finally {
+			closed = true;
 		}
+	}
+
+	public boolean isClosed() {
+		return closed;
 	}
 
 	public QueueDao getQueueDao() {
