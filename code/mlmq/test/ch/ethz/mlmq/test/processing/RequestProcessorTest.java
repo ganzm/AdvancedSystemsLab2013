@@ -18,7 +18,6 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
-import ch.ethz.mlmq.net.request.HostForQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
@@ -26,7 +25,6 @@ import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
-import ch.ethz.mlmq.net.response.HostForQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
@@ -77,14 +75,13 @@ public class RequestProcessorTest {
 
 	@Before
 	public void before() {
-		processor = new RequestProcessor(config);
+		processor = new RequestProcessor();
 	}
 
 	@Test
 	public void doTest() throws MlmqException {
 		testRegistrationRequest();
 		testCreateQueueRequest();
-		testHostForQueueRequest();
 		testSendMessageRequest();
 		testDequeueMessageRequest();
 		testPeekMessageRequest();
@@ -98,13 +95,6 @@ public class RequestProcessorTest {
 		CreateQueueResponse response = (CreateQueueResponse) processor.process(context, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueueDto());
-	}
-
-	public void testHostForQueueRequest() throws MlmqException {
-		Request request = new HostForQueueRequest(1);
-		HostForQueueResponse response = (HostForQueueResponse) processor.process(context, request, pool);
-		Assert.assertNotNull(response);
-		Assert.assertNotNull(response.getBrokerDto());
 	}
 
 	public void testQueuesWithPendingMessagesRequest() throws MlmqException {

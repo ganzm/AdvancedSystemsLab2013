@@ -3,7 +3,6 @@ package ch.ethz.mlmq.server.processing;
 import java.sql.SQLException;
 import java.util.logging.Logger;
 
-import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.QueueDto;
@@ -11,7 +10,6 @@ import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
-import ch.ethz.mlmq.net.request.HostForQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
@@ -19,12 +17,10 @@ import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
-import ch.ethz.mlmq.net.response.HostForQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.net.response.SendMessageResponse;
-import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.ClientApplicationContext;
 import ch.ethz.mlmq.server.db.DbConnection;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
@@ -35,10 +31,8 @@ import ch.ethz.mlmq.server.db.dao.QueueDao;
 public class RequestProcessor {
 
 	private final Logger logger = Logger.getLogger(RequestProcessor.class.getSimpleName());
-	private BrokerConfiguration config;
 
-	public RequestProcessor(BrokerConfiguration config) {
-		this.config = config;
+	public RequestProcessor() {
 	}
 
 	public Response process(ClientApplicationContext clientApplicationContext, Request request, DbConnectionPool pool) throws MlmqException {
@@ -47,9 +41,6 @@ public class RequestProcessor {
 
 		if (request instanceof CreateQueueRequest) {
 			return processCreateQueueRequest((CreateQueueRequest) request, pool);
-
-		} else if (request instanceof HostForQueueRequest) {
-			return processHostForQueueRequest((HostForQueueRequest) request, pool);
 
 		} else if (request instanceof QueuesWithPendingMessagesRequest) {
 			return processQueuesWithPendingMessagesRequest((QueuesWithPendingMessagesRequest) request, clientApplicationContext, pool);
@@ -132,17 +123,6 @@ public class RequestProcessor {
 		} finally {
 			pool.returnConnection(connection);
 		}
-	}
-
-	private Response processHostForQueueRequest(HostForQueueRequest request, DbConnectionPool pool) {
-
-		// TODO this is wrong
-		String host = "localhost";
-
-		int port = config.getListenPort();
-		BrokerDto brokerDto = new BrokerDto(1, host, port);
-		HostForQueueResponse response = new HostForQueueResponse(brokerDto);
-		return response;
 	}
 
 	private Response processDeleteQueueRequest(DeleteQueueRequest request, DbConnectionPool pool) throws MlmqException {

@@ -1,7 +1,6 @@
 package ch.ethz.mlmq.client;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 import ch.ethz.mlmq.dto.BrokerDto;
@@ -15,7 +14,6 @@ import ch.ethz.mlmq.net.ConnectionPool;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
-import ch.ethz.mlmq.net.request.HostForQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueueRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
@@ -24,7 +22,6 @@ import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
-import ch.ethz.mlmq.net.response.HostForQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
@@ -33,18 +30,15 @@ import ch.ethz.mlmq.net.response.Response;
 public class ClientImpl implements Client {
 
 	private ClientDto registeredAs;
-	private HashMap<Long, BrokerDto> brokerCache = new HashMap<Long, BrokerDto>();
 	private final ConnectionPool brokerConnections;
 	private BrokerDto defaultBroker;
 
-	private final boolean forceUseDefaultBroker;
 	private final String name;
 
-	public ClientImpl(String name, BrokerDto defaultBroker, boolean forceUseDefaultBroker, long responseTimeoutTime) throws IOException {
+	public ClientImpl(String name, BrokerDto defaultBroker, long responseTimeoutTime) throws IOException {
 		this.name = name;
 		this.brokerConnections = new ConnectionPool(responseTimeoutTime);
 		this.defaultBroker = defaultBroker;
-		this.forceUseDefaultBroker = forceUseDefaultBroker;
 	}
 
 	@Override
@@ -53,7 +47,7 @@ public class ClientImpl implements Client {
 	}
 
 	private Response sendRequest(QueueRequest request) throws IOException {
-		return sendRequestToBroker(request, hostForQueue(request.getQueueId()));
+		return sendRequestToBroker(request, defaultBroker);
 	}
 
 	private Response sendRequest(Request request) throws IOException {
@@ -83,21 +77,6 @@ public class ClientImpl implements Client {
 		}
 
 		return response;
-	}
-
-	private BrokerDto hostForQueue(long queueId) throws IOException {
-		if (forceUseDefaultBroker) {
-			return defaultBroker;
-		}
-
-		if (brokerCache.containsKey(queueId)) {
-			return brokerCache.get(queueId);
-		}
-
-		HostForQueueResponse response = (HostForQueueResponse) sendRequest(new HostForQueueRequest(queueId));
-		brokerCache.put(queueId, response.getBrokerDto());
-
-		return hostForQueue(queueId);
 	}
 
 	@Override

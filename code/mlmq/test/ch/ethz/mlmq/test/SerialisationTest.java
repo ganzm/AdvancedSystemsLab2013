@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
@@ -17,7 +16,6 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
-import ch.ethz.mlmq.net.request.HostForQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
@@ -26,7 +24,6 @@ import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
-import ch.ethz.mlmq.net.response.HostForQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
@@ -44,12 +41,6 @@ public class SerialisationTest {
 	@Test
 	public void testSerializeCreateQueueRequest() {
 		CreateQueueRequest request = new CreateQueueRequest();
-		testRequest(request);
-	}
-
-	@Test
-	public void testHostForQueueRequest() {
-		HostForQueueRequest request = new HostForQueueRequest((long) Math.random());
 		testRequest(request);
 	}
 
@@ -119,13 +110,6 @@ public class SerialisationTest {
 	public void testExceptionResponse() {
 		MlmqException exception = new MlmqException("This is any random excpetion", new RuntimeException("Nested Exception"));
 		ExceptionResponse response = new ExceptionResponse(exception);
-		testResponse(response);
-	}
-
-	@Test
-	public void testHostForQueueResponse() {
-		BrokerDto broker = new BrokerDto();
-		HostForQueueResponse response = new HostForQueueResponse(broker);
 		testResponse(response);
 	}
 
