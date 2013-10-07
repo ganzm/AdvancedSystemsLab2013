@@ -15,7 +15,6 @@ import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
-import ch.ethz.mlmq.net.request.QueueRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
@@ -44,10 +43,6 @@ public class ClientImpl implements Client {
 	@Override
 	public void close() throws IOException {
 		brokerConnections.close();
-	}
-
-	private Response sendRequest(QueueRequest request) throws IOException {
-		return sendRequestToBroker(request, defaultBroker);
 	}
 
 	private Response sendRequest(Request request) throws IOException {

@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.request;
 
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 
-public class PeekMessageRequest implements QueueRequest {
+public class PeekMessageRequest implements Request {
 
 	private static final long serialVersionUID = 5535263002144596601L;
 
@@ -12,7 +12,6 @@ public class PeekMessageRequest implements QueueRequest {
 		this.messageQueryInfo = messageQueryInfo;
 	}
 
-	@Override
 	public long getQueueId() {
 		return messageQueryInfo.getQueue().getId();
 	}

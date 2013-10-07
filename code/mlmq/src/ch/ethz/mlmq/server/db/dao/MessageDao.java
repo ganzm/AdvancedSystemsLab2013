@@ -65,12 +65,16 @@ public class MessageDao implements Closeable {
 	}
 
 	public void insertMessage(SendMessageRequest request, ClientApplicationContext clientContext) throws SQLException {
-		insertMessageStmt.setLong(1, request.getQueueId());
-		insertMessageStmt.setLong(2, clientContext.getClientId());
-		insertMessageStmt.setBytes(3, request.getContent());
-		insertMessageStmt.setInt(4, request.getPrio());
 
-		insertMessageStmt.execute();
+		for (long queueId : request.getQueueIds()) {
+			insertMessageStmt.setLong(1, queueId);
+			insertMessageStmt.setLong(2, clientContext.getClientId());
+			insertMessageStmt.setBytes(3, request.getContent());
+			insertMessageStmt.setInt(4, request.getPrio());
+
+			insertMessageStmt.execute();
+		}
+
 	}
 
 	public MessageDto dequeueMessage(MessageQueryInfoDto queryInfo) throws SQLException {

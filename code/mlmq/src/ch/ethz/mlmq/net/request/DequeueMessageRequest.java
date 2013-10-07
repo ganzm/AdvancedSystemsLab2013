@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.request;
 
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 
-public class DequeueMessageRequest implements QueueRequest {
+public class DequeueMessageRequest implements Request {
 
 	private static final long serialVersionUID = -4034153593869631817L;
 
@@ -16,7 +16,6 @@ public class DequeueMessageRequest implements QueueRequest {
 		return messageQueryInfo;
 	}
 
-	@Override
 	public long getQueueId() {
 		return messageQueryInfo.getQueue().getId();
 	}

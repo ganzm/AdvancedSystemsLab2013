@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.request;
 
 import ch.ethz.mlmq.dto.QueueDto;
 
-public class DeleteQueueRequest implements QueueRequest {
+public class DeleteQueueRequest implements Request {
 
 	private static final long serialVersionUID = -689440274911871604L;
 
@@ -12,7 +12,6 @@ public class DeleteQueueRequest implements QueueRequest {
 		queue = new QueueDto(queueId);
 	}
 
-	@Override
 	public long getQueueId() {
 		return queue.getId();
 	}
