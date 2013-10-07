@@ -17,6 +17,10 @@ public class PeekMessageRequest implements QueueRequest {
 		return messageQueryInfo.getQueue().getId();
 	}
 
+	public MessageQueryInfoDto getMessageQueryInfo() {
+		return messageQueryInfo;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

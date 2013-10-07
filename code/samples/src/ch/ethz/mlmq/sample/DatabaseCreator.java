@@ -15,7 +15,7 @@ public class DatabaseCreator {
 		DatabaseInitializer dbInitializer = new DatabaseInitializer(config.getDbUrl(), config.getDbUserName(), config.getDbPassword(), "mlmq");
 		dbInitializer.connect();
 
-		dbInitializer.deleteDatabase();
+		// dbInitializer.deleteDatabase();
 		dbInitializer.createDatabase();
 		dbInitializer.createTables();
 	}

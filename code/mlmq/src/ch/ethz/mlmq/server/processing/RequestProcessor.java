@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.ClientDto;
+import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
@@ -19,6 +20,7 @@ import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.HostForQueueResponse;
+import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.net.response.SendMessageResponse;
@@ -50,7 +52,7 @@ public class RequestProcessor {
 			return processHostForQueueRequest((HostForQueueRequest) request, pool);
 
 		} else if (request instanceof QueuesWithPendingMessagesRequest) {
-			throw new MlmqException("TODO - not yet implemented");
+			return processQueuesWithPendingMessagesRequest((QueuesWithPendingMessagesRequest) request, clientApplicationContext, pool);
 
 		} else if (request instanceof RegistrationRequest) {
 			return processRegistrationRequest((RegistrationRequest) request, clientApplicationContext, pool);
@@ -62,13 +64,37 @@ public class RequestProcessor {
 			return processDequeueMessageRequest((DequeueMessageRequest) request, clientApplicationContext, pool);
 
 		} else if (request instanceof PeekMessageRequest) {
-			throw new MlmqException("TODO - not yet implemented");
+			return processPeekMessageRequest((PeekMessageRequest) request, clientApplicationContext, pool);
 
 		} else if (request instanceof SendMessageRequest) {
 			return processSendMessageRequest((SendMessageRequest) request, clientApplicationContext, pool);
 
 		} else {
 			throw new MlmqException("Unexpected Request to process " + request.getClass().getSimpleName() + " - " + request);
+		}
+	}
+
+	private Response processQueuesWithPendingMessagesRequest(QueuesWithPendingMessagesRequest request, ClientApplicationContext clientApplicationContext,
+			DbConnectionPool pool) {
+
+		throw new RuntimeException("TODO");
+	}
+
+	private Response processPeekMessageRequest(PeekMessageRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+			MessageDao messageDao = connection.getMessageDao();
+
+			MessageDto message = messageDao.peekMessage(request.getMessageQueryInfo());
+			return new MessageResponse(message);
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			pool.returnConnection(connection);
 		}
 	}
 
@@ -80,8 +106,8 @@ public class RequestProcessor {
 			connection = pool.getConnection();
 			MessageDao messageDao = connection.getMessageDao();
 
-			return messageDao.dequeueMessage(request);
-
+			MessageDto message = messageDao.dequeueMessage(request.getMessageQueryInfo());
+			return new MessageResponse(message);
 		} catch (SQLException ex) {
 			connection.close();
 			throw new MlmqException(ex);

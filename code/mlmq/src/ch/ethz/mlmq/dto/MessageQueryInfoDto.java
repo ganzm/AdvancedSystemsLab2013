@@ -5,13 +5,21 @@ import java.io.Serializable;
 /**
  * Data Transfer Object
  * 
- * used to filter incoming messages.
+ * used to filter messages.
  */
 public class MessageQueryInfoDto implements Serializable {
 	private static final long serialVersionUID = 1658560065690073547L;
 
+	/**
+	 * only get messages which belong to this queue
+	 */
 	private QueueDto queue;
+
+	/**
+	 * only get message which were sent by a specific sender
+	 */
 	private ClientDto sender;
+
 	private boolean shouldOrderByPriority;
 
 	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority) {

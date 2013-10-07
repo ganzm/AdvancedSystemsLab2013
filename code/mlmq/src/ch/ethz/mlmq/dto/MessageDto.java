@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.dto;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Data Transfer Object
@@ -13,8 +14,10 @@ public class MessageDto implements Serializable {
 	private static final long serialVersionUID = -5253100231478702803L;
 
 	private long id;
-	private MessageContentDto messageContent;
 	private QueueDto queue;
+	private byte[] content;
+	private int prio;
+	private ClientDto sender;
 
 	public MessageDto() {
 
@@ -24,21 +27,51 @@ public class MessageDto implements Serializable {
 		return id;
 	}
 
-	public MessageContentDto getMessageContent() {
-		return messageContent;
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public QueueDto getQueue() {
 		return queue;
 	}
 
+	public void setQueue(QueueDto queue) {
+		this.queue = queue;
+	}
+
+	public byte[] getContent() {
+		return content;
+	}
+
+	public void setContent(byte[] content) {
+		this.content = content;
+	}
+
+	public int getPrio() {
+		return prio;
+	}
+
+	public void setPrio(int prio) {
+		this.prio = prio;
+	}
+
+	public ClientDto getSender() {
+		return sender;
+	}
+
+	public void setSender(ClientDto sender) {
+		this.sender = sender;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + Arrays.hashCode(content);
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + ((messageContent == null) ? 0 : messageContent.hashCode());
+		result = prime * result + prio;
 		result = prime * result + ((queue == null) ? 0 : queue.hashCode());
+		result = prime * result + ((sender == null) ? 0 : sender.hashCode());
 		return result;
 	}
 
@@ -51,17 +84,21 @@ public class MessageDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		MessageDto other = (MessageDto) obj;
+		if (!Arrays.equals(content, other.content))
+			return false;
 		if (id != other.id)
 			return false;
-		if (messageContent == null) {
-			if (other.messageContent != null)
-				return false;
-		} else if (!messageContent.equals(other.messageContent))
+		if (prio != other.prio)
 			return false;
 		if (queue == null) {
 			if (other.queue != null)
 				return false;
 		} else if (!queue.equals(other.queue))
+			return false;
+		if (sender == null) {
+			if (other.sender != null)
+				return false;
+		} else if (!sender.equals(other.sender))
 			return false;
 		return true;
 	}

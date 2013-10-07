@@ -12,6 +12,10 @@ public class DequeueMessageRequest implements QueueRequest {
 		this.messageQueryInfo = messageQueryInfo;
 	}
 
+	public MessageQueryInfoDto getMessageQueryInfo() {
+		return messageQueryInfo;
+	}
+
 	@Override
 	public long getQueueId() {
 		return messageQueryInfo.getQueue().getId();
@@ -41,4 +45,5 @@ public class DequeueMessageRequest implements QueueRequest {
 			return false;
 		return true;
 	}
+
 }
