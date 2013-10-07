@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import ch.ethz.mlmq.client.ClientImpl;
 import ch.ethz.mlmq.dto.BrokerDto;
+import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.Broker;
@@ -70,6 +71,10 @@ public class SimpleSystemTest {
 		defaultBroker.setPort(config.getListenPort());
 		try (ClientImpl client = new ClientImpl("UnitTestClient", defaultBroker, true, Integer.MAX_VALUE)) {
 			client.register();
+			QueueDto queue = client.createQueue();
+
+			client.sendMessage(queue.getId(), "HalloWelt".getBytes(), 10);
+			client.deleteQueue(queue.getId());
 		}
 	}
 }
