@@ -15,7 +15,7 @@ import ch.ethz.mlmq.server.BrokerConfiguration;
 public class ByteBufferPoolTest {
 
 	private Logger logger = Logger.getLogger(NetworkInterfaceTest.class.getSimpleName());
-	private int bufferSize;
+	private int bufferSize = 10;
 
 	@BeforeClass
 	public static void beforeClass() throws IOException {
@@ -41,6 +41,7 @@ public class ByteBufferPoolTest {
 		pool.release(buffer1);
 		CloseableByteBuffer buffer1copy = pool.aquire();
 		Assert.assertTrue(buffer1 == buffer1copy);
+		logger.info("Test ByteBuffer finished");
 	}
 
 	private BrokerConfiguration getTestConfig() {

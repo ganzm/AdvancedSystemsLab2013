@@ -23,6 +23,8 @@ public class LoggerUtil {
 			+ ".level= ALL\n";
 	//@formatter:on
 
+	private static boolean isConsoleInitialized = false;
+
 	/**
 	 * Reads logging configuration from file 'logging.properties' and inits java.util.logging
 	 * 
@@ -41,6 +43,10 @@ public class LoggerUtil {
 	 * Use this method to setup your TestLoggers
 	 */
 	public static void initConsoleDebug() {
+
+		if (isConsoleInitialized) {
+			return;
+		}
 		try {
 			try (ByteArrayInputStream ins = new ByteArrayInputStream(loggingProperties.getBytes())) {
 				LogManager mgr = LogManager.getLogManager();
@@ -50,6 +56,8 @@ public class LoggerUtil {
 			initStdOut();
 		} catch (IOException ex) {
 			Logger.getGlobal().severe("Error while initializing ConsoleDebug logging " + getStackTraceString(ex));
+		} finally {
+			isConsoleInitialized = true;
 		}
 	}
 

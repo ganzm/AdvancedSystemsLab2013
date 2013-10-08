@@ -13,6 +13,7 @@ public class ClientDao implements Closeable {
 	private static final Logger logger = Logger.getLogger(ClientDao.class.getSimpleName());
 
 	private PreparedStatement insertNewClientStmt;
+	private PreparedStatement getClientByNameStatement;
 
 	public ClientDao() {
 
@@ -22,6 +23,7 @@ public class ClientDao implements Closeable {
 
 		// prepare statements
 		insertNewClientStmt = connection.prepareStatement("SELECT createClient(?)");
+		getClientByNameStatement = connection.prepareStatement("SELECT id, name FROM client where name = ?");
 	}
 
 	public void close() {
@@ -30,9 +32,35 @@ public class ClientDao implements Closeable {
 		} catch (SQLException e) {
 			logger.severe("Error while closing insertNewClientStmt" + LoggerUtil.getStackTraceString(e));
 		}
+
+		try {
+			getClientByNameStatement.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing getClientByNameStatement" + LoggerUtil.getStackTraceString(e));
+		}
 	}
 
 	public int insertNewClient(String name) throws SQLException {
+		Integer existingClientId = getClientId(name);
+		if (existingClientId == null) {
+			return insertNewClientPrivate(name);
+		}
+		return existingClientId;
+	}
+
+	private Integer getClientId(String clientName) throws SQLException {
+		getClientByNameStatement.setString(1, clientName);
+
+		try (ResultSet rs = getClientByNameStatement.executeQuery()) {
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+
+			return null;
+		}
+	}
+
+	private int insertNewClientPrivate(String name) throws SQLException {
 		insertNewClientStmt.setString(1, name);
 
 		try (ResultSet rs = insertNewClientStmt.executeQuery()) {
