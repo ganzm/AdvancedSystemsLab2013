@@ -126,11 +126,12 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 				Set<SelectionKey> selectedKeys = selector.selectedKeys();
 				Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 				while (keyIterator.hasNext()) {
+					SelectionKey key = keyIterator.next();
 					try {
-						SelectionKey key = keyIterator.next();
 						selectKey(key);
 					} catch (Exception ex) {
 						logger.info("Exception " + ex);
+						disconnectCLient(key);
 					} finally {
 						keyIterator.remove();
 					}
@@ -151,6 +152,21 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 			}
 			logger.info("NetworkInterface closed");
 		}
+	}
+
+	private void disconnectCLient(SelectionKey key) {
+		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
+		SocketChannel clientChannel = (SocketChannel) key.channel();
+
+		logger.info("Disconnecting from Client " + clientChannel);
+		clientInstance.close();
+		try {
+			clientChannel.close();
+		} catch (IOException e) {
+			logger.severe("Error while disconnecting from Client " + clientChannel);
+		}
+
+		connectedClients.remove(clientInstance.getClientContext().getClientNetworkHandle());
 	}
 
 	/**
@@ -180,28 +196,16 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		}
 	}
 
-	private void selectKey(SelectionKey key) {
+	private void selectKey(SelectionKey key) throws ClosedChannelException, IOException {
 
 		if (key.isValid() && key.isAcceptable()) {
-			try {
-				selectAccept(key);
-			} catch (Exception ex) {
-				logger.severe("Exception while accepting " + LoggerUtil.getStackTraceString(ex));
-			}
-		}
-		if (key.isValid() && key.isReadable()) {
-			try {
-				selectRead(key);
-			} catch (Exception ex) {
-				logger.severe("Exception while reading " + LoggerUtil.getStackTraceString(ex));
-			}
+			selectAccept(key);
 		}
 		if (key.isValid() && key.isWritable()) {
-			try {
-				selectWrite(key);
-			} catch (Exception ex) {
-				logger.severe("Exception while writing " + LoggerUtil.getStackTraceString(ex));
-			}
+			selectWrite(key);
+		}
+		if (key.isValid() && key.isReadable()) {
+			selectRead(key);
 		}
 	}
 
@@ -241,9 +245,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		if (byteCount < 0) {
 			logger.info("Socket remotely closed " + clientChannel);
-			clientInstance.close();
-			connectedClients.remove(clientInstance.getClientContext().getClientNetworkHandle());
-			return;
+			disconnectCLient(key);
 		}
 	}
 
