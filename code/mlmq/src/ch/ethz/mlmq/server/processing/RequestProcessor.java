@@ -173,15 +173,22 @@ public class RequestProcessor {
 		try {
 			connection = pool.getConnection();
 
+			// insert new Client
 			ClientDao clientDao = connection.getClientDao();
-
 			int newClientId = clientDao.insertNewClient(request.getClientName());
 
-			clientApplicationContext.setClientId(newClientId);
-			clientApplicationContext.setClientName(request.getClientName());
+			// insert new ClientQueue
+			QueueDao queueDao = connection.getQueueDao();
+			QueueDto clientQueue = queueDao.createClientQueue(newClientId);
 
 			ClientDto clientDto = new ClientDto(newClientId);
+			clientDto.setName(request.getClientName());
+
+			clientApplicationContext.setClient(clientDto);
+			clientApplicationContext.setClientQueue(clientQueue);
+
 			RegistrationResponse response = new RegistrationResponse(clientDto);
+
 			return response;
 
 		} catch (SQLException ex) {

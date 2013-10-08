@@ -67,7 +67,7 @@ public class ClientConnection implements Closeable {
 		requestTimeoutTimer.schedule(timeoutTask, responseTimeoutTime);
 
 		try {
-			while ((numBytes = clientSocket.read(ioBuffer)) > 0) {
+			while ((numBytes = clientSocket.read(ioBuffer)) >= 0) {
 				if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT && responseLenght == -1) {
 					// there is enough data to read an int
 

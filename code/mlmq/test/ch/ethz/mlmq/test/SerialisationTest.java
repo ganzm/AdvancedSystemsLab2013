@@ -40,7 +40,7 @@ public class SerialisationTest {
 
 	@Test
 	public void testSerializeCreateQueueRequest() {
-		CreateQueueRequest request = new CreateQueueRequest();
+		CreateQueueRequest request = new CreateQueueRequest("UnitTestQueue");
 		testRequest(request);
 	}
 

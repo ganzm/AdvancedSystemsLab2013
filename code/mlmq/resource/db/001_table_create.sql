@@ -6,7 +6,7 @@ CREATE SEQUENCE request_response_id START 1;
 
 CREATE TABLE client (
   id INTEGER PRIMARY KEY DEFAULT nextval('client_id'),
-  name VARCHAR
+  name VARCHAR UNIQUE
 );
 
 
@@ -20,11 +20,10 @@ CREATE TABLE message (
   id INTEGER PRIMARY KEY DEFAULT nextval('message_id'),
   queue_id INTEGER NOT NULL REFERENCES queue (id) ON DELETE CASCADE,
   client_sender_id INTEGER NOT NULL REFERENCES client (id),
-  content VARCHAR,
+  content BYTEA,
   prio SMALLINT,
-  is_request_response BOOLEAN DEFAULT false,
-  request_message_id INTEGER NULL,
-  sent_at time without time zone NOT NULL DEFAULT now()
+  sent_at time without time zone NOT NULL DEFAULT NOW(),
+  context INTEGER NULL 
 );
 
 

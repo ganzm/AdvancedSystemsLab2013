@@ -239,7 +239,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 			onMessage(clientInstance, messageBuffer);
 		}
 
-		if (byteCount <= 0) {
+		if (byteCount < 0) {
 			logger.info("Socket remotely closed " + clientChannel);
 			clientInstance.close();
 			connectedClients.remove(clientInstance.getClientContext().getClientNetworkHandle());

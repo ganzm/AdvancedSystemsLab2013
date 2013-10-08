@@ -15,6 +15,13 @@ import ch.ethz.mlmq.dto.QueueDto;
 public interface Client extends Closeable {
 
 	/**
+	 * Initializes the client and connects it ot the Broker
+	 * 
+	 * @throws IOException
+	 */
+	void init() throws IOException;
+
+	/**
 	 * Registers a new client.
 	 * 
 	 * @return
@@ -27,7 +34,7 @@ public interface Client extends Closeable {
 	 * 
 	 * @return
 	 */
-	QueueDto createQueue() throws IOException;
+	QueueDto createQueue(String queueName) throws IOException;
 
 	/**
 	 * Deletes a queue.
@@ -53,6 +60,42 @@ public interface Client extends Closeable {
 	 * @throws IOException
 	 */
 	void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException;
+
+	/**
+	 * Sends a private message to a client
+	 * 
+	 * @param clientId
+	 * @param content
+	 * @param prio
+	 * @throws IOException
+	 */
+	void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException;
+
+	/**
+	 * 
+	 * Request/Responses are posted to the private client queue it is sent to
+	 * 
+	 * As soon as a client performs a Request it receives a context identifier
+	 * 
+	 * Any response received from a client needs to be in the queue of the receiving client and needs to have the same context identifier
+	 * 
+	 * @param client
+	 * @param content
+	 * @param prio
+	 * @throws IOException
+	 * @return returns a context identifier
+	 */
+	long sendRequestToClient(long client, byte[] content, int prio) throws IOException;
+
+	/**
+	 * 
+	 * @param clientId
+	 * @param context
+	 * @param content
+	 * @param prio
+	 * @throws IOException
+	 */
+	void sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException;
 
 	/**
 	 * Query for queues with pending messages.

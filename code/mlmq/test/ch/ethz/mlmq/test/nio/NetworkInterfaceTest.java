@@ -54,6 +54,7 @@ public class NetworkInterfaceTest {
 		defaultBroker.setPort(config.getListenPort());
 
 		client = new ClientImpl("UnitTestClient", defaultBroker, 3000);
+		client.init();
 	}
 
 	private void setupNetworkInterface() throws MlmqException {
@@ -79,7 +80,7 @@ public class NetworkInterfaceTest {
 
 	@Test
 	public void testSendSimpleMessage() throws IOException {
-		QueueDto response = client.createQueue();
+		QueueDto response = client.createQueue("UnitTest");
 
 		Assert.assertNotNull(response);
 

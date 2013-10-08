@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.dto.ClientDto;
@@ -68,7 +69,7 @@ public class MessageDao implements Closeable {
 
 		for (long queueId : request.getQueueIds()) {
 			insertMessageStmt.setLong(1, queueId);
-			insertMessageStmt.setLong(2, clientContext.getClientId());
+			insertMessageStmt.setLong(2, clientContext.getClient().getId());
 			insertMessageStmt.setBytes(3, request.getContent());
 			insertMessageStmt.setInt(4, request.getPrio());
 
@@ -95,8 +96,17 @@ public class MessageDao implements Closeable {
 
 	public MessageDto peekMessage(MessageQueryInfoDto queryInfo) throws SQLException {
 
-		peekMessageStmt.setInt(1, (int) queryInfo.getQueue().getId());
-		peekMessageStmt.setInt(2, (int) queryInfo.getSender().getId());
+		if (queryInfo.getQueue() == null) {
+			peekMessageStmt.setNull(1, Types.INTEGER);
+		} else {
+			peekMessageStmt.setInt(1, (int) queryInfo.getQueue().getId());
+		}
+
+		if (queryInfo.getSender() == null) {
+			peekMessageStmt.setNull(2, Types.INTEGER);
+		} else {
+			peekMessageStmt.setInt(2, (int) queryInfo.getSender().getId());
+		}
 		peekMessageStmt.setBoolean(3, queryInfo.shouldOrderByPriority());
 
 		try (ResultSet rs = peekMessageStmt.executeQuery()) {

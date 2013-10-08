@@ -1,5 +1,14 @@
 package ch.ethz.mlmq.net.request;
 
+/**
+ * Request is performed whenever a client calls register()
+ * 
+ * 
+ * A RegistrationResponse is returned.
+ * 
+ * A ClientQueue is created on the database
+ * 
+ */
 public class RegistrationRequest implements Request {
 
 	private static final long serialVersionUID = 7742122658910533817L;

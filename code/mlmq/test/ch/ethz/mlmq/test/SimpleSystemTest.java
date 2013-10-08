@@ -70,8 +70,9 @@ public class SimpleSystemTest {
 		defaultBroker.setHost("localhost");
 		defaultBroker.setPort(config.getListenPort());
 		try (ClientImpl client = new ClientImpl("UnitTestClient", defaultBroker, Integer.MAX_VALUE)) {
+			client.init();
 			client.register();
-			QueueDto queue = client.createQueue();
+			QueueDto queue = client.createQueue("UnitTest");
 
 			client.sendMessage(queue.getId(), "HalloWelt".getBytes(), 10);
 			client.deleteQueue(queue.getId());

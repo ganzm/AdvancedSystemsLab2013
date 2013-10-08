@@ -30,7 +30,7 @@ LANGUAGE plpgsql;
 ----
 
 CREATE OR REPLACE FUNCTION  peekMessage(from_queue_id integer, from_client_id integer, shouldOrderByPriority boolean)
-RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content varchar, prio smallint, sent_at time without time zone )
+RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content BYTEA, prio smallint, sent_at time without time zone )
 AS $$
 
 DECLARE

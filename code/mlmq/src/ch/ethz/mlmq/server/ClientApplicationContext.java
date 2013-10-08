@@ -1,5 +1,8 @@
 package ch.ethz.mlmq.server;
 
+import ch.ethz.mlmq.dto.ClientDto;
+import ch.ethz.mlmq.dto.QueueDto;
+
 public class ClientApplicationContext {
 
 	/**
@@ -7,12 +10,12 @@ public class ClientApplicationContext {
 	 */
 	private final int clientNetworkHandle;
 
-	/**
-	 * Client ID assigned from the database
-	 */
-	private int clientId;
+	private ClientDto clientDto;
 
-	private String clientName;
+	/**
+	 * Queue where this client receives messages
+	 */
+	private QueueDto clientQueue;
 
 	public ClientApplicationContext(int clientNetworkHandle) {
 		this.clientNetworkHandle = clientNetworkHandle;
@@ -22,19 +25,19 @@ public class ClientApplicationContext {
 		return clientNetworkHandle;
 	}
 
-	public int getClientId() {
-		return clientId;
+	public ClientDto getClient() {
+		return clientDto;
 	}
 
-	public void setClientId(int clientId) {
-		this.clientId = clientId;
+	public void setClientQueue(QueueDto clientQueue) {
+		this.clientQueue = clientQueue;
 	}
 
-	public void setClientName(String clientName) {
-		this.clientName = clientName;
+	public void setClient(ClientDto clientDto) {
+		this.clientDto = clientDto;
 	}
 
-	public String getClientName() {
-		return clientName;
+	public QueueDto getClientQueue() {
+		return this.clientQueue;
 	}
 }

@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.logging.Logger;
 
-import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
 
@@ -43,12 +42,12 @@ public class QueueDao implements Closeable {
 		return createClientQueue(null);
 	}
 
-	public QueueDto createClientQueue(ClientDto client) throws SQLException {
+	public QueueDto createClientQueue(Integer clientId) throws SQLException {
 
-		if (client == null) {
+		if (clientId == null) {
 			createQueueStmt.setNull(1, Types.INTEGER);
 		} else {
-			createQueueStmt.setLong(1, client.getId());
+			createQueueStmt.setInt(1, clientId);
 		}
 
 		try (ResultSet rs = createQueueStmt.executeQuery()) {
@@ -57,7 +56,6 @@ public class QueueDao implements Closeable {
 			}
 
 			int queueId = rs.getInt(1);
-
 			return new QueueDto(queueId);
 		}
 	}

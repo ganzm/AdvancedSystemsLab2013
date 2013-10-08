@@ -2,7 +2,10 @@ package ch.ethz.mlmq.test.processing;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -37,6 +40,8 @@ import ch.ethz.mlmq.server.processing.RequestProcessor;
 
 public class RequestProcessorTest {
 
+	private final Logger logger = Logger.getLogger(RequestProcessorTest.class.getSimpleName());
+
 	private static BrokerConfiguration config;
 
 	private RequestProcessor processor;
@@ -46,7 +51,7 @@ public class RequestProcessorTest {
 
 	private static DbConnectionPool pool;
 
-	private final ClientApplicationContext context = new ClientApplicationContext(1);
+	private ClientApplicationContext defaultContext = null;
 
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException, MlmqException {
@@ -74,8 +79,20 @@ public class RequestProcessorTest {
 	}
 
 	@Before
-	public void before() {
+	public void before() throws MlmqException {
 		processor = new RequestProcessor();
+
+		defaultContext = registerClient();
+	}
+
+	private ClientApplicationContext registerClient() throws MlmqException {
+		logger.info("Register UnitTestClient");
+
+		ClientApplicationContext context = new ClientApplicationContext(1);
+		RegistrationRequest registerRequest = new RegistrationRequest("UnitTestClient");
+		processor.process(context, registerRequest, pool);
+
+		return context;
 	}
 
 	@Test
@@ -89,37 +106,119 @@ public class RequestProcessorTest {
 		testDeleteQueueRequest();
 	}
 
+	/**
+	 * Clients can send messages to multiple queues
+	 * 
+	 * @throws MlmqException
+	 */
+	@Test
+	public void testSendToMultipleQueues() throws MlmqException {
+
+		int numQueues = 10;
+		List<Long> queueIdList = new ArrayList<>();
+
+		byte[] content = "Hallo Welt".getBytes();
+		int prio = 10;
+
+		for (int i = 0; i < numQueues; i++) {
+			String queueName = "testSendToMultipleQueues" + i;
+			logger.info("Creating Queue " + queueName);
+			CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName);
+			CreateQueueResponse response = (CreateQueueResponse) processor.process(defaultContext, createQueueRequest, pool);
+			queueIdList.add(response.getQueueDto().getId());
+		}
+
+		Request request = new SendMessageRequest(queueIdList, content, prio);
+		SendMessageResponse response = (SendMessageResponse) processor.process(defaultContext, request, pool);
+		Assert.assertNotNull(response);
+
+		for (Long queueId : queueIdList) {
+
+			QueueDto queueFilter = new QueueDto(queueId);
+			ClientDto sender = null;
+			boolean shouldOrderByPriority = true;
+			MessageQueryInfoDto messageQueryInfo = new MessageQueryInfoDto(queueFilter, sender, shouldOrderByPriority);
+			DequeueMessageRequest dequeuRequest = new DequeueMessageRequest(messageQueryInfo);
+
+			MessageResponse messageResponse = (MessageResponse) processor.process(defaultContext, dequeuRequest, pool);
+			Assert.assertNotNull(messageResponse);
+
+			Assert.assertArrayEquals(content, messageResponse.getMessageDto().getContent());
+			Assert.assertEquals(prio, messageResponse.getMessageDto().getPrio());
+		}
+	}
+
+	/**
+	 * Clients can send a message to a queue indicating a particular receiver
+	 * 
+	 * If a message has an explicit receiver, it can only be accessed by that receiver
+	 * 
+	 * @throws MlmqException
+	 */
+	@Test
+	public void testSendToClient() throws MlmqException {
+		ClientApplicationContext clientContext1 = registerClient();
+		ClientApplicationContext clientContext2 = registerClient();
+
+		byte[] content = "Blub".getBytes();
+		int prio = 5;
+
+		logger.info("Client 1 sends a message to Client 2");
+		long queueId = clientContext2.getClientQueue().getId();
+		SendMessageRequest sendToClient2 = new SendMessageRequest(queueId, content, prio);
+		processor.process(clientContext1, sendToClient2, pool);
+
+		logger.info("Client 2 wants to read it");
+		QueueDto queueFilter = clientContext2.getClientQueue();
+		ClientDto sender = null;
+		boolean shouldOrderByPriority = true;
+		MessageQueryInfoDto messageQueryInfo = new MessageQueryInfoDto(queueFilter, sender, shouldOrderByPriority);
+		DequeueMessageRequest readMessage = new DequeueMessageRequest(messageQueryInfo);
+		MessageResponse receiveMessageResponse = (MessageResponse) processor.process(clientContext2, readMessage, pool);
+
+		Assert.assertNotNull(receiveMessageResponse);
+		Assert.assertArrayEquals(content, receiveMessageResponse.getMessageDto().getContent());
+	}
+
+	/**
+	 * Clients can query for messages from a particular sender (at most one message is returned)
+	 */
+	@Test
+	public void testQueryMessageFromSender() {
+		Assert.fail("TODO");
+	}
+
 	public void testCreateQueueRequest() throws MlmqException {
 
-		Request request = new CreateQueueRequest();
-		CreateQueueResponse response = (CreateQueueResponse) processor.process(context, request, pool);
+		Request request = new CreateQueueRequest("SampleQueue");
+		CreateQueueResponse response = (CreateQueueResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueueDto());
 	}
 
 	public void testQueuesWithPendingMessagesRequest() throws MlmqException {
 		Request request = new QueuesWithPendingMessagesRequest();
-		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) processor.process(context, request, pool);
+		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueues());
 	}
 
 	public void testRegistrationRequest() throws MlmqException {
 		Request request = new RegistrationRequest("ClientName");
-		RegistrationResponse response = (RegistrationResponse) processor.process(context, request, pool);
+		RegistrationResponse response = (RegistrationResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getClientDto());
 	}
 
 	public void testDeleteQueueRequest() throws MlmqException {
 		Request request = new DeleteQueueRequest(1);
-		DeleteQueueResponse response = (DeleteQueueResponse) processor.process(context, request, pool);
+		DeleteQueueResponse response = (DeleteQueueResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 	}
 
 	public void testDequeueMessageRequest() throws MlmqException {
 		Request request = new DequeueMessageRequest(createTestMessageQueryInfoDto());
-		MessageResponse response = (MessageResponse) processor.process(context, request, pool);
+		MessageResponse response = (MessageResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 	}
 
@@ -134,7 +233,7 @@ public class RequestProcessorTest {
 
 	public void testPeekMessageRequest() throws MlmqException {
 		Request request = new PeekMessageRequest(createTestMessageQueryInfoDto());
-		MessageResponse response = (MessageResponse) processor.process(context, request, pool);
+		MessageResponse response = (MessageResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 	}
 
@@ -143,7 +242,7 @@ public class RequestProcessorTest {
 		byte[] content = "Hallo Welt".getBytes();
 		int prio = 10;
 		Request request = new SendMessageRequest(queueId, content, prio);
-		SendMessageResponse response = (SendMessageResponse) processor.process(context, request, pool);
+		SendMessageResponse response = (SendMessageResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 	}
 }

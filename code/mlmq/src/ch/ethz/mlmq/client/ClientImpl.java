@@ -10,7 +10,6 @@ import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.net.ClientConnection;
-import ch.ethz.mlmq.net.ConnectionPool;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
@@ -29,20 +28,24 @@ import ch.ethz.mlmq.net.response.Response;
 public class ClientImpl implements Client {
 
 	private ClientDto registeredAs;
-	private final ConnectionPool brokerConnections;
 	private BrokerDto defaultBroker;
+	private ClientConnection connection;
 
 	private final String name;
 
 	public ClientImpl(String name, BrokerDto defaultBroker, long responseTimeoutTime) throws IOException {
 		this.name = name;
-		this.brokerConnections = new ConnectionPool(responseTimeoutTime);
 		this.defaultBroker = defaultBroker;
+		this.connection = new ClientConnection(defaultBroker.getHost(), defaultBroker.getPort(), responseTimeoutTime);
+	}
+
+	public void init() throws IOException {
+		connection.connect();
 	}
 
 	@Override
 	public void close() throws IOException {
-		brokerConnections.close();
+		connection.close();
 	}
 
 	private Response sendRequest(Request request) throws IOException {
@@ -60,8 +63,7 @@ public class ClientImpl implements Client {
 	 * @throws MlmqException
 	 */
 	private Response sendRequestToBroker(Request request, BrokerDto broker) throws IOException {
-		ClientConnection c = brokerConnections.getConnection(broker);
-		Response response = c.submitRequest(request);
+		Response response = connection.submitRequest(request);
 
 		if (response instanceof ExceptionResponse) {
 			ExceptionResponse r = (ExceptionResponse) response;
@@ -82,8 +84,8 @@ public class ClientImpl implements Client {
 	}
 
 	@Override
-	public QueueDto createQueue() throws IOException {
-		CreateQueueResponse repsonse = (CreateQueueResponse) sendRequest(new CreateQueueRequest());
+	public QueueDto createQueue(String queueName) throws IOException {
+		CreateQueueResponse repsonse = (CreateQueueResponse) sendRequest(new CreateQueueRequest(queueName));
 		return repsonse.getQueueDto();
 	}
 
@@ -120,6 +122,24 @@ public class ClientImpl implements Client {
 	public List<QueueDto> queuesWithPendingMessages() throws IOException {
 		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) sendRequest(new QueuesWithPendingMessagesRequest());
 		return response.getQueues();
+	}
+
+	@Override
+	public void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public long sendRequestToClient(long client, byte[] content, int prio) throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException {
+		// TODO Auto-generated method stub
+
 	}
 
 }
