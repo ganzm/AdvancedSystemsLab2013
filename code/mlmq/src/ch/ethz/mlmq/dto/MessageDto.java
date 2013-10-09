@@ -18,7 +18,7 @@ public class MessageDto implements Serializable {
 	private byte[] content;
 	private int prio;
 	private ClientDto sender;
-	private Long conversationContext;
+	private Integer conversationContext;
 
 	public MessageDto() {
 
@@ -64,11 +64,11 @@ public class MessageDto implements Serializable {
 		this.sender = sender;
 	}
 
-	public Long getConversationContext() {
+	public Integer getConversationContext() {
 		return conversationContext;
 	}
 
-	public void setConversationContext(Long conversationContext) {
+	public void setConversationContext(Integer conversationContext) {
 		this.conversationContext = conversationContext;
 	}
 

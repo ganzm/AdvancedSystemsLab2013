@@ -29,7 +29,7 @@ LANGUAGE plpgsql;
 
 ----
 
-CREATE OR REPLACE FUNCTION  peekMessage(from_queue_id integer, from_client_id integer, shouldOrderByPriority boolean)
+CREATE OR REPLACE FUNCTION  peekMessage(from_queue_id INTEGER, from_client_id INTEGER, shouldOrderByPriority boolean, ctx INTEGER)
 RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content BYTEA, prio smallint, sent_at time without time zone, context INTEGER  )
 AS $$
 
@@ -48,9 +48,14 @@ BEGIN
 		-- client id
 		query_string = query_string || ' AND m.client_sender_id = '  || $2;
 	END IF;
+	
+	IF(NOT $4 IS NULL) THEN
+		-- context
+		query_string = query_string || ' AND m.context = '  || $4;
+	END IF;
 
 	if(shouldOrderByPriority) THEN
-		query_string = query_string || ' ORDER BY m.prio LIMIT 1';
+		query_string = query_string || ' ORDER BY m.prio DESC LIMIT 1';
 	ELSE
 		query_string = query_string || ' ORDER BY m.sent_at LIMIT 1';
 	END IF;

@@ -40,17 +40,7 @@ public class ClientDao implements Closeable {
 		}
 	}
 
-	public int insertNewClient(String name) throws SQLException {
-		Integer existingClientId = getClientId(name);
-		if (existingClientId == null) {
-			return insertNewClientPrivate(name);
-		}
-
-		logger.warning("Client with Name [" + name + "] already exists with ID [" + existingClientId + "]");
-		return existingClientId;
-	}
-
-	private Integer getClientId(String clientName) throws SQLException {
+	public Integer getClientId(String clientName) throws SQLException {
 		getClientByNameStatement.setString(1, clientName);
 
 		try (ResultSet rs = getClientByNameStatement.executeQuery()) {
@@ -62,7 +52,7 @@ public class ClientDao implements Closeable {
 		}
 	}
 
-	private int insertNewClientPrivate(String name) throws SQLException {
+	public int insertNewClient(String name) throws SQLException {
 		insertNewClientStmt.setString(1, name);
 
 		try (ResultSet rs = insertNewClientStmt.executeQuery()) {

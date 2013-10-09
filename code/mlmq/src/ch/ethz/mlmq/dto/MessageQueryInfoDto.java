@@ -22,7 +22,7 @@ public class MessageQueryInfoDto implements Serializable {
 
 	private boolean shouldOrderByPriority;
 
-	private Long conversationContext = null;
+	private Integer conversationContext = null;
 
 	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority) {
 		this.queue = queueFilter;
@@ -30,7 +30,7 @@ public class MessageQueryInfoDto implements Serializable {
 		this.shouldOrderByPriority = shouldOrderByPriority;
 	}
 
-	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority, long conversationContext) {
+	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority, int conversationContext) {
 		this.conversationContext = conversationContext;
 		this.queue = queueFilter;
 		this.sender = sender;
@@ -52,7 +52,7 @@ public class MessageQueryInfoDto implements Serializable {
 		return shouldOrderByPriority;
 	}
 
-	public Long getConversationContext() {
+	public Integer getConversationContext() {
 		return conversationContext;
 	}
 

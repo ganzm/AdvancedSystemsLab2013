@@ -39,7 +39,7 @@ public class MessageDao implements Closeable {
 		//@formatter:on
 		insertMessageStmt = connection.prepareStatement(insertSqlStatement);
 
-		String peekMessageSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessage(?, ?, ?)";
+		String peekMessageSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessage(?, ?, ?, ?)";
 		peekMessageStmt = connection.prepareStatement(peekMessageSqlStmt);
 
 		String deleteMessageSqlStmt = "DELETE FROM message WHERE id = ?";
@@ -132,7 +132,15 @@ public class MessageDao implements Closeable {
 		} else {
 			peekMessageStmt.setInt(2, (int) queryInfo.getSender().getId());
 		}
+
 		peekMessageStmt.setBoolean(3, queryInfo.shouldOrderByPriority());
+
+		Integer expectedContext = queryInfo.getConversationContext();
+		if (expectedContext == null) {
+			peekMessageStmt.setNull(4, Types.INTEGER);
+		} else {
+			peekMessageStmt.setInt(4, ((int) (long) queryInfo.getConversationContext()));
+		}
 
 		try (ResultSet rs = peekMessageStmt.executeQuery()) {
 			if (rs.next()) {
@@ -144,7 +152,7 @@ public class MessageDao implements Closeable {
 				message.setContent(rs.getBytes(4));
 				message.setPrio(rs.getInt(5));
 
-				long context = rs.getLong(7);
+				int context = rs.getInt(7);
 				if (!rs.wasNull()) {
 					message.setConversationContext(context);
 				}

@@ -104,9 +104,23 @@ public class RequestProcessor {
 	}
 
 	private Response processQueuesWithPendingMessagesRequest(QueuesWithPendingMessagesRequest request, ClientApplicationContext clientApplicationContext,
-			DbConnectionPool pool) {
+			DbConnectionPool pool) throws MlmqException {
 
-		throw new RuntimeException("TODO");
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
+			throw new SQLException("TODO");
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
+		}
+
 	}
 
 	private Response processPeekMessageRequest(PeekMessageRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
@@ -223,13 +237,27 @@ public class RequestProcessor {
 
 			// insert new Client
 			ClientDao clientDao = connection.getClientDao();
-			int newClientId = clientDao.insertNewClient(request.getClientName());
-
-			// insert new ClientQueue
 			QueueDao queueDao = connection.getQueueDao();
-			QueueDto clientQueue = queueDao.createClientQueue(newClientId);
 
-			ClientDto clientDto = new ClientDto(newClientId);
+			String name = request.getClientName();
+
+			Integer clientId = clientDao.getClientId(name);
+			QueueDto clientQueue;
+			if (clientId == null) {
+				int newClientId = clientDao.insertNewClient(name);
+				clientId = newClientId;
+
+				// insert new ClientQueue
+				clientQueue = queueDao.createClientQueue(newClientId);
+			} else {
+
+				long queueId = queueDao.getQueueByClientId(clientId);
+				clientQueue = new QueueDto(queueId);
+
+				logger.info("Welcome back " + name + " ClientId [" + clientId + "] ClientQueue [" + queueId + "]");
+			}
+
+			ClientDto clientDto = new ClientDto(clientId);
 			clientDto.setName(request.getClientName());
 
 			clientApplicationContext.setClient(clientDto);

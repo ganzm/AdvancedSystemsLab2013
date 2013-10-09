@@ -183,6 +183,11 @@ public class RequestProcessorTest {
 		Assert.assertArrayEquals(content, receiveMessageResponse.getMessageDto().getContent());
 	}
 
+	/**
+	 * A client can send a a Request-response like message to a specific other client
+	 * 
+	 * @throws MlmqException
+	 */
 	@Test
 	public void testRequestResponse() throws MlmqException {
 		ClientApplicationContext clientContext1 = registerClient("RequestResponseClient1");
@@ -213,7 +218,7 @@ public class RequestProcessorTest {
 		Assert.assertArrayEquals(content1, msg.getContent());
 		Assert.assertNotNull(msg.getConversationContext());
 
-		long conversationContext = msg.getConversationContext();
+		int conversationContext = msg.getConversationContext();
 
 		logger.info("Client 2 responds on Conversation Context " + conversationContext);
 		SendClientMessageRequest replyToClient = new SendClientMessageRequest(clientId1, content2, prio, conversationContext);
@@ -226,6 +231,45 @@ public class RequestProcessorTest {
 		DequeueMessageRequest readResponseMessage = new DequeueMessageRequest(messageQueryInfo2);
 		MessageResponse receiveResponseMessageResponse = (MessageResponse) processor.process(clientContext1, readResponseMessage, pool);
 		Assert.assertNotNull(receiveResponseMessageResponse);
+	}
+
+	@Test
+	public void testPublicQueue() throws MlmqException {
+		MessageQueryInfoDto mQI;
+
+		byte[] msg1 = "Message1".getBytes();
+		byte[] msg2 = "Message2".getBytes();
+		byte[] msg3 = "Message3".getBytes();
+
+		// register clients
+		ClientApplicationContext context1 = registerClient("Client1");
+		ClientApplicationContext context2 = registerClient("Client2");
+		ClientApplicationContext context3 = registerClient("Client3");
+
+		// create Queue
+		CreateQueueResponse createQueueResponse = (CreateQueueResponse) processor.process(context1, new CreateQueueRequest("AnyQueue"), pool);
+		long queueId = createQueueResponse.getQueueDto().getId();
+		logger.info("Created public Queue " + queueId);
+
+		// send 3 messages
+		processor.process(context1, new SendMessageRequest(queueId, msg1, 1), pool);
+		processor.process(context1, new SendMessageRequest(queueId, msg2, 10), pool);
+		processor.process(context1, new SendMessageRequest(queueId, msg3, 5), pool);
+
+		// expect to read oldest message msg1
+		mQI = new MessageQueryInfoDto(new QueueDto(queueId), null, false);
+		MessageResponse msgResonse = (MessageResponse) processor.process(context2, new PeekMessageRequest(mQI), pool);
+		Assert.assertArrayEquals(msg1, msgResonse.getMessageDto().getContent());
+
+		// expect and delete hightest prio message msg2
+		mQI = new MessageQueryInfoDto(new QueueDto(queueId), null, true);
+		msgResonse = (MessageResponse) processor.process(context3, new DequeueMessageRequest(mQI), pool);
+		Assert.assertArrayEquals(msg2, msgResonse.getMessageDto().getContent());
+
+		// expect and delete hightest prio message msg3 (msg2 was deleted
+		msgResonse = (MessageResponse) processor.process(context3, new DequeueMessageRequest(mQI), pool);
+		Assert.assertArrayEquals(msg3, msgResonse.getMessageDto().getContent());
+
 	}
 
 	public void testCreateQueueRequest() throws MlmqException {
