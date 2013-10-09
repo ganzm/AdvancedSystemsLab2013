@@ -45,6 +45,8 @@ public class ClientDao implements Closeable {
 		if (existingClientId == null) {
 			return insertNewClientPrivate(name);
 		}
+
+		logger.warning("Client with Name [" + name + "] already exists with ID [" + existingClientId + "]");
 		return existingClientId;
 	}
 

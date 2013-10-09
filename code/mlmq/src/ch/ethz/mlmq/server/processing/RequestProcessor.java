@@ -14,12 +14,14 @@ import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
+import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
+import ch.ethz.mlmq.net.response.SendClientMessageResponse;
 import ch.ethz.mlmq.net.response.SendMessageResponse;
 import ch.ethz.mlmq.server.ClientApplicationContext;
 import ch.ethz.mlmq.server.db.DbConnection;
@@ -60,9 +62,45 @@ public class RequestProcessor {
 		} else if (request instanceof SendMessageRequest) {
 			return processSendMessageRequest((SendMessageRequest) request, clientApplicationContext, pool);
 
+		} else if (request instanceof SendClientMessageRequest) {
+			return processSendClientMessageRequest((SendClientMessageRequest) request, clientApplicationContext, pool);
+
 		} else {
 			throw new MlmqException("Unexpected Request to process " + request.getClass().getSimpleName() + " - " + request);
 		}
+	}
+
+	private Response processSendClientMessageRequest(SendClientMessageRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
+			QueueDao queueDao = connection.getQueueDao();
+
+			long receivingClientQueueId = queueDao.getQueueByClientId(request.getClientId());
+
+			MessageDao messageDao = connection.getMessageDao();
+
+			Long context = request.getConversationContext();
+			if (request.isConversation() && context == null) {
+				context = messageDao.generateNewConversationContext();
+			}
+			messageDao.insertMessage(receivingClientQueueId, clientApplicationContext.getClient().getId(), request.getContent(), request.getPrio(), context);
+			SendClientMessageResponse response = new SendClientMessageResponse();
+			response.setConversationContext(context);
+			return response;
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException(ex);
+		} finally {
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
+		}
+
 	}
 
 	private Response processQueuesWithPendingMessagesRequest(QueuesWithPendingMessagesRequest request, ClientApplicationContext clientApplicationContext,
@@ -85,7 +123,9 @@ public class RequestProcessor {
 			connection.close();
 			throw new MlmqException(ex);
 		} finally {
-			pool.returnConnection(connection);
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
 		}
 	}
 
@@ -103,7 +143,9 @@ public class RequestProcessor {
 			connection.close();
 			throw new MlmqException(ex);
 		} finally {
-			pool.returnConnection(connection);
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
 		}
 	}
 
@@ -121,7 +163,9 @@ public class RequestProcessor {
 			connection.close();
 			throw new MlmqException(ex);
 		} finally {
-			pool.returnConnection(connection);
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
 		}
 	}
 
@@ -142,7 +186,9 @@ public class RequestProcessor {
 			connection.close();
 			throw new MlmqException(ex);
 		} finally {
-			pool.returnConnection(connection);
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
 		}
 
 	}
@@ -162,7 +208,9 @@ public class RequestProcessor {
 			connection.close();
 			throw new MlmqException(ex);
 		} finally {
-			pool.returnConnection(connection);
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
 		}
 	}
 
@@ -195,7 +243,9 @@ public class RequestProcessor {
 			connection.close();
 			throw new MlmqException(ex);
 		} finally {
-			pool.returnConnection(connection);
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
 		}
 	}
 }

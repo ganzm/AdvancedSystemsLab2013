@@ -18,6 +18,7 @@ public class MessageDto implements Serializable {
 	private byte[] content;
 	private int prio;
 	private ClientDto sender;
+	private Long conversationContext;
 
 	public MessageDto() {
 
@@ -63,11 +64,20 @@ public class MessageDto implements Serializable {
 		this.sender = sender;
 	}
 
+	public Long getConversationContext() {
+		return conversationContext;
+	}
+
+	public void setConversationContext(Long conversationContext) {
+		this.conversationContext = conversationContext;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.hashCode(content);
+		result = prime * result + ((conversationContext == null) ? 0 : conversationContext.hashCode());
 		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + prio;
 		result = prime * result + ((queue == null) ? 0 : queue.hashCode());
@@ -85,6 +95,11 @@ public class MessageDto implements Serializable {
 			return false;
 		MessageDto other = (MessageDto) obj;
 		if (!Arrays.equals(content, other.content))
+			return false;
+		if (conversationContext == null) {
+			if (other.conversationContext != null)
+				return false;
+		} else if (!conversationContext.equals(other.conversationContext))
 			return false;
 		if (id != other.id)
 			return false;

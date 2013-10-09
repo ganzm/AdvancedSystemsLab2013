@@ -23,6 +23,7 @@ public class MessageDao implements Closeable {
 	private PreparedStatement insertMessageStmt;
 	private PreparedStatement peekMessageStmt;
 	private PreparedStatement deleteMessageStmt;
+	private PreparedStatement generateNewConversationContextStmt;
 
 	public MessageDao() {
 
@@ -33,17 +34,18 @@ public class MessageDao implements Closeable {
 
 		//@formatter:off
 		String insertSqlStatement = "INSERT INTO message("
-				+ "queue_id, client_sender_id, content, prio)"
-				+ "VALUES (?, ?, ?, ?)";
+				+ "queue_id, client_sender_id, content, prio, context)"
+				+ "VALUES (?, ?, ?, ?, ?)";
 		//@formatter:on
 		insertMessageStmt = connection.prepareStatement(insertSqlStatement);
 
-		String peekMessageSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio,sent_at FROM peekMessage(?, ?, ?)";
+		String peekMessageSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessage(?, ?, ?)";
 		peekMessageStmt = connection.prepareStatement(peekMessageSqlStmt);
 
 		String deleteMessageSqlStmt = "DELETE FROM message WHERE id = ?";
 		deleteMessageStmt = connection.prepareStatement(deleteMessageSqlStmt);
 
+		generateNewConversationContextStmt = connection.prepareStatement("SELECT nextval('message_context')");
 	}
 
 	public void close() {
@@ -58,10 +60,17 @@ public class MessageDao implements Closeable {
 		} catch (SQLException e) {
 			logger.severe("Error while closing peekMessageStmt" + LoggerUtil.getStackTraceString(e));
 		}
+
 		try {
 			deleteMessageStmt.close();
 		} catch (SQLException e) {
 			logger.severe("Error while closing deleteMessageStmt" + LoggerUtil.getStackTraceString(e));
+		}
+
+		try {
+			generateNewConversationContextStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing generateNewConversationContextStmt" + LoggerUtil.getStackTraceString(e));
 		}
 	}
 
@@ -72,10 +81,26 @@ public class MessageDao implements Closeable {
 			insertMessageStmt.setLong(2, clientContext.getClient().getId());
 			insertMessageStmt.setBytes(3, request.getContent());
 			insertMessageStmt.setInt(4, request.getPrio());
+			insertMessageStmt.setNull(5, Types.INTEGER);
 
 			insertMessageStmt.execute();
 		}
 
+	}
+
+	public void insertMessage(long queueId, long clientId, byte[] content, int prio, Long clientContext) throws SQLException {
+		insertMessageStmt.setLong(1, queueId);
+		insertMessageStmt.setLong(2, clientId);
+		insertMessageStmt.setBytes(3, content);
+		insertMessageStmt.setInt(4, prio);
+
+		if (clientContext == null) {
+			insertMessageStmt.setNull(5, Types.INTEGER);
+		} else {
+			insertMessageStmt.setLong(5, clientContext);
+		}
+
+		insertMessageStmt.execute();
 	}
 
 	public MessageDto dequeueMessage(MessageQueryInfoDto queryInfo) throws SQLException {
@@ -119,10 +144,24 @@ public class MessageDao implements Closeable {
 				message.setContent(rs.getBytes(4));
 				message.setPrio(rs.getInt(5));
 
+				long context = rs.getLong(7);
+				if (!rs.wasNull()) {
+					message.setConversationContext(context);
+				}
+
 				return message;
 			}
 		}
 
 		return null;
+	}
+
+	public long generateNewConversationContext() throws SQLException {
+		try (ResultSet rs = generateNewConversationContextStmt.executeQuery()) {
+			if (rs.next()) {
+				return rs.getLong(1);
+			}
+			throw new SQLException("No Value found for generateNewConversationContext()");
+		}
 	}
 }

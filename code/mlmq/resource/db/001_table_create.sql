@@ -1,7 +1,7 @@
 CREATE SEQUENCE client_id START 1;
 CREATE SEQUENCE queue_id START 1;
 CREATE SEQUENCE message_id START 1;
-CREATE SEQUENCE request_response_id START 1;
+CREATE SEQUENCE message_context START 1;
 
 
 CREATE TABLE client (
@@ -28,3 +28,8 @@ CREATE TABLE message (
 
 
 
+
+CREATE INDEX idx_queue_client_id
+  ON queue
+  USING btree
+  (client_id);

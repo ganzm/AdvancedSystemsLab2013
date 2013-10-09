@@ -21,6 +21,7 @@ import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
+import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
@@ -28,6 +29,7 @@ import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
+import ch.ethz.mlmq.net.response.SendClientMessageResponse;
 
 public class SerialisationTest {
 
@@ -100,6 +102,16 @@ public class SerialisationTest {
 	}
 
 	@Test
+	public void testSendClientMessageRequest() {
+		long queueId = Long.MAX_VALUE;
+		byte[] content = "Hello World".getBytes();
+		int prio = 5;
+
+		SendClientMessageRequest request = new SendClientMessageRequest(queueId, content, prio);
+		testRequest(request);
+	}
+
+	@Test
 	public void testCreateQueueResponse() {
 		QueueDto queue = new QueueDto(42);
 		CreateQueueResponse response = new CreateQueueResponse(queue);
@@ -130,6 +142,12 @@ public class SerialisationTest {
 	public void testRegistrationResponse() {
 		ClientDto clientDto = new ClientDto(27);
 		RegistrationResponse response = new RegistrationResponse(clientDto);
+		testResponse(response);
+	}
+
+	@Test
+	public void testSendClientMessageResponse() {
+		SendClientMessageResponse response = new SendClientMessageResponse();
 		testResponse(response);
 	}
 

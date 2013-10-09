@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.ethz.mlmq.dto.ClientDto;
+import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
@@ -25,12 +26,14 @@ import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
+import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
+import ch.ethz.mlmq.net.response.SendClientMessageResponse;
 import ch.ethz.mlmq.net.response.SendMessageResponse;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.ClientApplicationContext;
@@ -82,14 +85,14 @@ public class RequestProcessorTest {
 	public void before() throws MlmqException {
 		processor = new RequestProcessor();
 
-		defaultContext = registerClient();
+		defaultContext = registerClient("DefaultRequestProcessorUnitTestClient");
 	}
 
-	private ClientApplicationContext registerClient() throws MlmqException {
+	private ClientApplicationContext registerClient(String name) throws MlmqException {
 		logger.info("Register UnitTestClient");
 
 		ClientApplicationContext context = new ClientApplicationContext(1);
-		RegistrationRequest registerRequest = new RegistrationRequest("UnitTestClient");
+		RegistrationRequest registerRequest = new RegistrationRequest(name);
 		processor.process(context, registerRequest, pool);
 
 		return context;
@@ -157,8 +160,8 @@ public class RequestProcessorTest {
 	 */
 	@Test
 	public void testSendToClient() throws MlmqException {
-		ClientApplicationContext clientContext1 = registerClient();
-		ClientApplicationContext clientContext2 = registerClient();
+		ClientApplicationContext clientContext1 = registerClient("SendToClient1");
+		ClientApplicationContext clientContext2 = registerClient("SendToClient2");
 
 		byte[] content = "Blub".getBytes();
 		int prio = 5;
@@ -180,12 +183,49 @@ public class RequestProcessorTest {
 		Assert.assertArrayEquals(content, receiveMessageResponse.getMessageDto().getContent());
 	}
 
-	/**
-	 * Clients can query for messages from a particular sender (at most one message is returned)
-	 */
 	@Test
-	public void testQueryMessageFromSender() {
-		Assert.fail("TODO");
+	public void testRequestResponse() throws MlmqException {
+		ClientApplicationContext clientContext1 = registerClient("RequestResponseClient1");
+		ClientApplicationContext clientContext2 = registerClient("RequestResponseClient2");
+
+		byte[] content1 = "Request".getBytes();
+		byte[] content2 = "Response".getBytes();
+		int prio = 5;
+
+		logger.info("Client 1 sends a request-message to Client 2");
+		long clientId1 = clientContext1.getClient().getId();
+		long clientId2 = clientContext2.getClient().getId();
+		SendClientMessageRequest sendToClient2 = new SendClientMessageRequest(clientId2, content1, prio, true);
+		SendClientMessageResponse response1 = (SendClientMessageResponse) processor.process(clientContext1, sendToClient2, pool);
+
+		Assert.assertNotNull("Expect ConversationContext", response1.getConversationContext());
+
+		logger.info("Client 2 wants to read it");
+		QueueDto queue2Filter = clientContext2.getClientQueue();
+		ClientDto sender = null;
+		boolean shouldOrderByPriority = true;
+		MessageQueryInfoDto messageQueryInfo = new MessageQueryInfoDto(queue2Filter, sender, shouldOrderByPriority);
+		DequeueMessageRequest readMessage = new DequeueMessageRequest(messageQueryInfo);
+		MessageResponse receiveMessageResponse = (MessageResponse) processor.process(clientContext2, readMessage, pool);
+
+		Assert.assertNotNull(receiveMessageResponse);
+		MessageDto msg = receiveMessageResponse.getMessageDto();
+		Assert.assertArrayEquals(content1, msg.getContent());
+		Assert.assertNotNull(msg.getConversationContext());
+
+		long conversationContext = msg.getConversationContext();
+
+		logger.info("Client 2 responds on Conversation Context " + conversationContext);
+		SendClientMessageRequest replyToClient = new SendClientMessageRequest(clientId1, content2, prio, conversationContext);
+		SendClientMessageResponse replyResponse = (SendClientMessageResponse) processor.process(clientContext1, replyToClient, pool);
+		Assert.assertNotNull(replyResponse);
+
+		logger.info("Client 1 reads reply");
+		QueueDto queue1Filter = clientContext1.getClientQueue();
+		MessageQueryInfoDto messageQueryInfo2 = new MessageQueryInfoDto(queue1Filter, null, false, conversationContext);
+		DequeueMessageRequest readResponseMessage = new DequeueMessageRequest(messageQueryInfo2);
+		MessageResponse receiveResponseMessageResponse = (MessageResponse) processor.process(clientContext1, readResponseMessage, pool);
+		Assert.assertNotNull(receiveResponseMessageResponse);
 	}
 
 	public void testCreateQueueRequest() throws MlmqException {

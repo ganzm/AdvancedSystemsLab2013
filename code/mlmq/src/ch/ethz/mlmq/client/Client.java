@@ -95,7 +95,7 @@ public interface Client extends Closeable {
 	 * @param prio
 	 * @throws IOException
 	 */
-	void sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException;
+	long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException;
 
 	/**
 	 * Query for queues with pending messages.

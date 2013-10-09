@@ -30,14 +30,14 @@ LANGUAGE plpgsql;
 ----
 
 CREATE OR REPLACE FUNCTION  peekMessage(from_queue_id integer, from_client_id integer, shouldOrderByPriority boolean)
-RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content BYTEA, prio smallint, sent_at time without time zone )
+RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content BYTEA, prio smallint, sent_at time without time zone, context INTEGER  )
 AS $$
 
 DECLARE
     query_string varchar;
 BEGIN
 
-	query_string = 'SELECT m.id, m.queue_id, m.client_sender_id, m.content, m.prio, m.sent_at FROM message m WHERE 1=1 ';
+	query_string = 'SELECT m.id, m.queue_id, m.client_sender_id, m.content, m.prio, m.sent_at, m.context FROM message m WHERE 1=1 ';
 
 	IF (NOT $1 IS NULL) THEN
 		-- queue id

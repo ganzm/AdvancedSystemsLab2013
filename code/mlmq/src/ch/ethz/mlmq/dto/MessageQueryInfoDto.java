@@ -22,7 +22,16 @@ public class MessageQueryInfoDto implements Serializable {
 
 	private boolean shouldOrderByPriority;
 
+	private Long conversationContext = null;
+
 	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority) {
+		this.queue = queueFilter;
+		this.sender = sender;
+		this.shouldOrderByPriority = shouldOrderByPriority;
+	}
+
+	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority, long conversationContext) {
+		this.conversationContext = conversationContext;
 		this.queue = queueFilter;
 		this.sender = sender;
 		this.shouldOrderByPriority = shouldOrderByPriority;
@@ -43,10 +52,15 @@ public class MessageQueryInfoDto implements Serializable {
 		return shouldOrderByPriority;
 	}
 
+	public Long getConversationContext() {
+		return conversationContext;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((conversationContext == null) ? 0 : conversationContext.hashCode());
 		result = prime * result + ((queue == null) ? 0 : queue.hashCode());
 		result = prime * result + ((sender == null) ? 0 : sender.hashCode());
 		result = prime * result + (shouldOrderByPriority ? 1231 : 1237);
@@ -62,6 +76,11 @@ public class MessageQueryInfoDto implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		MessageQueryInfoDto other = (MessageQueryInfoDto) obj;
+		if (conversationContext == null) {
+			if (other.conversationContext != null)
+				return false;
+		} else if (!conversationContext.equals(other.conversationContext))
+			return false;
 		if (queue == null) {
 			if (other.queue != null)
 				return false;

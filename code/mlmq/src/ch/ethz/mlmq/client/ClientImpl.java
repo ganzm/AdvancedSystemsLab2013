@@ -17,6 +17,7 @@ import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
+import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
@@ -24,6 +25,7 @@ import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
+import ch.ethz.mlmq.net.response.SendClientMessageResponse;
 
 public class ClientImpl implements Client {
 
@@ -126,20 +128,22 @@ public class ClientImpl implements Client {
 
 	@Override
 	public void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException {
-		// TODO Auto-generated method stub
-
+		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio);
+		sendRequest(sendMessageRequest);
 	}
 
 	@Override
-	public long sendRequestToClient(long client, byte[] content, int prio) throws IOException {
-		// TODO Auto-generated method stub
-		return 0;
+	public long sendRequestToClient(long clientId, byte[] content, int prio) throws IOException {
+		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio, true);
+		SendClientMessageResponse response = (SendClientMessageResponse) sendRequest(sendMessageRequest);
+		return response.getConversationContext();
 	}
 
 	@Override
-	public void sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException {
-		// TODO Auto-generated method stub
-
+	public long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException {
+		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio, context);
+		SendClientMessageResponse response = (SendClientMessageResponse) sendRequest(sendMessageRequest);
+		return response.getConversationContext();
 	}
 
 }
