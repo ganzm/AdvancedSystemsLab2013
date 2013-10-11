@@ -19,6 +19,7 @@ import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
@@ -59,6 +60,7 @@ public class RequestProcessorTest {
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException, MlmqException {
 		LoggerUtil.initConsoleDebug();
+		PerformanceLoggerManager.configureDisabled();
 
 		// load properties
 		Properties props = BrokerConfiguration.loadProperties("unittestconfig.example.properties");

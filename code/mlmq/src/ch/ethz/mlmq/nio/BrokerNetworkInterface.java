@@ -18,6 +18,8 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLogger;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.processing.WorkerTask;
 import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
@@ -25,6 +27,8 @@ import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 public class BrokerNetworkInterface implements Runnable, Closeable {
 
 	private static final Logger logger = Logger.getLogger(BrokerNetworkInterface.class.getSimpleName());
+
+	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
 	private Selector selector;
 
@@ -221,7 +225,13 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		int byteCount = clientChannel.write(txBuffer);
 		logger.fine("writing to Client " + clientInstance + " num bytes " + byteCount);
 
-		clientInstance.afterWrite();
+		if (clientInstance.afterWrite()) {
+			long time = System.currentTimeMillis() - clientInstance.getStartSendResponseTime();
+			long totalTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
+
+			perfLog.log(time, "SendResponse");
+			perfLog.log(totalTime, "TotalRequestResponse");
+		}
 	}
 
 	private void selectRead(SelectionKey key) throws IOException {
@@ -233,6 +243,12 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		}
 
 		ByteBuffer rxBuffer = clientInstance.getRxBuffer();
+
+		if (rxBuffer.position() == 0) {
+			// first byte seen from client
+			clientInstance.setFirstRequestByteSeenTimeStamp();
+		}
+
 		int byteCount = clientChannel.read(rxBuffer);
 		logger.fine("reading from Client " + clientInstance + " num bytes " + byteCount);
 
@@ -272,6 +288,10 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 	private void onMessage(ConnectedClient clientInstance, CloseableByteBuffer messageBuffer) {
 		logger.info("onmessage " + clientInstance + " " + messageBuffer);
+
+		// do performance logging
+		long receiveTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
+		perfLog.log(receiveTime, "ReceiveRequest");
 
 		if (!requestQueue.enqueue(new WorkerTask(clientInstance.getClientContext(), messageBuffer))) {
 			logger.severe("WorkerTaskQueue full dropping Message from Client " + clientInstance);

@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.logging.PerformanceLogger;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
@@ -13,6 +15,8 @@ import ch.ethz.mlmq.server.db.DbConnectionPool;
 
 public class Worker extends Thread {
 	private final Logger logger = Logger.getLogger(Worker.class.getSimpleName());
+
+	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
 	private final WorkerTaskQueueImpl requestQueue;
 	private final WorkerTaskQueue responseQueue;
@@ -67,6 +71,8 @@ public class Worker extends Thread {
 	}
 
 	private void process(WorkerTask task) {
+		long startTime = System.currentTimeMillis();
+
 		CloseableByteBuffer requestBuffer = task.getAndRemoveRequestBuffer();
 		ByteBuffer rawRequest = requestBuffer.getByteBuffer();
 
@@ -84,5 +90,7 @@ public class Worker extends Thread {
 		task.setResponseBuffer(requestBuffer);
 
 		responseQueue.enqueue(task);
+
+		perfLog.log(System.currentTimeMillis() - startTime, "ProcessRequest#" + request.getClass().getSimpleName() + ":" + response.getClass().getSimpleName());
 	}
 }

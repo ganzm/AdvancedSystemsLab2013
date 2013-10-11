@@ -25,6 +25,9 @@ public class ConnectedClient {
 
 	private final ClientApplicationContext clientApplicationContext;
 
+	private long firstRequestByteSeen;
+	private long startSendResponseTime;
+
 	public ConnectedClient(int clientNetworkHandle, String name) {
 		this.clientApplicationContext = new ClientApplicationContext(clientNetworkHandle);
 		this.name = name;
@@ -114,9 +117,16 @@ public class ConnectedClient {
 		newTxBuffer.getByteBuffer().flip();
 
 		selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+
+		startSendResponseTime = System.currentTimeMillis();
 	}
 
-	public void afterWrite() {
+	/**
+	 * returns true if there is no more data to send
+	 * 
+	 * @return
+	 */
+	public boolean afterWrite() {
 		if (!txBuffer.getByteBuffer().hasRemaining()) {
 
 			selectionKey.interestOps(SelectionKey.OP_READ);
@@ -124,6 +134,30 @@ public class ConnectedClient {
 			// give by transmission buffer
 			txBuffer.close();
 			txBuffer = null;
+
+			return true;
 		}
+		return false;
+	}
+
+	/**
+	 * Used for performance logging
+	 */
+	public void setFirstRequestByteSeenTimeStamp() {
+		firstRequestByteSeen = System.currentTimeMillis();
+	}
+
+	/**
+	 * Used for performance logging
+	 */
+	public long getFirstRequestByteSeenTimeStamp() {
+		return firstRequestByteSeen;
+	}
+
+	/**
+	 * Used for performance logging
+	 */
+	public long getStartSendResponseTime() {
+		return startSendResponseTime;
 	}
 }

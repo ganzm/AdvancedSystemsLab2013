@@ -16,6 +16,7 @@ import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.Response;
@@ -37,6 +38,7 @@ public class NetworkInterfaceTest {
 	@BeforeClass
 	public static void beforeClass() throws IOException {
 		LoggerUtil.initConsoleDebug();
+		PerformanceLoggerManager.configureDisabled();
 	}
 
 	@Before

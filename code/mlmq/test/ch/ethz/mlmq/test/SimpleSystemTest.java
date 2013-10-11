@@ -16,6 +16,7 @@ import ch.ethz.mlmq.dto.BrokerDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.Broker;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
@@ -33,6 +34,7 @@ public class SimpleSystemTest {
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException {
 		LoggerUtil.initConsoleDebug();
+		PerformanceLoggerManager.configureDisabled();
 
 		Properties props = BrokerConfiguration.loadProperties("unittestconfig.example.properties");
 		props.put(BrokerConfiguration.DB_NAME, dbName);
