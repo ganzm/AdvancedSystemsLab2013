@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.logging.PerformanceLoggerConfig;
+
 /**
  * Holds configuration like database connection information, tuning parameters, etc for one single broker
  */
@@ -21,6 +23,9 @@ public class BrokerConfiguration {
 	public static final String DB_NAME = "db.name";
 	public static final String REQUESTQUEUE_SIZE = "requestqueue.size";
 	public static final String MAX_MESSAGE_SIZE = "message.maxsize";
+	public static final String PERFORMANCELOGGER_PATH = "performancelogger.logfilepath";
+	public static final String COMMANDOFILE_PATH = "commandofilepath";
+	public static final String TESTRUN_ID = "testrun.id";
 
 	protected int listenPort = 8099;
 	protected int workerThreadCount = 5;
@@ -31,6 +36,13 @@ public class BrokerConfiguration {
 	protected String dbName = "mlmq";
 	protected int requestQueueSize = 10;
 	protected int maxMessageSize = 4000;
+	protected String commandoFilePath = "./brokercommando.txt";
+	protected PerformanceLoggerConfig performanceLoggerConfig = new PerformanceLoggerConfig("log");
+
+	/**
+	 * describes the test scenario
+	 */
+	protected int testRunId = 1;
 
 	public BrokerConfiguration() {
 	}
@@ -76,6 +88,10 @@ public class BrokerConfiguration {
 		dbName = props.getProperty(DB_NAME);
 		requestQueueSize = Integer.parseInt(props.getProperty(REQUESTQUEUE_SIZE));
 		maxMessageSize = Integer.parseInt(props.getProperty(MAX_MESSAGE_SIZE));
+		commandoFilePath = props.getProperty(COMMANDOFILE_PATH);
+		testRunId = Integer.parseInt(props.getProperty(TESTRUN_ID));
+		performanceLoggerConfig = new PerformanceLoggerConfig(props.getProperty(PERFORMANCELOGGER_PATH));
+
 	}
 
 	public int getListenPort() {
@@ -119,6 +135,18 @@ public class BrokerConfiguration {
 
 	public int getMaxMessageSize() {
 		return maxMessageSize;
+	}
+
+	public String getCommandoFilePath() {
+		return commandoFilePath;
+	}
+
+	public PerformanceLoggerConfig getPerformanceLoggerConfig() {
+		return performanceLoggerConfig;
+	}
+
+	public int getTestRunId() {
+		return testRunId;
 	}
 
 }
