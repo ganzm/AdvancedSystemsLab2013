@@ -63,8 +63,8 @@ public class DatabaseInitializer {
 				+ " WITH OWNER = " + userName
 				+ " ENCODING = 'UTF8'"
 				+ " TABLESPACE = pg_default"
-				+ " LC_COLLATE = 'German_Switzerland.1252'"
-				+ " LC_CTYPE = 'German_Switzerland.1252'"
+				+ " LC_COLLATE = 'en_US.utf8'"
+				+ " LC_CTYPE = 'en_US.utf8'"
 				+ " CONNECTION LIMIT = -1;";
 		//@formatter:on
 
