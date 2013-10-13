@@ -22,7 +22,7 @@ public class BrokerCommandFileHandlerTest {
 
 	private BrokerCommandFileHandler fileHandler;
 
-	private String pathToFileToWatch = "test" + File.separator + "blub" + File.separator + "brokercommando.txt";
+	private String pathToFileToWatch = "test" + File.separator + "blub" + File.separator + "commando.txt";
 
 	private long fileCheckIntervall = 500;
 

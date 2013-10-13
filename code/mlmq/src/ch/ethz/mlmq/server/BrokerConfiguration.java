@@ -35,7 +35,7 @@ public class BrokerConfiguration {
 	protected String dbName = "mlmq";
 	protected int requestQueueSize = 10;
 	protected int maxMessageSize = 4000;
-	protected String commandoFilePath = "./brokercommando.txt";
+	protected String commandoFilePath = "./commando.txt";
 	protected long commandoFileCheckIntervall = 5000;
 	protected PerformanceLoggerConfig performanceLoggerConfig = new PerformanceLoggerConfig("log");
 

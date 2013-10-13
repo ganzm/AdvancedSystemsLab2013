@@ -19,7 +19,7 @@ public class ClientConfiguration {
 	protected int brokerPort = 8099;
 	protected String name = "DefaultClient";
 	protected long responseTimeoutTime = 5000;
-	protected String commandoFilePath = "./brokercommando.txt";
+	protected String commandoFilePath = "./commando.txt";
 	protected long commandoFileCheckIntervall = 5000;
 	/**
 	 * Scenario Nr this client should be running
