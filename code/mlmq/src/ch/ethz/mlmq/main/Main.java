@@ -121,7 +121,7 @@ public class Main {
 				+ "\n\t\t\t-url [jdbc:postgresql://host:port]"
 				+ "\n\t\t\t-db [database name]"
 				+ "\n\t\t\t-user [usename]"
-				+ "\n\t\t\t-pwd [password]"
+				+ "\n\t\t\t-password [password]"
 				+ "\n\t\t\t-createDatabase optional flag"
 				+ "\n\t\t\t-createTables optional flag"
 				+ "\n\t\t\t-dropDatabase optional flag"
