@@ -107,11 +107,12 @@ public class Main {
 	private static void showHelpAndExit() {
 
 		//@formatter:off
-		System.out.println("usage: java -jar target.jar <type>");
-		System.out.println();
+		System.out.println("usage: java -jar target.jar <type>\n");
 		System.out.println("Types:");
-		System.out.println("\tclient_sender\tStarts a client instance\n\t\t\t-config [ConfigFilePath]");
-		System.out.println("\tclient_receiver\tStarts a client instance\n\t\t\t-config [ConfigFilePath]");
+		System.out.println("\tclient\tStarts a client instance"
+				+ "\n\t\t\t-config [ConfigFilePath] Client Configuration Property file"
+				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
+				);
 		System.out.println("\tbroker\tStarts a broker instance (for the middleware)"
 				+ "\n\t\t\t-config [ConfigFilePath] Broker Configuration Property file"
 				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
