@@ -2,9 +2,14 @@ package ch.ethz.mlmq.logging;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
@@ -30,11 +35,23 @@ public class LoggerUtil {
 	 * 
 	 * @throws IOException
 	 */
-	public static void init() throws IOException {
+	public static void initDefault() throws IOException {
 		LogManager mgr = LogManager.getLogManager();
 
 		ClassLoader classLoader = LoggerUtil.class.getClassLoader();
 		try (InputStream ins = classLoader.getResourceAsStream("logging.properties")) {
+			mgr.readConfiguration(ins);
+		}
+	}
+
+	public static void initFromFile(String fileName) throws IOException {
+		LogManager mgr = LogManager.getLogManager();
+
+		File file = new File(fileName);
+		if (!file.exists()) {
+			throw new IOException("Logger config file does not exist " + fileName);
+		}
+		try (InputStream ins = new FileInputStream(file)) {
 			mgr.readConfiguration(ins);
 		}
 	}
@@ -104,6 +121,38 @@ public class LoggerUtil {
 				return;
 			}
 		}
+	}
+
+	public static void logStackTrace(Logger logger) {
+		StringBuffer buf = new StringBuffer();
+
+		Map<Thread, StackTraceElement[]> stacktraces = Thread.getAllStackTraces();
+		Iterator<Entry<Thread, StackTraceElement[]>> iter = stacktraces.entrySet().iterator();
+
+		while (iter.hasNext()) {
+			Entry<Thread, StackTraceElement[]> entry = iter.next();
+
+			Thread t = entry.getKey();
+			StackTraceElement[] elements = entry.getValue();
+
+			buf.append("Thread ");
+			buf.append(t.getName());
+
+			for (int i = 0; i < elements.length; i++) {
+				StackTraceElement element = elements[i];
+				buf.append("\n\t");
+				buf.append(element.getClassName());
+				buf.append("   ");
+				buf.append(element.getMethodName());
+				buf.append("   ");
+				buf.append(element.getLineNumber());
+
+			}
+
+			buf.append("\n\n");
+		}
+
+		logger.info(buf.toString());
 	}
 
 }

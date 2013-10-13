@@ -10,7 +10,7 @@ public class DatabaseCreator {
 
 	public static void main(String[] args) throws IOException, SQLException {
 
-		BrokerConfiguration config = BrokerConfiguration.load("unittestconfig.example.properties");
+		BrokerConfiguration config = BrokerConfiguration.loadFromJar("unittestconfig.example.properties");
 
 		DatabaseInitializer dbInitializer = new DatabaseInitializer(config.getDbUrl(), config.getDbUserName(), config.getDbPassword(), "mlmq");
 		dbInitializer.connect();

@@ -54,7 +54,6 @@ public class Broker {
 	}
 
 	public void shutdown() {
-
 		logger.info("Shutdown Broker");
 		networkInterface.close();
 
@@ -63,6 +62,9 @@ public class Broker {
 
 		logger.info("Shutdown ConnectionPool");
 		connectionPool.close();
+	}
 
+	public void join() throws InterruptedException {
+		networkInterface.join();
 	}
 }

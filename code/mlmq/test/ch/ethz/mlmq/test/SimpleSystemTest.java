@@ -36,7 +36,7 @@ public class SimpleSystemTest {
 		LoggerUtil.initConsoleDebug();
 		PerformanceLoggerManager.configureDisabled();
 
-		Properties props = BrokerConfiguration.loadProperties("unittestconfig.example.properties");
+		Properties props = BrokerConfiguration.loadPropertiesFromJar("unittestconfig.example.properties");
 		props.put(BrokerConfiguration.DB_NAME, dbName);
 		config = new BrokerConfiguration(props);
 

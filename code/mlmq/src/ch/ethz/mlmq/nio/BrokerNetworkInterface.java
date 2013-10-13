@@ -94,6 +94,10 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		networkingThread.setName("NetworkInterface");
 		networkingThread.start();
 
+		waitForStartup();
+	}
+
+	private void waitForStartup() throws MlmqException {
 		// busy wait for startup
 		while (!running && networkingThread.isAlive()) {
 			try {
@@ -343,5 +347,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	 */
 	public WorkerTaskQueue getResponseQueue() {
 		return responseQueue;
+	}
+
+	public void join() throws InterruptedException {
+		networkingThread.join();
 	}
 }

@@ -3,6 +3,11 @@ package ch.ethz.mlmq.server;
 import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.QueueDto;
 
+/**
+ * Broker stores context information for each connected client
+ * 
+ * 
+ */
 public class ClientApplicationContext {
 
 	/**

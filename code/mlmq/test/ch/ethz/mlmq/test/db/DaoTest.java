@@ -32,7 +32,7 @@ public class DaoTest {
 	public static void beforeClass() throws IOException, SQLException {
 		LoggerUtil.initConsoleDebug();
 
-		config = BrokerConfiguration.load("unittestconfig.example.properties");
+		config = BrokerConfiguration.loadFromJar("unittestconfig.example.properties");
 
 		dbInitializer = new DatabaseInitializer(config.getDbUrl(), config.getDbUserName(), config.getDbPassword(), dbName);
 

@@ -1,5 +1,7 @@
 package ch.ethz.mlmq.server;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -24,7 +26,8 @@ public class BrokerConfiguration {
 	public static final String REQUESTQUEUE_SIZE = "requestqueue.size";
 	public static final String MAX_MESSAGE_SIZE = "message.maxsize";
 	public static final String PERFORMANCELOGGER_PATH = "performancelogger.logfilepath";
-	public static final String COMMANDOFILE_PATH = "commandofilepath";
+	public static final String COMMANDOFILE_PATH = "commandofile.path";
+	public static final String COMMANDOFILE_CHECKINTERVALL = "commandofile.checkintervall";
 	public static final String TESTRUN_ID = "testrun.id";
 
 	protected int listenPort = 8099;
@@ -37,6 +40,7 @@ public class BrokerConfiguration {
 	protected int requestQueueSize = 10;
 	protected int maxMessageSize = 4000;
 	protected String commandoFilePath = "./brokercommando.txt";
+	protected long commandoFileCheckIntervall = 5000;
 	protected PerformanceLoggerConfig performanceLoggerConfig = new PerformanceLoggerConfig("log");
 
 	/**
@@ -51,7 +55,24 @@ public class BrokerConfiguration {
 		initFromProps(props);
 	}
 
-	public static Properties loadProperties(String fileName) throws IOException {
+	public static Properties loadPropertiesFromFile(String fileName) throws IOException {
+
+		logger.info("Load BrokerConfiguration from " + fileName);
+
+		File f = new File(fileName);
+		if (!f.exists()) {
+			throw new IOException("File not found " + fileName);
+		}
+
+		try (InputStream inStream = new FileInputStream(f)) {
+			Properties props = new Properties();
+			props.load(inStream);
+
+			return props;
+		}
+	}
+
+	public static Properties loadPropertiesFromJar(String fileName) throws IOException {
 		logger.info("Load BrokerConfiguration from " + fileName);
 
 		try (InputStream inStream = BrokerConfiguration.class.getClassLoader().getResourceAsStream(fileName)) {
@@ -65,8 +86,8 @@ public class BrokerConfiguration {
 		}
 	}
 
-	public static BrokerConfiguration load(String fileName) throws IOException {
-		return new BrokerConfiguration(loadProperties(fileName));
+	public static BrokerConfiguration loadFromJar(String fileName) throws IOException {
+		return new BrokerConfiguration(loadPropertiesFromJar(fileName));
 	}
 
 	public static BrokerConfiguration load(InputStream inStream) throws IOException {
@@ -89,6 +110,7 @@ public class BrokerConfiguration {
 		requestQueueSize = Integer.parseInt(props.getProperty(REQUESTQUEUE_SIZE));
 		maxMessageSize = Integer.parseInt(props.getProperty(MAX_MESSAGE_SIZE));
 		commandoFilePath = props.getProperty(COMMANDOFILE_PATH);
+		commandoFileCheckIntervall = Long.parseLong(props.getProperty(COMMANDOFILE_CHECKINTERVALL));
 		testRunId = Integer.parseInt(props.getProperty(TESTRUN_ID));
 		performanceLoggerConfig = new PerformanceLoggerConfig(props.getProperty(PERFORMANCELOGGER_PATH));
 
@@ -147,6 +169,10 @@ public class BrokerConfiguration {
 
 	public int getTestRunId() {
 		return testRunId;
+	}
+
+	public long getCommandFileCheckIntervall() {
+		return commandoFileCheckIntervall;
 	}
 
 }
