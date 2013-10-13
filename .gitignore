@@ -11,3 +11,5 @@ code/mlmq/target/classes/META-INF/
 unittestconfig.properties
 code/mlmq/target/
 brokercommando.txt
+code/mlmq/resource/brokerconfig.properties
+code/mlmq/resource/clientconfig.properties

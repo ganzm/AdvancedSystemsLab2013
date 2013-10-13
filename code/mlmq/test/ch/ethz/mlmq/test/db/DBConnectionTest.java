@@ -15,7 +15,7 @@ public class DBConnectionTest {
 	@Test
 	public void testDbConnection() throws Exception {
 
-		BrokerConfiguration config = BrokerConfiguration.loadFromJar("unittestconfig.properties");
+		BrokerConfiguration config = BrokerConfiguration.loadFromJar("brokerconfig.properties");
 
 		String userName = config.getDbUserName();
 		String password = config.getDbPassword();

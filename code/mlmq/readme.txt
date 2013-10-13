@@ -14,9 +14,11 @@ Creates an empty database
 dbscript -url jdbc:postgresql://localhost:5432 -db mlmq -user postgres -password postgres -createDatabase -createTables
 
 Start a Broker
-broker -config resource/unittestconfig.example.properties
+Copy resource/brokerconfig.example.properties to resource/brokerconfig.properties and adjust to your needs. Then:
+broker -config resource/brokerconfig.properties
 
 Start a client
-client -config resource/clientconfig.example.properties
+Copy resource/clientconfig.example.properties to resource/clientconfig.properties and adjust to your needs. Then:
+client -config resource/clientconfig.properties
 
 

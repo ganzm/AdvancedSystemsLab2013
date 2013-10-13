@@ -64,7 +64,7 @@ public class RequestProcessorTest {
 		PerformanceLoggerManager.configureDisabled();
 
 		// load properties
-		Properties props = ConfigurationUtil.loadPropertiesFromJar("unittestconfig.properties");
+		Properties props = ConfigurationUtil.loadPropertiesFromJar("brokerconfig.properties");
 		props.put(BrokerConfiguration.DB_NAME, dbName);
 		props.put(BrokerConfiguration.DB_CONNECTIONPOOL_SIZE, 1 + "");
 		config = new BrokerConfiguration(props);
