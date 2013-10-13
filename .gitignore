@@ -9,3 +9,4 @@ code/mlmq/target/classes/META-INF/
 *.toc
 *eps-converted-to.pdf
 unittestconfig.properties
+code/mlmq/target/
