@@ -147,22 +147,27 @@ public class Main {
 
 			if (!argList.isEmpty()) {
 				System.out.println("Parameters not understood " + argList);
+				System.exit(1);
 			}
 
 			if (url == null) {
 				System.out.println("Missing Parameter -url");
+				System.exit(1);
 			}
 
 			if (user == null) {
 				System.out.println("Missing Parameter -user");
+				System.exit(1);
 			}
 
 			if (password == null) {
 				System.out.println("Missing Parameter -password");
+				System.exit(1);
 			}
 
 			if (db == null) {
 				System.out.println("Missing Parameter -db");
+				System.exit(1);
 			}
 
 			DbScriptMain.run(file, url, db, user, password, createDatabase, createTables, dropDatabase);
