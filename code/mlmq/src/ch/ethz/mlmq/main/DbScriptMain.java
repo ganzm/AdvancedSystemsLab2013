@@ -36,12 +36,17 @@ public class DbScriptMain {
 
 			dbInitializer.connect();
 
+			if (dropDatabase) {
+				logger.info("Drop Database");
+				dbInitializer.deleteDatabase();
+			}
+
 			if (createDatabase) {
 				logger.info("Create Database");
 				dbInitializer.createDatabase();
 			}
 
-			if (createDatabase) {
+			if (createTables) {
 				logger.info("Create Tables");
 				dbInitializer.createTables();
 			}
@@ -49,11 +54,6 @@ public class DbScriptMain {
 			if (file != null) {
 				logger.info("Execute Script " + file);
 				dbInitializer.executeScript(file);
-			}
-
-			if (dropDatabase) {
-				logger.info("Drop Database");
-				dbInitializer.deleteDatabase();
 			}
 
 		} finally {
