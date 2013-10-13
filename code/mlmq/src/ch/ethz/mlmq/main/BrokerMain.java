@@ -68,5 +68,7 @@ public class BrokerMain implements CommandListener {
 		commandFileHandler.stop();
 
 		broker.shutdown();
+
+		PerformanceLoggerManager.shutDown();
 	}
 }

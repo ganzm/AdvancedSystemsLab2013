@@ -16,7 +16,10 @@ public class PerformanceLoggerManager {
 				return new PerformanceLoggerImpl(config);
 			}
 		};
+	}
 
+	public static void shutDown() {
+		// TODO
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.logging;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
-public class PerformanceLoggerImpl implements PerformanceLogger {
+public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
 	private static final String LOG_FORMAT = "%d;%s;%s\n"; // ignore the timezone: %tz
 
@@ -55,12 +56,21 @@ public class PerformanceLoggerImpl implements PerformanceLogger {
 
 		} catch (IOException e) {
 			logger.severe("Error while logging " + LoggerUtil.getStackTraceString(e));
-			try {
-				writer.close();
-			} catch (IOException e1) {
-				logger.severe("Error while closing writer " + LoggerUtil.getStackTraceString(e1));
-			}
-			writer = null;
+			closeWriter();
 		}
 	}
+
+	private void closeWriter() {
+		try {
+			writer.close();
+		} catch (IOException e1) {
+			logger.severe("Error while closing writer " + LoggerUtil.getStackTraceString(e1));
+		}
+		writer = null;
+	}
+
+	public void close() {
+		closeWriter();
+	}
+
 }

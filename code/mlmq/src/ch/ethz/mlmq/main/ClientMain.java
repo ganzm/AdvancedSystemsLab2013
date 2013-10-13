@@ -75,5 +75,7 @@ public class ClientMain implements CommandListener {
 		} catch (IOException e) {
 			logger.severe("Error while shutting down " + config.getName() + " " + LoggerUtil.getStackTraceString(e));
 		}
+
+		PerformanceLoggerManager.shutDown();
 	}
 }

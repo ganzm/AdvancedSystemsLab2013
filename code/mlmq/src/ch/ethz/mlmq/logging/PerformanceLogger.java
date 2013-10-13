@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.logging;
 
+
 public interface PerformanceLogger {
 
 	/**
