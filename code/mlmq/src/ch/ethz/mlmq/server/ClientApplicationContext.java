@@ -26,6 +26,10 @@ public class ClientApplicationContext {
 		this.clientNetworkHandle = clientNetworkHandle;
 	}
 
+	public boolean isRegistered() {
+		return clientQueue != null;
+	}
+
 	public int getClientNetworkHandle() {
 		return clientNetworkHandle;
 	}
@@ -45,4 +49,5 @@ public class ClientApplicationContext {
 	public QueueDto getClientQueue() {
 		return this.clientQueue;
 	}
+
 }

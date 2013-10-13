@@ -44,6 +44,10 @@ public class RequestProcessor {
 	public Response process(ClientApplicationContext clientApplicationContext, Request request, DbConnectionPool pool) throws MlmqException {
 		long startTime = System.currentTimeMillis();
 
+		if (!clientApplicationContext.isRegistered() && !(request instanceof RegistrationRequest)) {
+			throw new MlmqException("Client not yet registere");
+		}
+
 		logger.info("Process Request " + request);
 		try {
 

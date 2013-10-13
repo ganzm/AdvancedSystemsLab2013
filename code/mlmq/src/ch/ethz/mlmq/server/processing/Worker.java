@@ -3,7 +3,7 @@ package ch.ethz.mlmq.server.processing;
 import java.nio.ByteBuffer;
 import java.util.logging.Logger;
 
-import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLogger;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.Request;
@@ -57,7 +57,8 @@ public class Worker extends Thread {
 				try {
 					process(task);
 				} catch (Exception ex) {
-					logger.severe(getName() + " Error while processing " + task);
+					logger.severe("Exception for " + getName() + " while processing Task with ClientContext" + task.getClientContext() + " "
+							+ LoggerUtil.getStackTraceString(ex));
 				}
 			}
 		} finally {
@@ -80,7 +81,7 @@ public class Worker extends Thread {
 		Response response = null;
 		try {
 			response = processor.process(task.getClientContext(), request, connectionPool);
-		} catch (MlmqException ex) {
+		} catch (Exception ex) {
 			response = new ExceptionResponse(ex);
 		}
 
