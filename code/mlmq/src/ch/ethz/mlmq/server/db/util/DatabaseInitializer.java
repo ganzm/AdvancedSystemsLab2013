@@ -89,12 +89,7 @@ public class DatabaseInitializer {
 
 	public void createTables() throws SQLException {
 
-		String urlToDatabase = null;
-		if (url.endsWith("/")) {
-			urlToDatabase = url + databaseName;
-		} else {
-			urlToDatabase = url + "/" + databaseName;
-		}
+		String urlToDatabase = createCompleteDbUrlString();
 
 		logger.info("Connect to Database with URL: " + urlToDatabase);
 
@@ -102,26 +97,50 @@ public class DatabaseInitializer {
 
 		) {
 
-			String scriptFile;
-
-			scriptFile = "db/001_table_create.sql";
-			logger.info("Create Tables - exec " + scriptFile);
-			try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
-
-				ScriptRunner runner = new ScriptRunner();
-				runner.execute(scriptStream, createTableConnection);
-			}
-
-			scriptFile = "db/002_stored_procedures.sql";
-			logger.info("Create Tables - exec " + scriptFile);
-			try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
-
-				StoredProcedureScriptRunner runner = new StoredProcedureScriptRunner();
-				runner.execute(scriptStream, createTableConnection);
-			}
-
+			executeScript("db/001_table_create.sql", createTableConnection);
+			executeStoredProcedureScript("db/002_stored_procedures.sql", createTableConnection);
 		} catch (IOException e) {
 			throw new SQLException("Eror creating tables", e);
+		}
+	}
+
+	public void executeScript(String scriptFileName) throws SQLException {
+		String urlToDatabase = createCompleteDbUrlString();
+
+		logger.info("Connect to Database with URL: " + urlToDatabase);
+
+		try (Connection createTableConnection = DriverManager.getConnection(urlToDatabase, userName, password);) {
+			executeScript(scriptFileName, createTableConnection);
+		} catch (IOException e) {
+			throw new SQLException("Eror creating tables", e);
+		}
+	}
+
+	private String createCompleteDbUrlString() {
+		String urlToDatabase;
+		if (url.endsWith("/")) {
+			urlToDatabase = url + databaseName;
+		} else {
+			urlToDatabase = url + "/" + databaseName;
+		}
+		return urlToDatabase;
+	}
+
+	private void executeScript(String scriptFile, Connection connection) throws IOException, SQLException {
+		logger.info("Create Tables - exec " + scriptFile);
+		try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
+
+			ScriptRunner runner = new ScriptRunner();
+			runner.execute(scriptStream, connection);
+		}
+	}
+
+	private void executeStoredProcedureScript(String scriptFile, Connection connection) throws IOException, SQLException {
+		logger.info("Create Tables - exec " + scriptFile);
+		try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
+
+			StoredProcedureScriptRunner runner = new StoredProcedureScriptRunner();
+			runner.execute(scriptStream, connection);
 		}
 	}
 
