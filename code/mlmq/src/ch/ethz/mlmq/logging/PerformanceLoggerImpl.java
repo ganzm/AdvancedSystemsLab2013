@@ -4,15 +4,13 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
-	private static final String LOG_FORMAT = "%d;%s;%s\n"; // ignore the timezone: %tz
-
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("%Y%m%d%H%M%S");
+	private static final String LOG_FORMAT = "%d;%2$tY%2$tm%2$td%2$tH%2$tM%2$tS;%3$s\n"; // ignore the timezone: %2$tz
 
 	private final Logger logger = Logger.getLogger(PerformanceLoggerImpl.class.getSimpleName());
 
@@ -21,9 +19,7 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 	private FileWriter writer;
 
 	public PerformanceLoggerImpl(PerformanceLoggerConfig loggerConfig) {
-
 		validateConfig(loggerConfig);
-
 		this.loggerConfig = loggerConfig;
 	}
 
@@ -46,21 +42,30 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
 	@Override
 	public void log(long executionTime, String type) {
-		try {
+		String logMessage = String.format(LOG_FORMAT, executionTime, getCurrentDate().getTime(), type);
+		write(logMessage);
+	}
 
-			String logMessage = String.format(LOG_FORMAT, executionTime, dateFormat.format(new Date()), type);
+	protected void write(String logMessage) {
+		try {
 			if (writer == null) {
 				writer = new FileWriter(loggerConfig.getFileName(), true);
 			}
 			writer.write(logMessage);
-
 		} catch (IOException e) {
 			logger.severe("Error while logging " + LoggerUtil.getStackTraceString(e));
 			closeWriter();
 		}
 	}
 
+	protected Calendar getCurrentDate() {
+		return Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+	}
+
 	private void closeWriter() {
+		if (writer == null)
+			return;
+
 		try {
 			writer.close();
 		} catch (IOException e1) {

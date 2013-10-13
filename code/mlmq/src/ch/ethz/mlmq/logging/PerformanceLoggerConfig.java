@@ -5,6 +5,7 @@ import java.io.File;
 public class PerformanceLoggerConfig {
 
 	private String directoryPath;
+	private int count = 1;
 
 	public PerformanceLoggerConfig(String directoryPath) {
 		this.directoryPath = directoryPath;
@@ -14,8 +15,13 @@ public class PerformanceLoggerConfig {
 		return directoryPath;
 	}
 
+	public String logRotate() {
+		++count;
+		return getFileName();
+	}
+
 	public String getFileName() {
-		return directoryPath + File.separator + Thread.currentThread().getId() + ".log";
+		return getDirectoryPath() + File.separator + Thread.currentThread().getId() + "_" + count + ".log";
 	}
 
 }
