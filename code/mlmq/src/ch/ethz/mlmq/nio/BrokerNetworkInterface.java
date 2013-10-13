@@ -138,7 +138,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 					try {
 						selectKey(key);
 					} catch (Exception ex) {
-						logger.info("Exception " + ex);
+						logger.warning("Exception " + LoggerUtil.getStackTraceString(ex));
 						disconnectCLient(key);
 					} finally {
 						keyIterator.remove();

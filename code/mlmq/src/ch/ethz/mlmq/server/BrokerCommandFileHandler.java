@@ -41,7 +41,7 @@ public class BrokerCommandFileHandler implements Runnable {
 	}
 
 	public void start() {
-		logger.info("Start BrokerCommandFileHandler on " + fileToWatch);
+		logger.info("Start BrokerCommandFileHandler on " + pathToFileToWatch);
 		thread = new Thread(this);
 		thread.setName(this.getClass().getSimpleName());
 		thread.setDaemon(true);

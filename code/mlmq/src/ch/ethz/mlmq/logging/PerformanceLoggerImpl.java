@@ -3,13 +3,15 @@ package ch.ethz.mlmq.logging;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.TimeZone;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 
-class PerformanceLoggerImpl implements PerformanceLogger {
+public class PerformanceLoggerImpl implements PerformanceLogger {
 
-	private static final String LOG_FORMAT = "%d;%tY%tm%td%tH%tM%tS;%s\n"; // ignore the timezone: %tz
+	private static final String LOG_FORMAT = "%d;%s;%s\n"; // ignore the timezone: %tz
+
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("%Y%m%d%H%M%S");
 
 	private final Logger logger = Logger.getLogger(PerformanceLoggerImpl.class.getSimpleName());
 
@@ -29,7 +31,7 @@ class PerformanceLoggerImpl implements PerformanceLogger {
 			throw new RuntimeException("Invalid logger config");
 		}
 
-		File directory = new File(loggerConfig.getFileName());
+		File directory = new File(loggerConfig.getDirectoryPath());
 		if (directory.exists() && !directory.isDirectory()) {
 			throw new RuntimeException("Expected [" + loggerConfig.getFileName() + "] to be a directory");
 		}
@@ -43,12 +45,14 @@ class PerformanceLoggerImpl implements PerformanceLogger {
 
 	@Override
 	public void log(long executionTime, String type) {
-		String.format(LOG_FORMAT, executionTime, Calendar.getInstance(TimeZone.getTimeZone("GMT")), type);
 		try {
-			if (writer == null)
+
+			String logMessage = String.format(LOG_FORMAT, executionTime, dateFormat.format(new Date()), type);
+			if (writer == null) {
 				writer = new FileWriter(loggerConfig.getFileName(), true);
-			Calendar currentCalendar = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-			writer.write(String.format(LOG_FORMAT, executionTime, currentCalendar, type));
+			}
+			writer.write(logMessage);
+
 		} catch (IOException e) {
 			logger.severe("Error while logging " + LoggerUtil.getStackTraceString(e));
 			try {
@@ -57,7 +61,6 @@ class PerformanceLoggerImpl implements PerformanceLogger {
 				logger.severe("Error while closing writer " + LoggerUtil.getStackTraceString(e1));
 			}
 			writer = null;
-			e.printStackTrace();
 		}
 	}
 }

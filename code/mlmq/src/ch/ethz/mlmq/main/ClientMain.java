@@ -1,48 +1,51 @@
 package ch.ethz.mlmq.main;
 
+import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.client.ClientConfiguration;
+import ch.ethz.mlmq.client.ClientImpl;
+import ch.ethz.mlmq.client.testscenario.TestScenarioManager;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.Broker;
 import ch.ethz.mlmq.server.BrokerCommandFileHandler;
-import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.CommandListener;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
-public class BrokerMain implements CommandListener {
+public class ClientMain implements CommandListener {
 
-	private static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(ClientMain.class.getSimpleName());
 
-	private BrokerConfiguration config;
-	private Broker broker;
+	private ClientConfiguration config;
+
+	private ClientImpl clientInterface;
 	private BrokerCommandFileHandler commandFileHandler;
+	private TestScenarioManager testScenarioMgr;
 
-	public int run(String brokerConfigurationFile) {
-
+	public void run(String clientConfigurationFile) {
 		try {
-			Properties props = ConfigurationUtil.loadPropertiesFromFile(brokerConfigurationFile);
-			config = new BrokerConfiguration(props);
-			broker = new Broker(config);
+			Properties props = ConfigurationUtil.loadPropertiesFromFile(clientConfigurationFile);
+			config = new ClientConfiguration(props);
 
 			logger.info("Configuring Performance Logger");
 			PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
-			logger.info("Starting Broker...");
-			broker.startup();
-			logger.info("Broker started");
 
 			logger.info("CommandFileHandler...");
 			commandFileHandler = new BrokerCommandFileHandler(config.getCommandoFilePath(), config.getCommandFileCheckIntervall(), this);
 			commandFileHandler.start();
 			logger.info("CommandFileHandler started");
 
-			broker.join();
+			logger.info("Starting Client " + config.getName());
+			clientInterface = new ClientImpl(config);
+			clientInterface.init();
+			logger.info("Client started");
 
-			return 0;
+			testScenarioMgr = new TestScenarioManager(clientInterface);
+			testScenarioMgr.startTest(config);
+
 		} catch (Exception e) {
 			logger.severe("Exception " + LoggerUtil.getStackTraceString(e));
-			return -1;
 		}
 	}
 
@@ -63,10 +66,14 @@ public class BrokerMain implements CommandListener {
 	}
 
 	private void doShutdown() {
-		logger.info("Doing Broker shutdown...");
+		logger.info("Doing Client " + config.getName() + " shutdown...");
 
 		commandFileHandler.stop();
 
-		broker.shutdown();
+		try {
+			clientInterface.close();
+		} catch (IOException e) {
+			logger.severe("Error while shutting down " + config.getName() + " " + LoggerUtil.getStackTraceString(e));
+		}
 	}
 }

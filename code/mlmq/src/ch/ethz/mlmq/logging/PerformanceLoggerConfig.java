@@ -10,6 +10,10 @@ public class PerformanceLoggerConfig {
 		this.directoryPath = directoryPath;
 	}
 
+	public String getDirectoryPath() {
+		return directoryPath;
+	}
+
 	public String getFileName() {
 		return directoryPath + File.separator + Thread.currentThread().getId() + ".log";
 	}

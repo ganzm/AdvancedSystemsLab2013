@@ -20,6 +20,7 @@ import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.Broker;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
+import ch.ethz.mlmq.util.ConfigurationUtil;
 
 public class SimpleSystemTest {
 
@@ -36,7 +37,7 @@ public class SimpleSystemTest {
 		LoggerUtil.initConsoleDebug();
 		PerformanceLoggerManager.configureDisabled();
 
-		Properties props = BrokerConfiguration.loadPropertiesFromJar("unittestconfig.example.properties");
+		Properties props = ConfigurationUtil.loadPropertiesFromJar("unittestconfig.example.properties");
 		props.put(BrokerConfiguration.DB_NAME, dbName);
 		config = new BrokerConfiguration(props);
 

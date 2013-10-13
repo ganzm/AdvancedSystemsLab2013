@@ -11,25 +11,15 @@ import java.io.Serializable;
 public class BrokerDto implements Serializable {
 	private static final long serialVersionUID = 2397258276459710559L;
 
-	private long id;
 	private String host;
 	private int port;
 
-	public BrokerDto(long id, String host, int port) {
-		this.id = id;
+	public BrokerDto(String host, int port) {
 		this.host = host;
 		this.port = port;
 	}
 
 	public BrokerDto() {
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
 	}
 
 	public String getHost() {
@@ -53,7 +43,6 @@ public class BrokerDto implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((host == null) ? 0 : host.hashCode());
-		result = prime * result + (int) (id ^ (id >>> 32));
 		result = prime * result + port;
 		return result;
 	}
@@ -71,8 +60,6 @@ public class BrokerDto implements Serializable {
 			if (other.host != null)
 				return false;
 		} else if (!host.equals(other.host))
-			return false;
-		if (id != other.id)
 			return false;
 		if (port != other.port)
 			return false;

@@ -41,6 +41,7 @@ import ch.ethz.mlmq.server.ClientApplicationContext;
 import ch.ethz.mlmq.server.db.DbConnectionPool;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 import ch.ethz.mlmq.server.processing.RequestProcessor;
+import ch.ethz.mlmq.util.ConfigurationUtil;
 
 public class RequestProcessorTest {
 
@@ -63,7 +64,7 @@ public class RequestProcessorTest {
 		PerformanceLoggerManager.configureDisabled();
 
 		// load properties
-		Properties props = BrokerConfiguration.loadPropertiesFromJar("unittestconfig.example.properties");
+		Properties props = ConfigurationUtil.loadPropertiesFromJar("unittestconfig.example.properties");
 		props.put(BrokerConfiguration.DB_NAME, dbName);
 		props.put(BrokerConfiguration.DB_CONNECTIONPOOL_SIZE, 1 + "");
 		config = new BrokerConfiguration(props);

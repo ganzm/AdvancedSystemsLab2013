@@ -142,9 +142,9 @@ public class LoggerUtil {
 				StackTraceElement element = elements[i];
 				buf.append("\n\t");
 				buf.append(element.getClassName());
-				buf.append("   ");
+				buf.append(".");
 				buf.append(element.getMethodName());
-				buf.append("   ");
+				buf.append("() Line ");
 				buf.append(element.getLineNumber());
 
 			}

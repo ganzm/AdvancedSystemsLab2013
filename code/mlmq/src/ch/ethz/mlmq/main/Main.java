@@ -22,19 +22,14 @@ public class Main {
 		initLogging(argList);
 
 		switch (args[0]) {
-		case "client_sender":
-			System.out.println("Hi! I'm a client sender.");
-			// TODO...
-			break;
-		case "client_receiver":
-			System.out.println("And I'm a client receiver.");
-			// TODO...
+		case "client":
+			mainClient(argList);
 			break;
 		case "broker":
-			System.exit(mainBroker(argList));
+			mainBroker(argList);
 			break;
 		case "dbscript":
-			System.exit(mainDbScript(argList));
+			mainDbScript(argList);
 			break;
 		default:
 			showHelpAndExit();
@@ -52,6 +47,21 @@ public class Main {
 			LoggerUtil.initFromFile(loggerConfigFile);
 			logger.info("Logger initialized from " + loggerConfigFile);
 		}
+	}
+
+	private static void mainClient(Map<String, String> argList) {
+		String config = argList.remove("config");
+
+		if (!argList.isEmpty()) {
+			System.out.println("Parameters not understood " + argList);
+		}
+
+		if (config == null) {
+			System.out.println("Missing Parameter -config");
+		}
+
+		ClientMain clientMain = new ClientMain();
+		clientMain.run(config);
 	}
 
 	private static int mainBroker(Map<String, String> argList) {

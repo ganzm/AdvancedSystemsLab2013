@@ -1,20 +1,16 @@
 package ch.ethz.mlmq.server;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.PerformanceLoggerConfig;
+import ch.ethz.mlmq.util.ConfigurationUtil;
 
 /**
  * Holds configuration like database connection information, tuning parameters, etc for one single broker
  */
 public class BrokerConfiguration {
-
-	private static final Logger logger = Logger.getLogger("BrokerConfiguration");
 
 	public static final String LISTENPORT2 = "listenport";
 	public static final String WORKERTHREAD_COUNT = "workerthread.count";
@@ -55,39 +51,8 @@ public class BrokerConfiguration {
 		initFromProps(props);
 	}
 
-	public static Properties loadPropertiesFromFile(String fileName) throws IOException {
-
-		logger.info("Load BrokerConfiguration from " + fileName);
-
-		File f = new File(fileName);
-		if (!f.exists()) {
-			throw new IOException("File not found " + fileName);
-		}
-
-		try (InputStream inStream = new FileInputStream(f)) {
-			Properties props = new Properties();
-			props.load(inStream);
-
-			return props;
-		}
-	}
-
-	public static Properties loadPropertiesFromJar(String fileName) throws IOException {
-		logger.info("Load BrokerConfiguration from " + fileName);
-
-		try (InputStream inStream = BrokerConfiguration.class.getClassLoader().getResourceAsStream(fileName)) {
-			if (inStream == null) {
-				throw new IOException("FileNotFound " + fileName);
-			}
-			Properties props = new Properties();
-			props.load(inStream);
-
-			return props;
-		}
-	}
-
 	public static BrokerConfiguration loadFromJar(String fileName) throws IOException {
-		return new BrokerConfiguration(loadPropertiesFromJar(fileName));
+		return new BrokerConfiguration(ConfigurationUtil.loadPropertiesFromJar(fileName));
 	}
 
 	public static BrokerConfiguration load(InputStream inStream) throws IOException {

@@ -41,6 +41,10 @@ public class ClientImpl implements Client {
 		this.connection = new ClientConnection(defaultBroker.getHost(), defaultBroker.getPort(), responseTimeoutTime);
 	}
 
+	public ClientImpl(ClientConfiguration config) throws IOException {
+		this(config.getName(), new BrokerDto(config.getBrokerHost(), config.getBrokerPort()), config.getResponseTimeoutTime());
+	}
+
 	public void init() throws IOException {
 		connection.connect();
 	}
