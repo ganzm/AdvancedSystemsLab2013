@@ -18,6 +18,8 @@ public class ScenarioSimpleSend {
 
 	public void run() throws IOException {
 
+		client.register();
+
 		QueueDto queue = client.createQueue("QueueOf" + config.getName());
 
 		for (int i = 0; i < 100; i++) {
