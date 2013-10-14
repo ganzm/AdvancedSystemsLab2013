@@ -3,12 +3,12 @@ package ch.ethz.mlmq.common;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ScenarioConfiguration {
+public class BalancedScenarioConfiguration {
 
 	private final int position;
 	private Map<String, String[]> mapping;
 
-	public ScenarioConfiguration(String rawMapping, int position) throws InvalidConfigurationException {
+	public BalancedScenarioConfiguration(String rawMapping, int position) throws InvalidConfigurationException {
 		this.position = position;
 
 		mapping = parseMapping(rawMapping);
