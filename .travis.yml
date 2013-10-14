@@ -2,7 +2,6 @@ language: java
 jdk:
   - openjdk7
   - oraclejdk7
-  - openjdk6
 before_install:
   - cd code/mlmq
   - cp resource/brokerconfig.example.properties resource/brokerconfig.properties
