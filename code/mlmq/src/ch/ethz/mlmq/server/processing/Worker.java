@@ -69,6 +69,8 @@ public class Worker extends Thread {
 	public void close() {
 		logger.info("Closing Worker " + getName() + "...");
 		running = false;
+
+		this.interrupt();
 	}
 
 	private void process(WorkerTask task) {
