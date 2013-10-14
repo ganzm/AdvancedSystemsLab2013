@@ -4,6 +4,5 @@ before_install:
   - cp resource/brokerconfig.example.properties resource/brokerconfig.properties
   - cp resource/clientconfig.example.properties resource/clientconfig.properties
 before_script:
-  - cd code/mlmq
   - psql -c 'create database mlmq;' -U postgres
   - psql -c 'alter role postgres password "postgres";' -U postgres 
