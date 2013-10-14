@@ -1,9 +1,7 @@
 package ch.ethz.mlmq.server.db.util;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -128,10 +126,7 @@ public class DatabaseInitializer {
 	private void executeScript(String scriptFile, Connection connection) throws IOException, SQLException {
 		logger.info("Create Tables - exec " + scriptFile);
 
-		// TODO: remove this hack
-		// try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
-		String url = "https://raw.github.com/ganzm/AdvancedSystemsLab2013/master/code/mlmq/resource/" + scriptFile;
-		try (InputStream scriptStream = new BufferedInputStream(new URL(url).openStream())) {
+		try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
 			ScriptRunner runner = new ScriptRunner();
 			runner.execute(scriptStream, connection);
 		}
@@ -140,11 +135,7 @@ public class DatabaseInitializer {
 	private void executeStoredProcedureScript(String scriptFile, Connection connection) throws IOException, SQLException {
 		logger.info("Create Stored Procedures - exec " + scriptFile);
 
-		// TODO: remove this hack
-		// try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
-		String url = "https://raw.github.com/ganzm/AdvancedSystemsLab2013/master/code/mlmq/resource/" + scriptFile;
-		try (InputStream scriptStream = new BufferedInputStream(new URL(url).openStream())) {
-
+		try (InputStream scriptStream = this.getClass().getClassLoader().getResourceAsStream(scriptFile)) {
 			StoredProcedureScriptRunner runner = new StoredProcedureScriptRunner();
 			runner.execute(scriptStream, connection);
 		}
