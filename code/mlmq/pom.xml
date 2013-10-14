@@ -6,6 +6,25 @@
   <name>YetAnotherMessageQueue</name>
   <build>
     <sourceDirectory>src</sourceDirectory>
+    <testSourceDirectory>test</testSourceDirectory>
+    
+    <resources>
+		<resource>
+			<directory>resource</directory>
+			<excludes>
+				<exclude>**/*.java</exclude>
+			</excludes>
+		</resource>
+	</resources>
+	<testResources>
+		<testResource>
+			<directory>resource</directory>
+			<excludes>
+				<exclude>**/*.java</exclude>
+			</excludes>
+		</testResource>
+	</testResources>
+    
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -19,6 +38,7 @@
 	    <!-- Build an executable JAR -->
 	    <groupId>org.apache.maven.plugins</groupId>
 	    <artifactId>maven-jar-plugin</artifactId>
+            <version>2.4</version>
 	    <configuration>
 			<archive>
 			  <manifest>
@@ -36,6 +56,7 @@
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
   		<version>4.11</version>
+                <scope>test</scope>
   	</dependency>
   	<dependency>
   		<groupId>postgresql</groupId>
