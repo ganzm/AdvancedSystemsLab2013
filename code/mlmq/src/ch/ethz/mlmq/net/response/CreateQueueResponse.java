@@ -1,5 +1,7 @@
 package ch.ethz.mlmq.net.response;
 
+import java.nio.ByteBuffer;
+
 import ch.ethz.mlmq.dto.QueueDto;
 
 public class CreateQueueResponse implements Response {
@@ -39,6 +41,23 @@ public class CreateQueueResponse implements Response {
 		} else if (!queue.equals(other.queue))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deserialize(ByteBuffer serializeBuffer) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 
 }
