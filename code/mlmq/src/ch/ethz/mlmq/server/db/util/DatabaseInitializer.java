@@ -94,8 +94,8 @@ public class DatabaseInitializer {
 		logger.info("Connect to Database with URL: " + urlToDatabase);
 
 		try (Connection createTableConnection = DriverManager.getConnection(urlToDatabase, userName, password)) {
-			executeScript("/db/001_table_create.sql", createTableConnection);
-			executeStoredProcedureScript("/db/002_stored_procedures.sql", createTableConnection);
+			executeScript("db/001_table_create.sql", createTableConnection);
+			executeStoredProcedureScript("db/002_stored_procedures.sql", createTableConnection);
 		} catch (IOException e) {
 			throw new SQLException("Eror creating tables", e);
 		}
