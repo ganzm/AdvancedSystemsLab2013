@@ -85,30 +85,32 @@ public class RequestResponseFactory {
 	 * @throws InstantiationException
 	 */
 	public Request deserializeRequest(ByteBuffer serializeBuffer) {
+		int requestType = 0;
 		Class<? extends Request> requestClass = null;
 		try {
-			int requestType = serializeBuffer.getInt();
+			requestType = serializeBuffer.getInt();
 			requestClass = requestTypMap.get(requestType);
 			Request instance = requestClass.newInstance();
 
 			instance.deserialize(serializeBuffer);
 			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("Error while deserializing Request Class[" + requestClass + "]", e);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while deserializing Request Type [" + requestType + "] Class[" + requestClass + "]", e);
 		}
 	}
 
 	public Response deserializeResponse(ByteBuffer serializeBuffer) {
 		Class<? extends Response> responseClass = null;
+		int responseType = 0;
 		try {
-			int responseType = serializeBuffer.getInt();
+			responseType = serializeBuffer.getInt();
 			responseClass = responseTypMap.get(responseType);
 			Response instance = responseClass.newInstance();
 
 			instance.deserialize(serializeBuffer);
 			return instance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new RuntimeException("Error while deserializing Request Class[" + responseClass + "]", e);
+		} catch (Exception e) {
+			throw new RuntimeException("Error while deserializing Request Type[" + responseType + "] Class[" + responseClass + "]", e);
 		}
 	}
 
@@ -137,6 +139,7 @@ public class RequestResponseFactory {
 		int startPayload = buffer.position(); // should be startPosition + 4
 
 		// serialize the message to the buffer
+		buffer.putInt(request.getTypeId());
 		request.serialize(buffer);
 
 		int numBytes = buffer.position() - startPayload;
@@ -157,6 +160,7 @@ public class RequestResponseFactory {
 		int startPayload = buffer.position(); // should be startPosition + 4
 
 		// serialize the message to the buffer
+		buffer.putInt(response.getTypeId());
 		response.serialize(buffer);
 
 		int numBytes = buffer.position() - startPayload;
