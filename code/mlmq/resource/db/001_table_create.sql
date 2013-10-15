@@ -27,9 +27,29 @@ CREATE TABLE message (
 );
 
 
-
-
 CREATE INDEX idx_queue_client_id
   ON queue
   USING btree
   (client_id);
+
+CREATE INDEX idx_client_name
+  ON client
+  USING btree
+  (name);
+  
+CREATE INDEX idx_message_queue_id
+  ON message
+  USING btree
+  (queue_id);
+  
+CREATE INDEX idx_message_prio
+  ON message
+  USING btree
+  (prio);
+    
+CREATE INDEX idx_message_sent_at
+  ON message
+  USING btree
+  (sent_at);
+    
+  
