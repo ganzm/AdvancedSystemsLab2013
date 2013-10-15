@@ -1,8 +1,12 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+
 public class QueuesWithPendingMessagesRequest implements Request {
 
-	private static final long serialVersionUID = -4299769935652705291L;
+	static final long serialVersionUID = -4299769935652705291L;
 
 	@Override
 	public int hashCode() {
@@ -21,5 +25,19 @@ public class QueuesWithPendingMessagesRequest implements Request {
 		if (getClass() != obj.getClass())
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 }

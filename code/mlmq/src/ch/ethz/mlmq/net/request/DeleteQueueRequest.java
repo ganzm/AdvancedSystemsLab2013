@@ -1,12 +1,19 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
+
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class DeleteQueueRequest implements Request {
 
-	private static final long serialVersionUID = -689440274911871604L;
+	static final long serialVersionUID = -689440274911871604L;
 
 	private QueueDto queue;
+
+	public DeleteQueueRequest() {
+
+	}
 
 	public DeleteQueueRequest(long queueId) {
 		queue = new QueueDto(queueId);
@@ -39,5 +46,21 @@ public class DeleteQueueRequest implements Request {
 		} else if (!queue.equals(other.queue))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.serialize(queue, buffer);
+	}
+
+	@Override
+	public DeleteQueueRequest deserialize(ByteBuffer serializeBuffer) {
+		queue = (QueueDto) ByteBufferUtil.deserialize(new QueueDto(), serializeBuffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 }

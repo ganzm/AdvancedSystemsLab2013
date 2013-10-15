@@ -1,17 +1,25 @@
 package ch.ethz.mlmq.net.response;
 
+import java.nio.ByteBuffer;
+
 import ch.ethz.mlmq.dto.ClientDto;
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class RegistrationResponse implements Response {
 
-	private static final long serialVersionUID = -3027176762048543256L;
+	public static final long serialVersionUID = -3027176762048543256L;
 
-	private final ClientDto clientDto;
+	private ClientDto clientDto;
 
 	/**
 	 * indicates whether this client was seen the first time or not
 	 */
 	private boolean isNewClient;
+
+	public RegistrationResponse() {
+
+	}
 
 	public RegistrationResponse(ClientDto clientDto) {
 		this.clientDto = clientDto;
@@ -57,4 +65,21 @@ public class RegistrationResponse implements Response {
 		return true;
 	}
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.serialize(clientDto, buffer);
+		ByteBufferUtil.putBoolean(isNewClient, buffer);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		clientDto = (ClientDto) ByteBufferUtil.deserialize(new ClientDto(), buffer);
+		isNewClient = ByteBufferUtil.getBoolean(buffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
+	}
 }

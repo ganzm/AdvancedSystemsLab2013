@@ -1,6 +1,10 @@
 package ch.ethz.mlmq.dto;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 /**
  * Data Transfer Object
@@ -8,16 +12,20 @@ import java.io.Serializable;
  * used for data transport between Database and broker
  * 
  */
-public class ClientDto implements Serializable {
+public class ClientDto implements Serializable, HomeMadeSerializable {
 
 	private static final long serialVersionUID = 6719281939591243370L;
 
-	private final long id;
+	private long id;
 
 	/**
 	 * name of the client
 	 */
 	private String name;
+
+	public ClientDto() {
+
+	}
 
 	public ClientDto(long id) {
 		this.id = id;
@@ -61,6 +69,19 @@ public class ClientDto implements Serializable {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		buffer.putLong(id);
+		ByteBufferUtil.putString(buffer, name);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		id = buffer.getLong();
+		name = ByteBufferUtil.getString(buffer);
+		return this;
 	}
 
 }

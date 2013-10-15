@@ -1,10 +1,14 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class SendClientMessageRequest implements Request {
 
-	private static final long serialVersionUID = 5365826671308061202L;
+	static final long serialVersionUID = 5365826671308061202L;
 
 	/**
 	 * Receiving client
@@ -26,6 +30,10 @@ public class SendClientMessageRequest implements Request {
 	 * optional conversation context
 	 */
 	private Long conversationContext;
+
+	public SendClientMessageRequest() {
+
+	}
 
 	public SendClientMessageRequest(long clientId, byte[] content, int prio) {
 		this(clientId, content, prio, false);
@@ -124,4 +132,28 @@ public class SendClientMessageRequest implements Request {
 		return true;
 	}
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		buffer.putLong(clientId);
+		buffer.putInt(prio);
+		ByteBufferUtil.putBoolean(conversation, buffer);
+		ByteBufferUtil.putLong(conversationContext, buffer);
+		ByteBufferUtil.putByteArray(content, buffer);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		clientId = buffer.getLong();
+		prio = buffer.getInt();
+		conversation = ByteBufferUtil.getBoolean(buffer);
+		conversationContext = ByteBufferUtil.getLong(buffer);
+		content = ByteBufferUtil.getByteArray(buffer);
+
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
+	}
 }

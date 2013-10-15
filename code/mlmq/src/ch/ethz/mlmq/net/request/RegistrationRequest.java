@@ -1,5 +1,10 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
+
 /**
  * Request is performed whenever a client calls register()
  * 
@@ -11,8 +16,13 @@ package ch.ethz.mlmq.net.request;
  */
 public class RegistrationRequest implements Request {
 
-	private static final long serialVersionUID = 7742122658910533817L;
-	private final String clientName;
+	static final long serialVersionUID = 7742122658910533817L;
+
+	private String clientName;
+
+	public RegistrationRequest() {
+
+	}
 
 	public RegistrationRequest(String clientName) {
 		this.clientName = clientName;
@@ -45,6 +55,22 @@ public class RegistrationRequest implements Request {
 		} else if (!clientName.equals(other.clientName))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.putString(buffer, clientName);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		clientName = ByteBufferUtil.getString(buffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 
 }

@@ -1,5 +1,9 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.util.ByteBufferUtil;
+
 /**
  * Request is performed whenever a client wants to create any new Message Queue
  * 
@@ -10,9 +14,13 @@ package ch.ethz.mlmq.net.request;
  */
 public class CreateQueueRequest implements Request {
 
-	private static final long serialVersionUID = 5493920307572674123L;
+	static final long serialVersionUID = 5493920307572674123L;
 
 	private String queueName;
+
+	public CreateQueueRequest() {
+
+	}
 
 	public CreateQueueRequest(String queueName) {
 		this.queueName = queueName;
@@ -45,6 +53,22 @@ public class CreateQueueRequest implements Request {
 		} else if (!queueName.equals(other.queueName))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.putString(buffer, queueName);
+	}
+
+	@Override
+	public CreateQueueRequest deserialize(ByteBuffer serializeBuffer) {
+		queueName = ByteBufferUtil.getString(serializeBuffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 
 }

@@ -1,82 +1,129 @@
 package ch.ethz.mlmq.net.request;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
+import ch.ethz.mlmq.net.response.CreateQueueResponse;
+import ch.ethz.mlmq.net.response.DeleteQueueResponse;
+import ch.ethz.mlmq.net.response.ExceptionResponse;
+import ch.ethz.mlmq.net.response.MessageResponse;
+import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
+import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
+import ch.ethz.mlmq.net.response.SendClientMessageResponse;
+import ch.ethz.mlmq.net.response.SendMessageResponse;
 
 /**
- * TODO Performance - serialisation/deserialisation needs to be refactored - this is just a quick java serialisation implementation
+ * 
+ * Request and Response Serialisations
  */
 public class RequestResponseFactory {
 
+	private Map<Integer, Class<? extends Request>> requestTypMap = new HashMap<>();
+	private Map<Integer, Class<? extends Response>> responseTypMap = new HashMap<>();
+
 	public RequestResponseFactory() {
+		registerRequests();
+	}
+
+	private void registerRequests() {
+		registerRequest(CreateQueueRequest.class);
+		registerRequest(DeleteQueueRequest.class);
+		registerRequest(DequeueMessageRequest.class);
+		registerRequest(PeekMessageRequest.class);
+		registerRequest(QueuesWithPendingMessagesRequest.class);
+		registerRequest(RegistrationRequest.class);
+		registerRequest(SendClientMessageRequest.class);
+		registerRequest(SendMessageRequest.class);
+
+		registerResponse(CreateQueueResponse.class);
+		registerResponse(DeleteQueueResponse.class);
+		registerResponse(ExceptionResponse.class);
+		registerResponse(MessageResponse.class);
+		registerResponse(QueuesWithPendingMessagesResponse.class);
+		registerResponse(RegistrationResponse.class);
+		registerResponse(SendClientMessageResponse.class);
+		registerResponse(SendMessageResponse.class);
+	}
+
+	private void registerRequest(Class<? extends Request> clazz) {
+		try {
+			int key = getSerialVersionUIDFromClass(clazz);
+			Class<? extends Request> result = requestTypMap.put(key, clazz);
+			if (result != null) {
+				throw new RuntimeException(clazz + " conflicts with " + result + " - serialVersionUID from both classes are identical (if casted to int)");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while registering Request " + clazz, e);
+		}
+	}
+
+	private void registerResponse(Class<? extends Response> clazz) {
+		try {
+			int key = getSerialVersionUIDFromClass(clazz);
+			Class<? extends Response> result = responseTypMap.put(key, clazz);
+			if (result != null) {
+				throw new RuntimeException(clazz + " conflicts with " + result + " - serialVersionUID from both classes are identical (if casted to int)");
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while registering Request " + clazz, e);
+		}
+	}
+
+	private int getSerialVersionUIDFromClass(Class<?> clazz) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String fieldName = "serialVersionUID";
+		Field serialVersionUIDField = clazz.getDeclaredField(fieldName);
+		return (int) serialVersionUIDField.getLong(null);
 	}
 
 	/**
-	 * TODO Performance - refactor serialisation/deserialisation - memory allocation is not necessary
-	 * 
 	 * @param serializeBuffer
 	 * @return
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	public Request deserializeRequest(ByteBuffer serializeBuffer) {
-		return (Request) deserializeObject(serializeBuffer);
+		Class<? extends Request> requestClass = null;
+		try {
+			int requestType = serializeBuffer.getInt();
+			requestClass = requestTypMap.get(requestType);
+			Request instance = requestClass.newInstance();
+
+			instance.deserialize(serializeBuffer);
+			return instance;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException("Error while deserializing Request Class[" + requestClass + "]", e);
+		}
 	}
 
 	public Response deserializeResponse(ByteBuffer serializeBuffer) {
-		return (Response) deserializeObject(serializeBuffer);
-	}
+		Class<? extends Response> responseClass = null;
+		try {
+			int responseType = serializeBuffer.getInt();
+			responseClass = responseTypMap.get(responseType);
+			Response instance = responseClass.newInstance();
 
-	private Object deserializeObject(ByteBuffer serializeBuffer) {
-		int numBytes = serializeBuffer.limit() - serializeBuffer.position();
-
-		// allocate space and read data from buffer
-		byte[] rawdata = new byte[numBytes];
-		serializeBuffer.get(rawdata);
-
-		try (ByteArrayInputStream bIn = new ByteArrayInputStream(rawdata); ObjectInputStream oIn = new ObjectInputStream(bIn);
-
-		) {
-
-			return oIn.readObject();
-		} catch (IOException | ClassNotFoundException e) {
-			throw new RuntimeException(e);
+			instance.deserialize(serializeBuffer);
+			return instance;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException("Error while deserializing Request Class[" + responseClass + "]", e);
 		}
 	}
 
-	/**
-	 * TODO Performance - refactor serialisation/deserialisation - memory allocation is not necessary
-	 * 
-	 * 
-	 * @param requestExpected
-	 * @param serializeBuffer
-	 */
 	public void serializeRequest(Request request, ByteBuffer serializeBuffer) {
-		serializeObject(request, serializeBuffer);
+		serializeBuffer.putInt(request.getTypeId());
+		request.serialize(serializeBuffer);
 	}
 
 	public void serializeResponse(Response response, ByteBuffer serializeBuffer) {
-		serializeObject(response, serializeBuffer);
-	}
-
-	private void serializeObject(Object obj, ByteBuffer serializeBuffer) {
-		try (ByteArrayOutputStream byteOut = new ByteArrayOutputStream(); ObjectOutputStream objectOut = new ObjectOutputStream(byteOut);) {
-			objectOut.writeObject(obj);
-			objectOut.flush();
-
-			serializeBuffer.put(byteOut.toByteArray());
-
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
+		serializeBuffer.putInt(response.getTypeId());
+		response.serialize(serializeBuffer);
 	}
 
 	/**
-	 * writes the lengtht field and serialized request to the buffer
+	 * writes the length field and serialized request to the buffer
 	 * 
 	 * @param request
 	 * @param buffer
@@ -90,13 +137,13 @@ public class RequestResponseFactory {
 		int startPayload = buffer.position(); // should be startPosition + 4
 
 		// serialize the message to the buffer
-		serializeRequest(request, buffer);
+		request.serialize(buffer);
 
 		int numBytes = buffer.position() - startPayload;
 		int endPosition = buffer.position();
 		buffer.position(startPosition);
 
-		// write payload lenght to position 0-3
+		// write payload length to position 0-3
 		buffer.putInt(numBytes);
 		buffer.position(endPosition);
 	}
@@ -110,14 +157,15 @@ public class RequestResponseFactory {
 		int startPayload = buffer.position(); // should be startPosition + 4
 
 		// serialize the message to the buffer
-		serializeResponse(response, buffer);
+		response.serialize(buffer);
 
 		int numBytes = buffer.position() - startPayload;
 		int endPosition = buffer.position();
 		buffer.position(startPosition);
 
-		// write payload lenght to position 0-3
+		// write payload length to position 0-3
 		buffer.putInt(numBytes);
 		buffer.position(endPosition);
 	}
+
 }

@@ -1,17 +1,24 @@
 package ch.ethz.mlmq.net.response;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class QueuesWithPendingMessagesResponse implements Response {
 
-	private static final long serialVersionUID = 4798365845603757482L;
+	public static final long serialVersionUID = 4798365845603757482L;
 
 	private List<QueueDto> queues;
 
+	public QueuesWithPendingMessagesResponse() {
+		this.queues = new ArrayList<>();
+	}
+
 	public List<QueueDto> getQueues() {
-		// TODO Auto-generated method stub
 		return queues;
 	}
 
@@ -44,4 +51,26 @@ public class QueuesWithPendingMessagesResponse implements Response {
 		return true;
 	}
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		buffer.putInt(queues.size());
+		for (QueueDto queue : queues) {
+			ByteBufferUtil.serialize(queue, buffer);
+		}
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		int listSize = buffer.getInt();
+		for (int i = 0; i < listSize; i++) {
+			queues.add((QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer));
+		}
+
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
+	}
 }

@@ -1,10 +1,19 @@
 package ch.ethz.mlmq.net.response;
 
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
+
 public class ExceptionResponse implements Response {
 
-	private static final long serialVersionUID = 5159033818555051347L;
+	public static final long serialVersionUID = 5159033818555051347L;
 
-	private final Exception exception;
+	private Exception exception;
+
+	public ExceptionResponse() {
+
+	}
 
 	public ExceptionResponse(Exception ex) {
 		this.exception = ex;
@@ -37,6 +46,22 @@ public class ExceptionResponse implements Response {
 		} else if (!exception.equals(other.exception))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.serializeAny(exception, buffer);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		exception = (Exception) ByteBufferUtil.deserializeAny(buffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 
 }

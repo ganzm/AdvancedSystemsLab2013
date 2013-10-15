@@ -1,12 +1,20 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
+
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class DequeueMessageRequest implements Request {
 
-	private static final long serialVersionUID = -4034153593869631817L;
+	static final long serialVersionUID = -4034153593869631817L;
 
 	private MessageQueryInfoDto messageQueryInfo;
+
+	public DequeueMessageRequest() {
+
+	}
 
 	public DequeueMessageRequest(MessageQueryInfoDto messageQueryInfo) {
 		this.messageQueryInfo = messageQueryInfo;
@@ -45,4 +53,19 @@ public class DequeueMessageRequest implements Request {
 		return true;
 	}
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.serialize(messageQueryInfo, buffer);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		messageQueryInfo = (MessageQueryInfoDto) ByteBufferUtil.deserialize(new MessageQueryInfoDto(), buffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
+	}
 }
