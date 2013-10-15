@@ -58,14 +58,21 @@ public class DatabaseInitializer {
 	}
 
 	public void createDatabase() throws SQLException {
+
+		String locale = getPostgresLocale();
+
 		//@formatter:off
 		String sqlStatement = "" 
 				+ " CREATE DATABASE " + databaseName 
 				+ " WITH OWNER = " + userName
 				+ " ENCODING = 'UTF8'"
 				+ " TABLESPACE = pg_default"
-				+ " LC_COLLATE = 'C'"
-                + " LC_CTYPE = 'C'"
+				+ " LC_COLLATE = '"
+				+ locale
+				+ "'"
+                + " LC_CTYPE = '"
+                + locale
+                + "'"
 				+ " CONNECTION LIMIT = -1;";
 		//@formatter:on
 
@@ -73,6 +80,16 @@ public class DatabaseInitializer {
 			logger.info("Executing " + sqlStatement);
 			stmt.execute(sqlStatement);
 		}
+	}
+
+	private String getPostgresLocale() {
+		String osName = System.getProperty("os.name");
+		osName = osName.toLowerCase();
+		String locale = "en_US.UTF-8";
+		if (osName.startsWith("win")) {
+			locale = "German_Switzerland.1252";
+		}
+		return locale;
 	}
 
 	public void deleteDatabase() throws SQLException {
