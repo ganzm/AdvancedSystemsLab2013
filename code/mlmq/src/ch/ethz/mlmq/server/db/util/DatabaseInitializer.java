@@ -44,6 +44,7 @@ public class DatabaseInitializer {
 	public void connect() throws SQLException {
 		try {
 			Class.forName("org.postgresql.Driver");
+			logger.info("Connectiong to DB " + url + " with user " + userName);
 			connection = DriverManager.getConnection(url, userName, password);
 		} catch (ClassNotFoundException e) {
 			throw new SQLException(e);
@@ -63,8 +64,8 @@ public class DatabaseInitializer {
 				+ " WITH OWNER = " + userName
 				+ " ENCODING = 'UTF8'"
 				+ " TABLESPACE = pg_default"
-				+ " LC_COLLATE = 'en_US.UTF-8'"
-                + " LC_CTYPE = 'en_US.UTF-8'"
+				+ " LC_COLLATE = 'C'"
+                + " LC_CTYPE = 'C'"
 				+ " CONNECTION LIMIT = -1;";
 		//@formatter:on
 
