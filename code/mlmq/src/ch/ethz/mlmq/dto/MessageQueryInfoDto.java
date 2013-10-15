@@ -1,13 +1,17 @@
 package ch.ethz.mlmq.dto;
 
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 /**
  * Data Transfer Object
  * 
  * used to filter messages.
  */
-public class MessageQueryInfoDto implements Serializable {
+public class MessageQueryInfoDto implements Serializable, HomeMadeSerializable {
 	private static final long serialVersionUID = 1658560065690073547L;
 
 	/**
@@ -35,6 +39,10 @@ public class MessageQueryInfoDto implements Serializable {
 		this.queue = queueFilter;
 		this.sender = sender;
 		this.shouldOrderByPriority = shouldOrderByPriority;
+	}
+
+	public MessageQueryInfoDto() {
+
 	}
 
 	/**
@@ -96,4 +104,20 @@ public class MessageQueryInfoDto implements Serializable {
 		return true;
 	}
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.serialize(queue, buffer);
+		ByteBufferUtil.serialize(sender, buffer);
+		ByteBufferUtil.putBoolean(shouldOrderByPriority, buffer);
+		ByteBufferUtil.putInteger(conversationContext, buffer);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		queue = (QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer);
+		sender = (ClientDto) ByteBufferUtil.deserialize(new ClientDto(), buffer);
+		shouldOrderByPriority = ByteBufferUtil.getBoolean(buffer);
+		conversationContext = ByteBufferUtil.getInteger(buffer);
+		return this;
+	}
 }

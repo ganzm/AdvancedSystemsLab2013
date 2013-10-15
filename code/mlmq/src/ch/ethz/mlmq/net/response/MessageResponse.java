@@ -1,12 +1,20 @@
 package ch.ethz.mlmq.net.response;
 
+import java.nio.ByteBuffer;
+
 import ch.ethz.mlmq.dto.MessageDto;
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class MessageResponse implements Response {
 
-	private static final long serialVersionUID = 1267869959385529197L;
+	public static final long serialVersionUID = 1267869959385529197L;
 
 	private MessageDto messageDto;
+
+	public MessageResponse() {
+
+	}
 
 	public MessageResponse(MessageDto messageDto) {
 		this.messageDto = messageDto;
@@ -41,4 +49,19 @@ public class MessageResponse implements Response {
 		return true;
 	}
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		ByteBufferUtil.serialize(messageDto, buffer);
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		messageDto = (MessageDto) ByteBufferUtil.deserialize(new MessageDto(), buffer);
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
+	}
 }

@@ -14,9 +14,13 @@ import ch.ethz.mlmq.util.ByteBufferUtil;
  */
 public class CreateQueueRequest implements Request {
 
-	private static final long serialVersionUID = 5493920307572674123L;
+	static final long serialVersionUID = 5493920307572674123L;
 
 	private String queueName;
+
+	public CreateQueueRequest() {
+
+	}
 
 	public CreateQueueRequest(String queueName) {
 		this.queueName = queueName;
@@ -57,8 +61,9 @@ public class CreateQueueRequest implements Request {
 	}
 
 	@Override
-	public void deserialize(ByteBuffer serializeBuffer) {
+	public CreateQueueRequest deserialize(ByteBuffer serializeBuffer) {
 		queueName = ByteBufferUtil.getString(serializeBuffer);
+		return this;
 	}
 
 	@Override

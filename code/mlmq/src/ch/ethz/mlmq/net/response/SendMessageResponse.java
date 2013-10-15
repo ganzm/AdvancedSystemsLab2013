@@ -1,7 +1,24 @@
 package ch.ethz.mlmq.net.response;
 
+import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+
 public class SendMessageResponse implements Response {
 
-	private static final long serialVersionUID = 1441841603203307110L;
+	public static final long serialVersionUID = 1441841603203307110L;
 
+	@Override
+	public void serialize(ByteBuffer buffer) {
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
+	}
 }

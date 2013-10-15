@@ -1,12 +1,16 @@
 package ch.ethz.mlmq.net.request;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
+
 public class SendMessageRequest implements Request {
 
-	private static final long serialVersionUID = 5365826671308061202L;
+	static final long serialVersionUID = -8471979592749732204L;
 
 	/**
 	 * Target queues
@@ -16,6 +20,10 @@ public class SendMessageRequest implements Request {
 	private byte[] content;
 
 	private int prio;
+
+	public SendMessageRequest() {
+		this.queueIds = new ArrayList<>();
+	}
 
 	public SendMessageRequest(long queueId, byte[] content, int prio) {
 		this.queueIds = new ArrayList<>();
@@ -72,6 +80,36 @@ public class SendMessageRequest implements Request {
 		} else if (!queueIds.equals(other.queueIds))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void serialize(ByteBuffer buffer) {
+		buffer.putInt(queueIds.size());
+		for (Long l : queueIds) {
+			ByteBufferUtil.putLong(l, buffer);
+		}
+
+		ByteBufferUtil.putByteArray(content, buffer);
+		buffer.putInt(prio);
+
+	}
+
+	@Override
+	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+		int queueIdsSize = buffer.getInt();
+		for (int i = 0; i < queueIdsSize; i++) {
+			queueIds.add(ByteBufferUtil.getLong(buffer));
+		}
+
+		content = ByteBufferUtil.getByteArray(buffer);
+		prio = buffer.getInt();
+
+		return this;
+	}
+
+	@Override
+	public int getTypeId() {
+		return (int) serialVersionUID;
 	}
 
 }

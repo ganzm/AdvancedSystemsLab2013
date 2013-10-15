@@ -1,16 +1,13 @@
 package ch.ethz.mlmq.net.response;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
+
+import ch.ethz.mlmq.net.HomeMadeSerializable;
 
 /**
  * Marker interface for the response
  */
-public interface Response extends Serializable {
-
-	void serialize(ByteBuffer buffer);
-
-	void deserialize(ByteBuffer serializeBuffer);
+public interface Response extends Serializable, HomeMadeSerializable {
 
 	int getTypeId();
 
