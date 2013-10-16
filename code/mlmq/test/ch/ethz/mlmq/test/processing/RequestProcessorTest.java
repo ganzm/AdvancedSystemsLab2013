@@ -104,13 +104,12 @@ public class RequestProcessorTest {
 	@Test
 	public void doTest() throws MlmqException {
 		testRegistrationRequest();
-		testCreateQueueRequest();
+		testCreateAndDeleteQueueRequest();
 		testSendMessageRequest();
 		testDequeueMessageRequest();
 		testPeekMessageRequest();
 		// TODO fix this?
 		// testQueuesWithPendingMessagesRequest();
-		// testDeleteQueueRequest();
 	}
 
 	/**
@@ -276,12 +275,16 @@ public class RequestProcessorTest {
 
 	}
 
-	public void testCreateQueueRequest() throws MlmqException {
+	public void testCreateAndDeleteQueueRequest() throws MlmqException {
 
 		Request request = new CreateQueueRequest("SampleQueue");
 		CreateQueueResponse response = (CreateQueueResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueueDto());
+
+		DeleteQueueRequest deleteRequest = new DeleteQueueRequest(response.getQueueDto().getId());
+		DeleteQueueResponse deleteResponse = (DeleteQueueResponse) processor.process(defaultContext, deleteRequest, pool);
+		Assert.assertNotNull(deleteResponse);
 	}
 
 	public void testQueuesWithPendingMessagesRequest() throws MlmqException {
@@ -296,12 +299,6 @@ public class RequestProcessorTest {
 		RegistrationResponse response = (RegistrationResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getClientDto());
-	}
-
-	public void testDeleteQueueRequest() throws MlmqException {
-		Request request = new DeleteQueueRequest(1);
-		DeleteQueueResponse response = (DeleteQueueResponse) processor.process(defaultContext, request, pool);
-		Assert.assertNotNull(response);
 	}
 
 	public void testDequeueMessageRequest() throws MlmqException {
