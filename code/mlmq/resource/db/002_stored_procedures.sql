@@ -20,7 +20,7 @@ DECLARE
     newid BIGINT;
 BEGIN
 
-   INSERT INTO client(name) VALUES ($1)  RETURNING id INTO newid;
+   INSERT INTO client(name) VALUES ( '$1' )  RETURNING id INTO newid;
     return newid;
 END
 $$
