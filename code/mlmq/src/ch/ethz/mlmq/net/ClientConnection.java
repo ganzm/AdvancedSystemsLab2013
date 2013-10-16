@@ -63,7 +63,7 @@ public class ClientConnection implements Closeable {
 		int responseLenght = -1;
 
 		// schedule TimeouTimer
-		TimeoutTimerTask timeoutTask = new TimeoutTimerTask();
+		TimeoutTimerTask timeoutTask = new TimeoutTimerTask(responseTimeoutTime);
 		requestTimeoutTimer.schedule(timeoutTask, responseTimeoutTime);
 
 		try {
@@ -157,10 +157,20 @@ public class ClientConnection implements Closeable {
 	}
 
 	private class TimeoutTimerTask extends TimerTask {
+
+		/**
+		 * for logging purpouses only
+		 */
+		private long timeout;
+
+		public TimeoutTimerTask(long timeout) {
+			this.timeout = timeout;
+		}
+
 		@Override
 		public void run() {
 			try {
-				logger.severe("Request Timeout - closing connection");
+				logger.severe("Request Timeout " + timeout + " - closing connection");
 				clientSocket.close();
 			} catch (IOException e) {
 				logger.severe("Error while closing timeouted Socket " + LoggerUtil.getStackTraceString(e));

@@ -2,7 +2,6 @@ package ch.ethz.mlmq.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
@@ -132,8 +131,8 @@ public class ByteBufferUtil {
 
 			byte[] data = bOut.toByteArray();
 			putByteArray(data, buffer);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		} catch (Exception e) {
+			throw new RuntimeException("Exception while serializinging to Buffer " + buffer + " Object: " + obj, e);
 		}
 	}
 

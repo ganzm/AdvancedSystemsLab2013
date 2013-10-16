@@ -16,6 +16,9 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.BrokerCommandFileHandler;
 import ch.ethz.mlmq.server.CommandListener;
 
+/**
+ * TODO stabilize UnitTest fails from time to time on the build server
+ */
 public class BrokerCommandFileHandlerTest {
 
 	private static final Logger logger = Logger.getLogger(BrokerCommandFileHandlerTest.class.getSimpleName());
