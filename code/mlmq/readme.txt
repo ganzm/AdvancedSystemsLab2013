@@ -3,7 +3,7 @@
 ==========================================
 
 
-Some usefull start parameters for the Main class
+Some useful start parameters for the Main class
 ================================================
 
 
@@ -20,5 +20,11 @@ broker -config resource/brokerconfig.properties
 Start a client
 Copy resource/clientconfig.example.properties to resource/clientconfig.properties and adjust to your needs. Then:
 client -config resource/clientconfig.properties
+
+
+Some useful vm arguments
+================================================
+Logs Garbage Collection Activities
+-Xloggc:gc.log
 
 
