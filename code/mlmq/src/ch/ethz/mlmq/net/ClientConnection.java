@@ -52,21 +52,24 @@ public class ClientConnection implements Closeable {
 	}
 
 	public Response submitRequest(Request request) throws IOException {
+		long requestStartTime = System.currentTimeMillis();
+
 		Response response = null;
+		TimeoutTimerTask timeoutTask = null;
 		logger.info("Submitting Request " + request.getClass().getSimpleName());
 
-		writeToSocket(request);
-
-		logger.info("Wait for response");
-
-		int numBytes = -1;
-		int responseLenght = -1;
-
-		// schedule TimeouTimer
-		TimeoutTimerTask timeoutTask = new TimeoutTimerTask(responseTimeoutTime);
-		requestTimeoutTimer.schedule(timeoutTask, responseTimeoutTime);
-
 		try {
+			writeToSocket(request);
+
+			logger.info("Wait for response");
+
+			int numBytes = -1;
+			int responseLenght = -1;
+
+			// schedule TimeouTimer
+			timeoutTask = new TimeoutTimerTask(responseTimeoutTime);
+			requestTimeoutTimer.schedule(timeoutTask, responseTimeoutTime);
+
 			while ((numBytes = clientSocket.read(ioBuffer)) >= 0) {
 				if (ioBuffer.position() >= Protocol.LENGH_FIELD_LENGHT && responseLenght == -1) {
 					// there is enough data to read an int
@@ -95,13 +98,27 @@ public class ClientConnection implements Closeable {
 				}
 
 			}
+
+			if (numBytes <= 0) {
+				throw new IOException("Connection remotely closed by host");
+			}
+
+			// TODO do performance logging
+			// perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request.getClass().getSimpleName() + ":" +
+			// response.getClass().getSimpleName());
+		} catch (Exception ex) {
+
+			// TODO do performance logging for failed request
+			// perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request.getClass().getSimpleName() + ":" +
+			// response.getClass().getSimpleName());
+
+			throw ex;
+
 		} finally {
 			// cancel TimeoutTimer
-			timeoutTask.cancel();
-		}
-
-		if (numBytes <= 0) {
-			throw new IOException("Connection remotely closed by host");
+			if (timeoutTask != null) {
+				timeoutTask.cancel();
+			}
 		}
 
 		return response;
