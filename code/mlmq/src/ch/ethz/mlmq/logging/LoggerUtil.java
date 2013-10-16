@@ -155,4 +155,9 @@ public class LoggerUtil {
 		logger.info(buf.toString());
 	}
 
+	public static void logMemory(Logger logger) {
+		Runtime rt = Runtime.getRuntime();
+		logger.info("Memory Usage Available[" + rt.maxMemory() / 1024 / 1024 + "]mb Allocated[" + rt.totalMemory() / 1024 / 1024 + "]mb Free["
+				+ rt.freeMemory() / 1024 / 1024 + "]mb");
+	}
 }

@@ -16,6 +16,10 @@ public class BrokerCommandFileHandler implements Runnable {
 
 	public static final String COMMAND_SHUTDOWN = "shutdown";
 	public static final String COMMAND_LOG_STACKTRACE = "logstacktrace";
+	public static final String COMMAND_LOG_MEMORY = "logmemory";
+
+	// TODO
+	public static final String COMMAND_PERFORMANCELOG_ROTATE = "rotatelog";
 
 	private final String pathToFileToWatch;
 

@@ -60,6 +60,9 @@ public class ClientMain implements CommandListener {
 		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_STACKTRACE)) {
 			LoggerUtil.logStackTrace(logger);
 			return;
+		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_MEMORY)) {
+			LoggerUtil.logMemory(logger);
+			return;
 		} else {
 			logger.info("BrokerCommand unexpected command [" + command + "]");
 		}
