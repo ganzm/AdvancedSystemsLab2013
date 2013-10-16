@@ -84,6 +84,7 @@ public class Worker extends Thread {
 		try {
 			response = processor.process(task.getClientContext(), request, connectionPool);
 		} catch (Exception ex) {
+			logger.severe("Error while Processing " + request + " - got Exception " + ex + " " + LoggerUtil.getStackTraceString(ex));
 			response = new ExceptionResponse(ex);
 		}
 

@@ -8,14 +8,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Logger;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.server.db.dao.ClientDao;
 import ch.ethz.mlmq.server.db.dao.QueueDao;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 
@@ -27,6 +30,8 @@ public class DaoTest {
 
 	private static DatabaseInitializer dbInitializer;
 	private static String dbName = "mlmqunittest" + System.currentTimeMillis();
+
+	private Connection connection;
 
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException {
@@ -46,14 +51,24 @@ public class DaoTest {
 		dbInitializer.deleteDatabase();
 	}
 
-	@Test
-	public void testQueueDao() throws SQLException {
-
+	@Before
+	public void before() throws SQLException {
 		String url = config.getDbUrl() + "/" + dbName;
 		String userName = config.getDbUserName();
 		String password = config.getDbPassword();
 
-		try (Connection connection = DriverManager.getConnection(url, userName, password); QueueDao queueDao = new QueueDao();) {
+		connection = DriverManager.getConnection(url, userName, password);
+
+	}
+
+	@After
+	public void after() throws SQLException {
+		connection.close();
+	}
+
+	@Test
+	public void testQueueDao() throws SQLException {
+		try (QueueDao queueDao = new QueueDao()) {
 
 			queueDao.init(connection);
 
@@ -69,6 +84,32 @@ public class DaoTest {
 
 			Assert.assertEquals(beforeCreate + 1, afterCreate);
 			Assert.assertEquals(beforeCreate, afterDelete);
+		}
+	}
+
+	@Test
+	public void testClientDao() throws SQLException {
+		try (ClientDao clientDao = new ClientDao()) {
+			clientDao.init(connection);
+
+			String name = "Blub : strange _ Chars " + System.currentTimeMillis();
+
+			Integer clientIdInteger = clientDao.getClientId(name);
+			Assert.assertNull(clientIdInteger);
+
+			int clientId = clientDao.insertNewClient(name);
+			logger.info("New ClientId is " + clientId);
+
+			clientIdInteger = clientDao.getClientId(name);
+			Assert.assertNotNull(clientIdInteger);
+
+			try {
+
+				clientDao.insertNewClient(name);
+				Assert.fail("Expected an exception");
+			} catch (Exception ex) {
+				logger.info("Expected Exception is " + ex);
+			}
 		}
 	}
 
