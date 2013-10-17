@@ -49,6 +49,7 @@ public class ClientImpl implements Client {
 		connection.connect();
 	}
 
+	@Override
 	public boolean isConnected() {
 		return connection.isConnected();
 	}
