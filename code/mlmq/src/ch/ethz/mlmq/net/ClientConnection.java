@@ -11,6 +11,8 @@ import java.util.TimerTask;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLogger;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.response.Response;
@@ -21,6 +23,8 @@ import ch.ethz.mlmq.net.response.Response;
 public class ClientConnection implements Closeable {
 
 	private static final Logger logger = Logger.getLogger(ClientConnection.class.getSimpleName());
+
+	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
 	private final String host;
 	private final int port;
@@ -103,17 +107,14 @@ public class ClientConnection implements Closeable {
 				throw new IOException("Connection remotely closed by host");
 			}
 
-			// TODO do performance logging
-			// perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request.getClass().getSimpleName() + ":" +
-			// response.getClass().getSimpleName());
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request == null ? "Null" : request.getClass().getSimpleName()
+					+ ":" + response == null ? "Null" : response.getClass().getSimpleName());
 		} catch (Exception ex) {
 
-			// TODO do performance logging for failed request
-			// perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request.getClass().getSimpleName() + ":" +
-			// response.getClass().getSimpleName());
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequestError#" + request == null ? "Null" : request.getClass()
+					.getSimpleName() + ":" + response == null ? "Null" : response.getClass().getSimpleName());
 
 			throw ex;
-
 		} finally {
 			// cancel TimeoutTimer
 			if (timeoutTask != null) {
