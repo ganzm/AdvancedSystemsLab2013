@@ -15,11 +15,18 @@ import ch.ethz.mlmq.dto.QueueDto;
 public interface Client extends Closeable {
 
 	/**
-	 * Initializes the client and connects it ot the Broker
+	 * Initializes the client and connects it to the Broker
 	 * 
 	 * @throws IOException
 	 */
 	void init() throws IOException;
+
+	/**
+	 * indicates whether the client is connected or not
+	 * 
+	 * @return
+	 */
+	boolean isConnected();
 
 	/**
 	 * Registers a new client.
