@@ -25,6 +25,8 @@ public class ClientMain implements CommandListener {
 
 	public void run(String clientConfigurationFile) {
 		try {
+			Thread.sleep(1000 * 8); // Hack: client should sleep until the server is awake. TODO: fix me.
+
 			Properties props = ConfigurationUtil.loadPropertiesFromFile(clientConfigurationFile);
 			config = new ClientConfiguration(props);
 
