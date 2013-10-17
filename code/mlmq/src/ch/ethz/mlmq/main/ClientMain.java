@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.main;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -23,10 +24,21 @@ public class ClientMain implements CommandListener {
 	private BrokerCommandFileHandler commandFileHandler;
 	private TestScenarioManager testScenarioMgr;
 
+	/**
+	 * Number of connect attempts to make
+	 * 
+	 * TODO move to configuration
+	 */
+	private int numberOfConnectionAtempts = -1;
+	/**
+	 * Time to wait in ms before reconnecting
+	 * 
+	 * TODO move to configuration
+	 */
+	private long reconnectSleepTime = 5000;
+
 	public void run(String clientConfigurationFile) {
 		try {
-			Thread.sleep(1000 * 8); // Hack: client should sleep until the server is awake. TODO: fix me.
-
 			Properties props = ConfigurationUtil.loadPropertiesFromFile(clientConfigurationFile);
 			config = new ClientConfiguration(props);
 
@@ -40,7 +52,16 @@ public class ClientMain implements CommandListener {
 
 			logger.info("Starting Client " + config.getName());
 			clientInterface = new ClientImpl(config);
-			clientInterface.init();
+
+			for (int i = 0; !clientInterface.isConnected() && (i < numberOfConnectionAtempts || numberOfConnectionAtempts == -1); i++) {
+				try {
+					logger.info("Client init");
+					clientInterface.init();
+				} catch (ConnectException ex) {
+					logger.warning("Could not connect to Broker " + config.getBrokerHost() + ":" + config.getBrokerPort());
+					Thread.sleep(reconnectSleepTime);
+				}
+			}
 			logger.info("Client started");
 
 			testScenarioMgr = new TestScenarioManager(clientInterface);

@@ -107,12 +107,13 @@ public class ClientConnection implements Closeable {
 				throw new IOException("Connection remotely closed by host");
 			}
 
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request == null ? "Null" : request.getClass().getSimpleName()
-					+ ":" + response == null ? "Null" : response.getClass().getSimpleName());
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + (request == null ? "Null" : request.getClass().getSimpleName())
+					+ ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
 		} catch (Exception ex) {
+			logger.severe("Exception while sending Message " + ex + " " + LoggerUtil.getStackTraceString(ex));
 
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequestError#" + request == null ? "Null" : request.getClass()
-					.getSimpleName() + ":" + response == null ? "Null" : response.getClass().getSimpleName());
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequestError#"
+					+ (request == null ? "Null" : request.getClass().getSimpleName()) + ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
 
 			throw ex;
 		} finally {
@@ -148,18 +149,35 @@ public class ClientConnection implements Closeable {
 
 		logger.info("Try connect to " + host + ":" + port + "...");
 
-		// Create client SocketChannel
-		clientSocket = SocketChannel.open();
+		try {
 
-		// Connection to host port
-		InetSocketAddress adr = new InetSocketAddress(host, port);
-		if (!clientSocket.connect(adr)) {
-			throw new IOException("Could not connect to " + host + ":" + port);
+			// Create client SocketChannel
+			clientSocket = SocketChannel.open();
+
+			// Connection to host port
+			InetSocketAddress adr = new InetSocketAddress(host, port);
+			if (!clientSocket.connect(adr)) {
+				throw new IOException("Could not connect to " + host + ":" + port);
+			}
+
+			boolean result = clientSocket.finishConnect();
+
+			logger.info("Connection established " + result);
+		} catch (Exception ex) {
+			if (clientSocket != null) {
+				clientSocket.close();
+			}
+
+			throw ex;
+		}
+	}
+
+	public boolean isConnected() {
+		if (clientSocket != null) {
+			return clientSocket.isConnected();
 		}
 
-		boolean result = clientSocket.finishConnect();
-
-		logger.info("Connection established " + result);
+		return false;
 	}
 
 	public void close() {

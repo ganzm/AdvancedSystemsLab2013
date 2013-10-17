@@ -49,6 +49,10 @@ public class ClientImpl implements Client {
 		connection.connect();
 	}
 
+	public boolean isConnected() {
+		return connection.isConnected();
+	}
+
 	@Override
 	public void close() throws IOException {
 		connection.close();
