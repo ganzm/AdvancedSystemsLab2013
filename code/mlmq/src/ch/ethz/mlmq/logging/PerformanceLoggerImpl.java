@@ -21,6 +21,7 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 	public PerformanceLoggerImpl(PerformanceLoggerConfig loggerConfig) {
 		validateConfig(loggerConfig);
 		this.loggerConfig = loggerConfig;
+		initWriter();
 	}
 
 	private void validateConfig(PerformanceLoggerConfig loggerConfig) {
@@ -49,11 +50,20 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 	protected void write(String logMessage) {
 		try {
 			if (writer == null) {
-				writer = new FileWriter(loggerConfig.getFileName(), true);
+				initWriter();
 			}
 			writer.write(logMessage);
 		} catch (IOException e) {
 			logger.severe("Error while logging " + LoggerUtil.getStackTraceString(e));
+			closeWriter();
+		}
+	}
+
+	private void initWriter() {
+		try {
+			writer = new FileWriter(loggerConfig.getFileName(), true);
+		} catch (IOException e) {
+			logger.severe("Error while creating logfile " + LoggerUtil.getStackTraceString(e));
 			closeWriter();
 		}
 	}
