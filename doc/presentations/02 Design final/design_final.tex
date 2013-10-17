@@ -35,11 +35,11 @@
 \frametitle{Design Choices}
 
 \begin{itemize}
-\item{Every client has a private queue}
-\item{Private messages can only be sent to private queues}
-\item{Every queue is handled by a specific host, this allows caching}
-\item{Use Java NIO}
-\item{Use Java conventions and guidelines, like naming :-)}
+\item The messaging system utilizes a single database instance. 
+\item On the logic tier multiple middleware instances may be running. 
+\item A client connects to a single middleware.
+\item{Every client has a private queue where he can receive private messages}
+
 \end{itemize}
 
 \end{frame}
@@ -54,7 +54,7 @@
 \begin{figure}
   \begin{center}
   
-    \includegraphics[scale=0.3]{../../drawings/system-overview.eps}
+    \includegraphics[scale=0.4]{../../drawings/system-overview.eps}
     
   \end{center}
   \caption{System Overview}
@@ -68,31 +68,15 @@
 
 \section{Messaging System}
 
-
 \begin{frame}
-\frametitle{System Overview}
-\begin{itemize}
-\item The messaging system utilizes a single database instance. 
-\item On the logic tier multiple broker instances may be running. 
-\item Each broker is responsible for certain queues.
-\item Clients may ask any broker about who handles requests for a specific queue.
-\item A client may connect to any number of brokers depending on which target queue it wants to send messages.
-\end{itemize}
-\end{frame}
-
-%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%
-
-
-\begin{frame}
-\frametitle{Broker Threading}
+\frametitle{Middleware Threading}
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=0.42]{../../drawings/broker-threading.eps}
+    \includegraphics[scale=0.4]{../../drawings/broker-threading.eps}
   \end{center}
-  \caption{Broker Threading}
-  \label{fig:broker-threading}
+  \caption{Middleware Threading}
+  \label{fig:middleware-threading}
 \end{figure}
-
 
 \end{frame}
 
@@ -105,7 +89,7 @@
 
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=0.42]{../../database/db-schema.png}
+    \includegraphics[scale=0.8]{../../database/db-schema.png}
   \end{center}
   \caption{Database Schema}
   \label{fig:db-schema}
@@ -118,11 +102,15 @@
 \frametitle{Client to Broker Communication}
 
 \begin{itemize}
+\item Request/Response communication
+\begin{itemize}
 \item Header: Length of the Java object in bytes.
 \item Body: Serialized Java object (Request, Response).
 \item Serialize POJO's and send it over the network
+\end{itemize}
+
 \item Connection: keep alive, connection pool
-\item Security: no authentication, no encryption
+
 \end{itemize}
 \end{frame}
 
@@ -138,52 +126,39 @@
 \item{Only read messages}
 \item{Only do request/response}
 \end{itemize}
-
-\item Management interface in HTTP
-\begin{itemize}
-\item{To start/stop the current action}
-\item{To collect statistics}
-\end{itemize}
-\item Use any Browser as Management Interface
 \end{itemize}
 \end{frame}
 
+
+
 %%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%
 
 
-
-\section{Request}
 \begin{frame}
-\frametitle{Request}
-
+\frametitle{Experiment Setup}
 \begin{figure}
   \begin{center}
-    \includegraphics[scale=0.25]{../../class_diagrams/Request.png}
+    \includegraphics[scale=0.4]{../../drawings/testsystem-overview.eps}
   \end{center}
-  \caption{Request Class Diagram}
-  \label{fig:db-schema}
+  \caption{Experiment Setup}
+  \label{fig:testsystem}
+\end{figure}
+\end{frame}
+
+
+%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%
+
+
+\begin{frame}
+\frametitle{2h Test - Memory Consumption}
+\begin{figure}
+  \begin{center}
+    \includegraphics[scale=0.6]{5clientsAt100msPerSecond.PNG}
+  \end{center}
+  \caption{5 Clients trying to send 100 Messages per Second}
+  \label{fig:testsystem}
 \end{figure}
 
 \end{frame}
-
-%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%
-
-\section{Response}
-\begin{frame}
-\frametitle{Response}
-
-\begin{figure}
-  \begin{center}
-    \includegraphics[scale=0.33]{../../class_diagrams/Response.png}
-  \end{center}
-  \caption{Response Class Diagram}
-  \label{fig:db-schema}
-\end{figure}
-
-\end{frame}
-
-%%%%%%%%%%% SLIDE %%%%%%%%%%%%%%%
-
 
 \end{document}
-
