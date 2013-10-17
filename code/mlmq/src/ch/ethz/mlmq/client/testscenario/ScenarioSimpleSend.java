@@ -14,6 +14,16 @@ public class ScenarioSimpleSend {
 	private Client client;
 	private ClientConfiguration config;
 
+	/**
+	 * TODO configurable
+	 */
+	private int numMessages = 100000;
+
+	/**
+	 * TODO configurable
+	 */
+	private long waitTimeBetweenMessages = 10;
+
 	public ScenarioSimpleSend(Client client, ClientConfiguration config) {
 		this.client = client;
 		this.config = config;
@@ -22,17 +32,20 @@ public class ScenarioSimpleSend {
 	public void run() throws IOException {
 
 		client.register();
-
 		QueueDto queue = client.createQueue("QueueOf" + config.getName());
-
-		for (int i = 0; i < 100000; i++) {
+		for (int i = 0; i < numMessages; i++) {
 			byte[] content = ("Some Random Text and message Nr " + i).getBytes();
 			try {
 				client.sendMessage(queue.getId(), content, i % 10);
 
-				Thread.sleep(50);
+				Thread.sleep(waitTimeBetweenMessages);
+
+			} catch (IOException e) {
+				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
+				i = numMessages;
 			} catch (Exception e) {
 				logger.warning("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
+
 			}
 		}
 	}
