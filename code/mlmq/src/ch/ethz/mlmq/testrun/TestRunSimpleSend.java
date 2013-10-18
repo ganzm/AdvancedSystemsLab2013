@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.client.testscenario;
+package ch.ethz.mlmq.testrun;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -8,8 +8,8 @@ import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
 
-public class ScenarioSimpleSend {
-	private final Logger logger = Logger.getLogger(ScenarioSimpleSend.class.getSimpleName());
+public class TestRunSimpleSend {
+	private final Logger logger = Logger.getLogger(TestRunSimpleSend.class.getSimpleName());
 
 	private Client client;
 	private ClientConfiguration config;
@@ -24,7 +24,7 @@ public class ScenarioSimpleSend {
 	 */
 	private long waitTimeBetweenMessages = 10;
 
-	public ScenarioSimpleSend(Client client, ClientConfiguration config) {
+	public TestRunSimpleSend(Client client, ClientConfiguration config) {
 		this.client = client;
 		this.config = config;
 	}

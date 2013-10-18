@@ -7,11 +7,11 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.client.ClientImpl;
-import ch.ethz.mlmq.client.testscenario.TestScenarioManager;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.BrokerCommandFileHandler;
 import ch.ethz.mlmq.server.CommandListener;
+import ch.ethz.mlmq.testrun.TestRunManager;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
 public class ClientMain implements CommandListener {
@@ -22,7 +22,7 @@ public class ClientMain implements CommandListener {
 
 	private ClientImpl clientInterface;
 	private BrokerCommandFileHandler commandFileHandler;
-	private TestScenarioManager testScenarioMgr;
+	private TestRunManager testScenarioMgr;
 
 	/**
 	 * Number of connect attempts to make
@@ -64,7 +64,7 @@ public class ClientMain implements CommandListener {
 			}
 			logger.info("Client started");
 
-			testScenarioMgr = new TestScenarioManager(clientInterface);
+			testScenarioMgr = new TestRunManager(clientInterface);
 			testScenarioMgr.startTest(config);
 
 		} catch (Exception e) {

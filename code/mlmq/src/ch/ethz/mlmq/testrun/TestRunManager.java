@@ -1,14 +1,14 @@
-package ch.ethz.mlmq.client.testscenario;
+package ch.ethz.mlmq.testrun;
 
 import ch.ethz.mlmq.client.Client;
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.exception.MlmqException;
 
-public class TestScenarioManager {
+public class TestRunManager {
 
 	private final Client client;
 
-	public TestScenarioManager(Client client) {
+	public TestRunManager(Client client) {
 		this.client = client;
 	}
 
@@ -17,7 +17,7 @@ public class TestScenarioManager {
 
 			if (config.getTestScenario() == 1) {
 
-				ScenarioSimpleSend scenario = new ScenarioSimpleSend(client, config);
+				TestRunSimpleSend scenario = new TestRunSimpleSend(client, config);
 				scenario.run();
 
 			} else {
