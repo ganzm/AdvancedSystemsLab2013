@@ -2,8 +2,8 @@ package ch.ethz.mlmq.client;
 
 import java.util.Properties;
 
-import ch.ethz.mlmq.common.InvalidConfigurationException;
 import ch.ethz.mlmq.common.BalancedScenarioConfiguration;
+import ch.ethz.mlmq.common.InvalidConfigurationException;
 import ch.ethz.mlmq.logging.PerformanceLoggerConfig;
 
 public class ClientConfiguration {
@@ -18,8 +18,6 @@ public class ClientConfiguration {
 	public static final String SCENARIO_MAPPING = "scenario.mapping";
 	public static final String SCENARIO_MYTYPE = "scenario.mytype";
 	public static final String SCENARIO_MYPOSITION = "scenario.myposition";
-
-	public static final String TESTRUN_ID = "testrun.id";
 
 	protected String brokerHost = "localhost";
 	protected int brokerPort = 8099;
@@ -43,8 +41,8 @@ public class ClientConfiguration {
 	}
 
 	private void initFromProps(Properties props) throws InvalidConfigurationException {
-		BalancedScenarioConfiguration scenario = new BalancedScenarioConfiguration(props.getProperty(SCENARIO_MAPPING),
-				Integer.parseInt(props.getProperty(SCENARIO_MYPOSITION)));
+		BalancedScenarioConfiguration scenario = new BalancedScenarioConfiguration(props.getProperty(SCENARIO_MAPPING), Integer.parseInt(props
+				.getProperty(SCENARIO_MYPOSITION)));
 		brokerHost = scenario.getBrokerHost();
 		brokerPort = scenario.getBrokerPort();
 		name = props.getProperty(SCENARIO_MYTYPE) + ": " + props.getProperty(CLIENT_NAME);

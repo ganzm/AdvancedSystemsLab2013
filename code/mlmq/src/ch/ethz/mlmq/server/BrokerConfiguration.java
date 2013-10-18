@@ -24,7 +24,6 @@ public class BrokerConfiguration {
 	public static final String PERFORMANCELOGGER_PATH = "performancelogger.logfilepath";
 	public static final String COMMANDOFILE_PATH = "commandofile.path";
 	public static final String COMMANDOFILE_CHECKINTERVALL = "commandofile.checkintervall";
-	public static final String TESTRUN_ID = "testrun.id";
 
 	protected int listenPort = 8099;
 	protected int workerThreadCount = 5;
@@ -76,7 +75,6 @@ public class BrokerConfiguration {
 		maxMessageSize = Integer.parseInt(props.getProperty(MAX_MESSAGE_SIZE));
 		commandoFilePath = props.getProperty(COMMANDOFILE_PATH);
 		commandoFileCheckIntervall = Long.parseLong(props.getProperty(COMMANDOFILE_CHECKINTERVALL));
-		testRunId = Integer.parseInt(props.getProperty(TESTRUN_ID));
 		performanceLoggerConfig = new PerformanceLoggerConfig(props.getProperty(PERFORMANCELOGGER_PATH));
 
 	}
@@ -130,10 +128,6 @@ public class BrokerConfiguration {
 
 	public PerformanceLoggerConfig getPerformanceLoggerConfig() {
 		return performanceLoggerConfig;
-	}
-
-	public int getTestRunId() {
-		return testRunId;
 	}
 
 	public long getCommandFileCheckIntervall() {
