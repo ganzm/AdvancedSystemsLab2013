@@ -60,7 +60,7 @@ public class ClientConnection implements Closeable {
 
 		Response response = null;
 		TimeoutTimerTask timeoutTask = null;
-		logger.info("Submitting Request " + request.getClass().getSimpleName());
+		logger.info("Submitting Request " + (request == null ? "Null" : request.getClass().getSimpleName()));
 
 		try {
 			writeToSocket(request);
