@@ -5,10 +5,11 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.Broker;
 import ch.ethz.mlmq.server.BrokerCommandFileHandler;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.server.BrokerImpl;
 import ch.ethz.mlmq.server.CommandListener;
+import ch.ethz.mlmq.testrun.TestRunManager;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
 public class BrokerMain implements CommandListener {
@@ -16,15 +17,16 @@ public class BrokerMain implements CommandListener {
 	private static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
 
 	private BrokerConfiguration config;
-	private Broker broker;
+	private BrokerImpl broker;
 	private BrokerCommandFileHandler commandFileHandler;
+	private TestRunManager testScenarioMgr;
 
 	public int run(String brokerConfigurationFile) {
 
 		try {
 			Properties props = ConfigurationUtil.loadPropertiesFromFile(brokerConfigurationFile);
 			config = new BrokerConfiguration(props);
-			broker = new Broker(config);
+			broker = new BrokerImpl(config);
 
 			logger.info("Configuring Performance Logger");
 			PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
@@ -37,7 +39,9 @@ public class BrokerMain implements CommandListener {
 			commandFileHandler.start();
 			logger.info("CommandFileHandler started");
 
-			broker.join();
+			// TODO make configurable
+			testScenarioMgr = new TestRunManager(broker, 1);
+			testScenarioMgr.runTest();
 
 			return 0;
 		} catch (Exception e) {

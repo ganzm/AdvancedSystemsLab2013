@@ -64,8 +64,8 @@ public class ClientMain implements CommandListener {
 			}
 			logger.info("Client started");
 
-			testScenarioMgr = new TestRunManager(clientInterface);
-			testScenarioMgr.startTest(config);
+			testScenarioMgr = new TestRunManager(clientInterface, config);
+			testScenarioMgr.runTest();
 
 		} catch (Exception e) {
 			logger.severe("Exception " + LoggerUtil.getStackTraceString(e));

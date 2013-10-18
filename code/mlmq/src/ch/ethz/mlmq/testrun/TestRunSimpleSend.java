@@ -8,31 +8,29 @@ import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
 
-public class TestRunSimpleSend {
+public class TestRunSimpleSend extends ClientTestRun {
 	private final Logger logger = Logger.getLogger(TestRunSimpleSend.class.getSimpleName());
 
-	private Client client;
 	private ClientConfiguration config;
 
-	/**
-	 * TODO configurable
-	 */
-	private int numMessages = 100000;
+	private final int numMessages;
 
-	/**
-	 * TODO configurable
-	 */
-	private long waitTimeBetweenMessages = 10;
+	private final long waitTimeBetweenMessages;
 
-	public TestRunSimpleSend(Client client, ClientConfiguration config) {
+	private final Client client;
+
+	public TestRunSimpleSend(Client client, ClientConfiguration config, int numMessages, long waitTimeBetweenMessages) {
 		this.client = client;
 		this.config = config;
+		this.numMessages = numMessages;
+		this.waitTimeBetweenMessages = waitTimeBetweenMessages;
 	}
 
+	@Override
 	public void run() throws IOException {
-
 		client.register();
 		QueueDto queue = client.createQueue("QueueOf" + config.getName());
+
 		for (int i = 0; i < numMessages; i++) {
 			byte[] content = ("Some Random Text and message Nr " + i).getBytes();
 			try {
@@ -42,10 +40,11 @@ public class TestRunSimpleSend {
 
 			} catch (IOException e) {
 				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
+
+				// stop sending messages in case of ioexception
 				i = numMessages;
 			} catch (Exception e) {
 				logger.warning("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
-
 			}
 		}
 	}

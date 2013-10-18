@@ -17,7 +17,7 @@ import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.Broker;
+import ch.ethz.mlmq.server.BrokerImpl;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 import ch.ethz.mlmq.util.ConfigurationUtil;
@@ -30,7 +30,7 @@ public class SimpleSystemTest {
 	private static DatabaseInitializer dbInitializer;
 	private static String dbName = "mlmqunittest" + System.currentTimeMillis();
 
-	private Broker broker;
+	private BrokerImpl broker;
 
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException {
@@ -55,7 +55,7 @@ public class SimpleSystemTest {
 
 	@Before
 	public void before() throws MlmqException {
-		broker = new Broker(config);
+		broker = new BrokerImpl(config);
 		broker.startup();
 	}
 
