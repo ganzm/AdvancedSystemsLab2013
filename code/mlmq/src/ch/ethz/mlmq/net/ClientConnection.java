@@ -60,7 +60,7 @@ public class ClientConnection implements Closeable {
 
 		Response response = null;
 		TimeoutTimerTask timeoutTask = null;
-		logger.info("Submitting Request " + (request == null ? "Null" : request.getClass().getSimpleName()));
+		logger.info("Submitting Request " + request.getClass().getSimpleName());
 
 		try {
 			writeToSocket(request);
@@ -107,13 +107,13 @@ public class ClientConnection implements Closeable {
 				throw new IOException("Connection remotely closed by host");
 			}
 
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + (request == null ? "Null" : request.getClass().getSimpleName())
-					+ ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequest#" + request.getClass().getSimpleName() + ":"
+					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 		} catch (Exception ex) {
 			logger.severe("Exception while sending Message " + ex + " " + LoggerUtil.getStackTraceString(ex));
 
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequestError#"
-					+ (request == null ? "Null" : request.getClass().getSimpleName()) + ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "ClientSendRequestError#" + request.getClass().getSimpleName() + ":"
+					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 
 			throw ex;
 		} finally {
