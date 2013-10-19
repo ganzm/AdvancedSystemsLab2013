@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.test;
+package ch.ethz.mlmq.test.logging;
 
 import java.io.IOException;
 import java.util.logging.Logger;
