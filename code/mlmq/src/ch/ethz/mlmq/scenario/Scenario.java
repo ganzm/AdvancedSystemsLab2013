@@ -1,22 +1,21 @@
-package ch.ethz.mlmq.scenario;
+package ch.ethz.mlmq.testrun;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ch.ethz.mlmq.scenario.startup.Startup;
-import ch.ethz.mlmq.server.Configuration;
+public abstract class TestRun<T> {
 
 public abstract class Scenario<T_SUT extends Startable, T_CONFIG extends Configuration> {
 	private final Timer timer = new Timer(true);
 
 	private final ConcurrentHashMap<String, TimerTask> activetimerTasks = new ConcurrentHashMap<>();
 
-	private T_SUT sut;
+	private final T sut;
 
-	private T_CONFIG config;
-
-	public Scenario() {
+	public TestRun(T sut) {
+		this.sut = sut;
 	}
 
 	protected void startTimer(final String name, long timeout) {
@@ -45,18 +44,13 @@ public abstract class Scenario<T_SUT extends Startable, T_CONFIG extends Configu
 		onTimeout(name, sut);
 	}
 
-	protected abstract void run(T_SUT sut, T_CONFIG config) throws Exception;
-
-	protected abstract Startup<T_SUT, T_CONFIG> initSut();
-
-	protected void onTimeout(String name, T_SUT sut) {
+	public void run() throws IOException {
+		run(sut);
 	}
 
-	public void start(String pathToConfig) throws Exception {
-		Startup<T_SUT, T_CONFIG> rj = initSut();
-		rj.start(pathToConfig);
-		config = rj.getConfig();
-		sut = rj.getSut();
-		run(sut, config);
+	protected abstract void run(T sut) throws IOException;
+
+	protected void onTimeout(String name, T sut) {
+
 	}
 }

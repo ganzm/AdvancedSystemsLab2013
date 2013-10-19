@@ -1,32 +1,31 @@
-package ch.ethz.mlmq.scenario.impl;
+package ch.ethz.mlmq.testrun;
 
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.client.Client;
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
-import ch.ethz.mlmq.scenario.ClientScenario;
 
-public class SimpleSendClient extends ClientScenario {
-	private static final Logger logger = Logger.getLogger(SimpleSendClient.class.getSimpleName());
+public class TestRunSimpleSend extends ClientTestRun {
+	private final Logger logger = Logger.getLogger(TestRunSimpleSend.class.getSimpleName());
 
-	private static final String NUMMESSAGE_KEY = "scenario.SimpleSendClient.numMessages";
-	private static final String WAITBETWEENMESSAGES_KEY = "scenario.SimpleSendClient.waitTimeBetweenMessages";
+	private ClientConfiguration config;
 
 	private final int numMessages;
 
-	private long waitTimeBetweenMessages;
+	private final long waitTimeBetweenMessages;
 
-	public SimpleSendClient(ClientConfiguration config) {
-		super(config);
-
-		numMessages = config.getIntConfig(NUMMESSAGE_KEY);
-		waitTimeBetweenMessages = config.getLongConfig(WAITBETWEENMESSAGES_KEY);
+	public TestRunSimpleSend(Client client, ClientConfiguration config) {
+		super(client);
+		this.config = config;
+		this.numMessages = config.getNumMessages();
+		this.waitTimeBetweenMessages = config.getWaitTimeBetweenMessages();
 	}
 
 	@Override
-	public void run() throws IOException {
+	public void run(Client client) throws IOException {
 		client.register();
 		QueueDto queue = client.createQueue("QueueOf" + config.getName());
 
