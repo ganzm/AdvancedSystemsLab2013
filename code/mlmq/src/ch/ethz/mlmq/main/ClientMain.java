@@ -7,10 +7,10 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.client.ClientImpl;
+import ch.ethz.mlmq.common.CommandFileHandler;
+import ch.ethz.mlmq.common.CommandListener;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.BrokerCommandFileHandler;
-import ch.ethz.mlmq.server.CommandListener;
 import ch.ethz.mlmq.testrun.TestRunManager;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
@@ -21,45 +21,31 @@ public class ClientMain implements CommandListener {
 	private ClientConfiguration config;
 
 	private ClientImpl clientInterface;
-	private BrokerCommandFileHandler commandFileHandler;
+	private CommandFileHandler commandFileHandler;
 	private TestRunManager testScenarioMgr;
-
-	/**
-	 * Number of connect attempts to make
-	 * 
-	 * TODO move to configuration
-	 */
-	private int numberOfConnectionAtempts = -1;
-	/**
-	 * Time to wait in ms before reconnecting
-	 * 
-	 * TODO move to configuration
-	 */
-	private long reconnectSleepTime = 5000;
 
 	public void run(String clientConfigurationFile) {
 		try {
 			Properties props = ConfigurationUtil.loadPropertiesFromFile(clientConfigurationFile);
 			config = new ClientConfiguration(props);
-
 			logger.info("Configuring Performance Logger");
 			PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
 
 			logger.info("CommandFileHandler...");
-			commandFileHandler = new BrokerCommandFileHandler(config.getCommandoFilePath(), config.getCommandFileCheckIntervall(), this);
+			commandFileHandler = new CommandFileHandler(config.getCommandoFilePath(), config.getCommandFileCheckIntervall(), this);
 			commandFileHandler.start();
 			logger.info("CommandFileHandler started");
 
 			logger.info("Starting Client " + config.getName());
 			clientInterface = new ClientImpl(config);
 
-			for (int i = 0; !clientInterface.isConnected() && (i < numberOfConnectionAtempts || numberOfConnectionAtempts == -1); i++) {
+			for (int i = 0; !clientInterface.isConnected() && (i < config.getNumberOfConnectionAtempts() || config.getNumberOfConnectionAtempts() == -1); i++) {
 				try {
 					logger.info("Client init");
 					clientInterface.init();
 				} catch (ConnectException ex) {
 					logger.warning("Could not connect to Broker " + config.getBrokerHost() + ":" + config.getBrokerPort());
-					Thread.sleep(reconnectSleepTime);
+					Thread.sleep(config.getReconnectSleepTime());
 				}
 			}
 			logger.info("Client started");
@@ -77,13 +63,13 @@ public class ClientMain implements CommandListener {
 		logger.info("BrokerCommandFile - onCommand [" + command + "]");
 
 		command = command.toLowerCase();
-		if (command.contains(BrokerCommandFileHandler.COMMAND_SHUTDOWN)) {
+		if (command.contains(CommandFileHandler.COMMAND_SHUTDOWN)) {
 			doShutdown();
 			return;
-		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_STACKTRACE)) {
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_STACKTRACE)) {
 			LoggerUtil.logStackTrace(logger);
 			return;
-		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_MEMORY)) {
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_MEMORY)) {
 			LoggerUtil.logMemory(logger);
 			return;
 		} else {

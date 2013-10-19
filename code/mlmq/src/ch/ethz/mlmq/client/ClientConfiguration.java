@@ -25,10 +25,26 @@ public class ClientConfiguration {
 	protected long responseTimeoutTime = 5000;
 	protected String commandoFilePath = "./commando.txt";
 	protected long commandoFileCheckIntervall = 5000;
+
+	protected int numMessages = 100000;
+	protected long waitTimeBetweenMessages = 5;
+
+	/**
+	 * Time to wait in ms before reconnecting
+	 */
+	private long reconnectSleepTime = 5000;
+
 	/**
 	 * Scenario Nr this client should be running
 	 */
 	protected int testScenario = 1;
+
+	/**
+	 * Number of connect attempts to make
+	 * 
+	 * TODO move to configuration
+	 */
+	protected int numberOfConnectionAtempts = -1;
 
 	protected PerformanceLoggerConfig performanceLoggerConfig = new PerformanceLoggerConfig("log");
 
@@ -83,4 +99,21 @@ public class ClientConfiguration {
 	public long getCommandFileCheckIntervall() {
 		return commandoFileCheckIntervall;
 	}
+
+	public int getNumMessages() {
+		return numMessages;
+	}
+
+	public long getWaitTimeBetweenMessages() {
+		return waitTimeBetweenMessages;
+	}
+
+	public long getReconnectSleepTime() {
+		return reconnectSleepTime;
+	}
+
+	public int getNumberOfConnectionAtempts() {
+		return numberOfConnectionAtempts;
+	}
+
 }

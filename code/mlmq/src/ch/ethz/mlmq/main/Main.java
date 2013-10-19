@@ -22,20 +22,39 @@ public class Main {
 		initLogging(argList);
 
 		switch (args[0]) {
-		case "client":
-			mainClient(argList);
-			break;
-		case "broker":
-			mainBroker(argList);
-			break;
 		case "dbscript":
 			mainDbScript(argList);
 			break;
 		default:
-			showHelpAndExit();
-			return;
+			try {
+				String config = getConfig(argList);
+				System.exit(startScenario(args[0], config));
+			} catch (Exception e) {
+				showHelpAndExit();
+			}
 		}
 
+	}
+
+	private static String getConfig(Map<String, String> argList) throws Exception {
+		String config = argList.remove("config");
+
+		if (!argList.isEmpty()) {
+			throw new Exception("Parameters not understood " + argList);
+		}
+
+		if (config == null) {
+			throw new Exception("Missing Parameter -config");
+		}
+
+		return config;
+	}
+
+	private static int startScenario(String scenarioName, String config) {
+		if (scenarioName.equals("broker"))
+			return mainBroker(config);
+		else
+			return mainClient(scenarioName, config);
 	}
 
 	private static void initLogging(Map<String, String> argList) throws IOException {
@@ -49,32 +68,13 @@ public class Main {
 		}
 	}
 
-	private static void mainClient(Map<String, String> argList) {
-		String config = argList.remove("config");
-
-		if (!argList.isEmpty()) {
-			System.out.println("Parameters not understood " + argList);
-		}
-
-		if (config == null) {
-			System.out.println("Missing Parameter -config");
-		}
-
+	private static int mainClient(String scenarioName, String config) {
 		ClientMain clientMain = new ClientMain();
 		clientMain.run(config);
+		return 0;
 	}
 
-	private static int mainBroker(Map<String, String> argList) {
-		String config = argList.remove("config");
-
-		if (!argList.isEmpty()) {
-			System.out.println("Parameters not understood " + argList);
-		}
-
-		if (config == null) {
-			System.out.println("Missing Parameter -config");
-		}
-
+	private static int mainBroker(String config) {
 		BrokerMain main = new BrokerMain();
 		return main.run(config);
 	}

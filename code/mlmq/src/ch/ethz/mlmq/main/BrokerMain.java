@@ -3,12 +3,12 @@ package ch.ethz.mlmq.main;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.common.CommandFileHandler;
+import ch.ethz.mlmq.common.CommandListener;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.BrokerCommandFileHandler;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.BrokerImpl;
-import ch.ethz.mlmq.server.CommandListener;
 import ch.ethz.mlmq.testrun.TestRunManager;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
@@ -18,7 +18,7 @@ public class BrokerMain implements CommandListener {
 
 	private BrokerConfiguration config;
 	private BrokerImpl broker;
-	private BrokerCommandFileHandler commandFileHandler;
+	private CommandFileHandler commandFileHandler;
 	private TestRunManager testScenarioMgr;
 
 	public int run(String brokerConfigurationFile) {
@@ -35,7 +35,7 @@ public class BrokerMain implements CommandListener {
 			logger.info("Broker started");
 
 			logger.info("CommandFileHandler...");
-			commandFileHandler = new BrokerCommandFileHandler(config.getCommandoFilePath(), config.getCommandFileCheckIntervall(), this);
+			commandFileHandler = new CommandFileHandler(config.getCommandoFilePath(), config.getCommandFileCheckIntervall(), this);
 			commandFileHandler.start();
 			logger.info("CommandFileHandler started");
 
@@ -55,13 +55,13 @@ public class BrokerMain implements CommandListener {
 		logger.info("BrokerCommandFile - onCommand [" + command + "]");
 
 		command = command.toLowerCase();
-		if (command.contains(BrokerCommandFileHandler.COMMAND_SHUTDOWN)) {
+		if (command.contains(CommandFileHandler.COMMAND_SHUTDOWN)) {
 			doShutdown();
 			return;
-		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_STACKTRACE)) {
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_STACKTRACE)) {
 			LoggerUtil.logStackTrace(logger);
 			return;
-		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_MEMORY)) {
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_MEMORY)) {
 			LoggerUtil.logMemory(logger);
 			return;
 		} else {

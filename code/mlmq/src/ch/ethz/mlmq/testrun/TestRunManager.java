@@ -48,22 +48,16 @@ public class TestRunManager {
 	}
 
 	private void runTestRun1(ClientConfiguration config) throws IOException {
-
-		// TODO configurable
-		// this configures how long this test is running
-		long shutdownDelay = 1 * 60 * 1000;
-		// TODO configurable
-		int numMessages = 100000;
-		// TODO configurable
-		long waitTimeBetweenMessages = 5;
-
 		if (client != null) {
-			TestRunSimpleSend clientSendTest = new TestRunSimpleSend(client, config, numMessages, waitTimeBetweenMessages);
+			TestRunSimpleSend clientSendTest = new TestRunSimpleSend(client, config);
 			clientSendTest.run();
 		} else {
+			// TODO configurable
+			// this configures how long this test is running
+			long shutdownDelay = 1 * 60 * 1000;
+
 			BrokerTestRunSimpleShutdown brokerTestRun = new BrokerTestRunSimpleShutdown(broker, shutdownDelay);
 			brokerTestRun.run();
 		}
-
 	}
 }

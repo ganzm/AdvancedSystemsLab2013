@@ -19,11 +19,11 @@ public class TestRunSimpleSend extends ClientTestRun {
 
 	private final Client client;
 
-	public TestRunSimpleSend(Client client, ClientConfiguration config, int numMessages, long waitTimeBetweenMessages) {
+	public TestRunSimpleSend(Client client, ClientConfiguration config) {
 		this.client = client;
 		this.config = config;
-		this.numMessages = numMessages;
-		this.waitTimeBetweenMessages = waitTimeBetweenMessages;
+		this.numMessages = config.getNumMessages();
+		this.waitTimeBetweenMessages = config.getWaitTimeBetweenMessages();
 	}
 
 	@Override
