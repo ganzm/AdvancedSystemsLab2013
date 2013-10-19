@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.common;
+package ch.ethz.mlmq.exception;
 
 public class InvalidConfigurationException extends Exception {
 

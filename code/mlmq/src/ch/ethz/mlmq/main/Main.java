@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.common.Initializer;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.Scenario;
-import ch.ethz.mlmq.scenario.ScenarioFinder;
 
 public class Main {
+
 	private static final Logger logger = Logger.getLogger(Main.class.getSimpleName());
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
 			showHelpAndExit();
 			return;
@@ -27,40 +28,35 @@ public class Main {
 		case "dbscript":
 			mainDbScript(argList);
 			break;
+		case "scenario":
+			mainScenario(argList);
+			break;
 		default:
-			try {
-				ScenarioFinder f = new ScenarioFinder();
-				Scenario<?, ?> s = f.findScenario(args[0]);
-				System.exit(startScenario(s, getConfig(argList)));
-			} catch (Exception e) {
-				System.out.println("Undefinded scenario " + args[0] + "\n\n");
-				showHelpAndExit();
-			}
+			showHelpAndExit();
+			return;
 		}
 
 	}
 
-	private static String getConfig(Map<String, String> argList) throws Exception {
-		String config = argList.remove("config");
+	private static void mainScenario(Map<String, String> argList) throws Exception {
+		String configFilePath = argList.remove("config");
 
 		if (!argList.isEmpty()) {
-			throw new Exception("Parameters not understood " + argList);
+			System.out.println("Parameters not understood " + argList);
 		}
 
-		if (config == null) {
-			throw new Exception("Missing Parameter -config");
+		if (configFilePath == null) {
+			System.out.println("Missing Parameter -config");
 		}
 
-		return config;
-	}
+		Initializer initializer = new Initializer();
+		Scenario scenario = initializer.initScenario(configFilePath);
 
-	private static int startScenario(Scenario<?, ?> scenario, String config) {
+		scenario.init();
 		try {
-			scenario.start(config);
-			return 0;
-		} catch (Exception e) {
-			logger.severe("Exception: " + e.getStackTrace());
-			return -1;
+			scenario.run();
+		} finally {
+			scenario.shutdown();
 		}
 	}
 
@@ -103,9 +99,9 @@ public class Main {
 	private static void showHelpAndExit() {
 
 		//@formatter:off
-		System.out.println("usage: java -jar target.jar <scenario>\n");
-		System.out.println("Scenarios:");
-		System.out.println("\t<any class in ch.ethz.mlmq.scenario.scenarios package>\tStarts an instance"
+		System.out.println("usage: java -jar target.jar <type>\n");
+		System.out.println("Types:");
+		System.out.println("\tscenario\tStarts a client or ab broker (depending on config)"
 				+ "\n\t\t\t-config [ConfigFilePath] Configuration Property file"
 				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
 				);

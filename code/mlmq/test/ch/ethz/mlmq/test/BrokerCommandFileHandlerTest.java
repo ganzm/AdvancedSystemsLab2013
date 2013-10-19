@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import ch.ethz.mlmq.common.CommandFileHandler;
-import ch.ethz.mlmq.common.CommandListener;
+import ch.ethz.mlmq.command.CommandFileHandler;
+import ch.ethz.mlmq.command.CommandListener;
 import ch.ethz.mlmq.logging.LoggerUtil;
 
 /**

@@ -11,6 +11,7 @@ import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.ClientConnection;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
@@ -33,25 +34,57 @@ public class ClientImpl implements Client {
 	private static final Logger logger = Logger.getLogger(ClientImpl.class.getSimpleName());
 
 	private ClientDto registeredAs;
-	private BrokerDto defaultBroker;
+
+	/**
+	 * Broker where we are connected to
+	 */
+	private BrokerDto broker;
 	private ClientConnection connection;
 
 	private final String name;
 	private ClientConfiguration config;
 
-	public ClientImpl(String name, BrokerDto defaultBroker, long responseTimeoutTime) throws IOException {
+	int numberOfInitialReconnects = -1;
+
+	public ClientImpl(String name, BrokerDto broker, long responseTimeoutTime) {
 		this.name = name;
-		this.defaultBroker = defaultBroker;
-		this.connection = new ClientConnection(defaultBroker.getHost(), defaultBroker.getPort(), responseTimeoutTime);
+		this.broker = broker;
+		this.connection = new ClientConnection(broker.getHost(), broker.getPort(), responseTimeoutTime);
 	}
 
-	public ClientImpl(ClientConfiguration config) throws IOException {
+	public ClientImpl(ClientConfiguration config) {
 		this(config.getName(), new BrokerDto(config.getBrokerHost(), config.getBrokerPort()), config.getResponseTimeoutTime());
 		this.config = config;
 	}
 
 	public void init() throws IOException {
-		connection.connect();
+
+		if (numberOfInitialReconnects <= 0) {
+			numberOfInitialReconnects = Integer.MAX_VALUE;
+		}
+
+		for (int i = 0; i < numberOfInitialReconnects && !connection.isConnected(); i++) {
+
+			if (i != 0) {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					logger.fine("Interrupted Exception - ignore me");
+				}
+			}
+
+			try {
+				logger.fine("Try to connect for the " + (i + 1) + "th time");
+				connection.connect();
+			} catch (IOException ex) {
+				logger.warning("Exception while connecting to " + broker);
+				logger.warning(LoggerUtil.getStackTraceString(ex));
+			}
+		}
+
+		if (!connection.isConnected()) {
+			throw new IOException("Could not establish connection to " + broker);
+		}
 	}
 
 	@Override
@@ -65,7 +98,7 @@ public class ClientImpl implements Client {
 	}
 
 	private Response sendRequest(Request request) throws IOException {
-		return sendRequestToBroker(request, defaultBroker);
+		return sendRequestToBroker(request, broker);
 	}
 
 	/**

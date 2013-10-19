@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.test.nio;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.junit.Assert;
@@ -11,6 +12,7 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.nio.ByteBufferPool;
 import ch.ethz.mlmq.nio.CloseableByteBuffer;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.util.ConfigurationUtil;
 
 public class ByteBufferPoolTest {
 
@@ -23,7 +25,7 @@ public class ByteBufferPoolTest {
 	}
 
 	@Test
-	public void testByteBufferPool() {
+	public void testByteBufferPool() throws IOException {
 		logger.info("Test ByteBuffer");
 		BrokerConfiguration config = getTestConfig();
 		ByteBufferPool pool = new ByteBufferPool(config);
@@ -44,12 +46,9 @@ public class ByteBufferPoolTest {
 		logger.info("Test ByteBuffer finished");
 	}
 
-	private BrokerConfiguration getTestConfig() {
-		return new BrokerConfiguration() {
-			@Override
-			public int getMaxMessageSize() {
-				return bufferSize;
-			}
-		};
+	private BrokerConfiguration getTestConfig() throws IOException {
+		Properties props = ConfigurationUtil.loadPropertiesFromJar("brokerconfig.properties");
+		props.put(BrokerConfiguration.MAX_MESSAGE_SIZE, bufferSize + "");
+		return new BrokerConfiguration(props);
 	}
 }

@@ -43,7 +43,7 @@ public class NetworkInterfaceTest {
 
 	@Before
 	public void before() throws IOException, MlmqException {
-		config = new BrokerConfiguration();
+		config = BrokerConfiguration.loadFromJar("brokerconfig.properties");
 
 		setupNetworkInterface();
 		setupClient();

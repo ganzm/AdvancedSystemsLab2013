@@ -2,16 +2,15 @@ package ch.ethz.mlmq.scenario;
 
 import java.util.logging.Logger;
 
-import ch.ethz.mlmq.scenario.scenarios.SimpleShutdownBroker;
-
+@Deprecated
 public class ScenarioFinder {
+	private static final Logger logger = Logger.getLogger(ScenarioFinder.class.getSimpleName());
 
-	private final Logger logger = Logger.getLogger(ScenarioFinder.class.getSimpleName());
-
-	public Scenario<?, ?> findScenario(String scenarioName) throws Exception {
-		String scenarioPkgName = SimpleShutdownBroker.class.getPackage().getName();
-		logger.info("Loading Scenario class " + scenarioPkgName + "." + scenarioName);
-		Class<?> c = Class.forName(scenarioPkgName + "." + scenarioName);
-		return (Scenario<?, ?>) c.newInstance();
+	public static Scenario findScenario(String scenarioName) throws Exception {
+		String packageName = "ch.ethz.mlmq.scenario";
+		String fullName = packageName + "." + scenarioName;
+		logger.info("Find scenario " + fullName);
+		Class<?> c = Class.forName(fullName);
+		return (Scenario) c.newInstance();
 	}
 }
