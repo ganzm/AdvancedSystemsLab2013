@@ -3,16 +3,12 @@ package ch.ethz.mlmq.main;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import ch.ethz.mlmq.common.CommandFileHandler;
-import ch.ethz.mlmq.common.CommandListener;
 import ch.ethz.mlmq.exception.MlmqException;
-import ch.ethz.mlmq.logging.LoggerUtil;
-import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.BrokerImpl;
 import ch.ethz.mlmq.testrun.TestRunManager;
 
-public class BrokerMain extends RunningJar<BrokerConfiguration> implements CommandListener {
+public class BrokerMain extends RunningJar<BrokerConfiguration> {
 
 	static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
 
@@ -33,36 +29,17 @@ public class BrokerMain extends RunningJar<BrokerConfiguration> implements Comma
 	}
 
 	@Override
-	public void onCommand(String command) {
-		logger.info("BrokerCommandFile - onCommand [" + command + "]");
-
-		command = command.toLowerCase();
-		if (command.contains(CommandFileHandler.COMMAND_SHUTDOWN)) {
-			doShutdown();
-			return;
-		} else if (command.contains(CommandFileHandler.COMMAND_LOG_STACKTRACE)) {
-			LoggerUtil.logStackTrace(logger);
-			return;
-		} else if (command.contains(CommandFileHandler.COMMAND_LOG_MEMORY)) {
-			LoggerUtil.logMemory(logger);
-			return;
-		} else {
-			logger.info("BrokerCommand unexpected command [" + command + "]");
-		}
+	public boolean processCommand(String command) {
+		// TODO: process specific commands (YAGNI??)
+		return false;
 	}
 
-	private void doShutdown() {
-		logger.info("Doing Broker shutdown...");
-
-		commandFileHandler.stop();
-
+	protected void executeShutdown() {
 		broker.shutdown();
-
-		PerformanceLoggerManager.shutDown();
 	}
 
 	@Override
-	protected void initConfig(String configurationFile) throws IOException {
-		setConfig(new BrokerConfiguration(getProperties(configurationFile)));
+	protected BrokerConfiguration initConfig(String configurationFile) throws IOException {
+		return new BrokerConfiguration(getProperties(configurationFile));
 	}
 }

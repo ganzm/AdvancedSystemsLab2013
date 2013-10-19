@@ -14,6 +14,16 @@ import ch.ethz.mlmq.util.ConfigurationUtil;
 
 public abstract class RunningJar<T extends Configuration> implements CommandListener {
 
+	protected abstract T initConfig(String configurationFile) throws InvalidConfigurationException, IOException;
+
+	protected abstract boolean processCommand(String command);
+
+	protected abstract void doStartup() throws Exception;
+
+	protected abstract void doRun() throws Exception;
+
+	protected abstract void executeShutdown() throws Exception;
+
 	private static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
 	protected CommandFileHandler commandFileHandler;
 	private T config;
@@ -39,15 +49,13 @@ public abstract class RunningJar<T extends Configuration> implements CommandList
 		this.config = config;
 	}
 
-	protected abstract void initConfig(String configurationFile) throws InvalidConfigurationException, IOException;
-
 	protected T getConfig() {
 		return config;
 	}
 
 	public int run(String configurationFile) {
 		try {
-			initConfig(configurationFile);
+			setConfig(initConfig(configurationFile));
 			initPerformanceLog(getConfig());
 
 			logger.info("Starting " + getName());
@@ -70,8 +78,38 @@ public abstract class RunningJar<T extends Configuration> implements CommandList
 		return msg;
 	}
 
-	protected abstract void doStartup() throws Exception;
+	public void onCommand(String command) {
+		logger.info("CommandFile - onCommand [" + command + "]");
 
-	protected abstract void doRun() throws Exception;
+		command = command.toLowerCase();
+		if (command.contains(CommandFileHandler.COMMAND_SHUTDOWN)) {
+			doShutdown();
+			return;
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_STACKTRACE)) {
+			LoggerUtil.logStackTrace(logger);
+			return;
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_MEMORY)) {
+			LoggerUtil.logMemory(logger);
+			return;
+		} else {
+			if (!processCommand(command))
+				logger.info("BrokerCommand unexpected command [" + command + "]");
+		}
+	}
+
+	private void doShutdown() {
+		logger.info("Doing Broker shutdown...");
+
+		commandFileHandler.stop();
+
+		try {
+			executeShutdown();
+		} catch (Exception e) {
+			logger.severe("Error while shutting down " + getName() + " " + LoggerUtil.getStackTraceString(e));
+
+		}
+
+		PerformanceLoggerManager.shutDown();
+	}
 
 }
