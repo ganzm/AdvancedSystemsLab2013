@@ -1,53 +1,35 @@
 package ch.ethz.mlmq.main;
 
-import java.util.Properties;
+import java.io.IOException;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.common.CommandFileHandler;
 import ch.ethz.mlmq.common.CommandListener;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.BrokerImpl;
 import ch.ethz.mlmq.testrun.TestRunManager;
-import ch.ethz.mlmq.util.ConfigurationUtil;
 
-public class BrokerMain implements CommandListener {
+public class BrokerMain extends RunningJar<BrokerConfiguration> implements CommandListener {
 
-	private static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
+	static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
 
-	private BrokerConfiguration config;
 	private BrokerImpl broker;
-	private CommandFileHandler commandFileHandler;
 	private TestRunManager testScenarioMgr;
 
-	public int run(String brokerConfigurationFile) {
+	@Override
+	protected void doRun() throws MlmqException {
+		// TODO make configurable
+		testScenarioMgr = new TestRunManager(broker, 1);
+		testScenarioMgr.runTest();
+	}
 
-		try {
-			Properties props = ConfigurationUtil.loadPropertiesFromFile(brokerConfigurationFile);
-			config = new BrokerConfiguration(props);
-			broker = new BrokerImpl(config);
-
-			logger.info("Configuring Performance Logger");
-			PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
-			logger.info("Starting Broker...");
-			broker.startup();
-			logger.info("Broker started");
-
-			logger.info("CommandFileHandler...");
-			commandFileHandler = new CommandFileHandler(config.getCommandoFilePath(), config.getCommandFileCheckIntervall(), this);
-			commandFileHandler.start();
-			logger.info("CommandFileHandler started");
-
-			// TODO make configurable
-			testScenarioMgr = new TestRunManager(broker, 1);
-			testScenarioMgr.runTest();
-
-			return 0;
-		} catch (Exception e) {
-			logger.severe("Exception " + LoggerUtil.getStackTraceString(e));
-			return -1;
-		}
+	@Override
+	protected void doStartup() throws MlmqException {
+		broker = new BrokerImpl(getConfig());
+		broker.startup();
 	}
 
 	@Override
@@ -77,5 +59,10 @@ public class BrokerMain implements CommandListener {
 		broker.shutdown();
 
 		PerformanceLoggerManager.shutDown();
+	}
+
+	@Override
+	protected void initConfig(String configurationFile) throws IOException {
+		setConfig(new BrokerConfiguration(getProperties(configurationFile)));
 	}
 }

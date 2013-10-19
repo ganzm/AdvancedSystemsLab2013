@@ -5,8 +5,9 @@ import java.util.Properties;
 import ch.ethz.mlmq.common.BalancedScenarioConfiguration;
 import ch.ethz.mlmq.common.InvalidConfigurationException;
 import ch.ethz.mlmq.logging.PerformanceLoggerConfig;
+import ch.ethz.mlmq.server.Configuration;
 
-public class ClientConfiguration {
+public class ClientConfiguration implements Configuration {
 
 	public static final String CLIENT_NAME = "client.name";
 	public static final String RESPONSE_TIMEOUTTIME = "response.timeout";

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.server.BrokerConfiguration;
 
 public class Main {
 	private static final Logger logger = Logger.getLogger(Main.class.getSimpleName());
@@ -75,7 +76,7 @@ public class Main {
 	}
 
 	private static int mainBroker(String config) {
-		BrokerMain main = new BrokerMain();
+		RunningJar<BrokerConfiguration> main = new BrokerMain();
 		return main.run(config);
 	}
 
