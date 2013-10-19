@@ -17,17 +17,15 @@ public class TestRunSimpleSend extends ClientTestRun {
 
 	private final long waitTimeBetweenMessages;
 
-	private final Client client;
-
 	public TestRunSimpleSend(Client client, ClientConfiguration config) {
-		this.client = client;
+		super(client);
 		this.config = config;
 		this.numMessages = config.getNumMessages();
 		this.waitTimeBetweenMessages = config.getWaitTimeBetweenMessages();
 	}
 
 	@Override
-	public void run() throws IOException {
+	public void run(Client client) throws IOException {
 		client.register();
 		QueueDto queue = client.createQueue("QueueOf" + config.getName());
 

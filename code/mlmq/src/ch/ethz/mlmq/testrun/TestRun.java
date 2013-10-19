@@ -1,16 +1,20 @@
 package ch.ethz.mlmq.testrun;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class TestRun {
+public abstract class TestRun<T> {
 
 	private final Timer timer = new Timer(true);
 
 	private final ConcurrentHashMap<String, TimerTask> activetimerTasks = new ConcurrentHashMap<>();
 
-	public TestRun() {
+	private final T sut;
+
+	public TestRun(T sut) {
+		this.sut = sut;
 	}
 
 	protected void startTimer(final String name, long timeout) {
@@ -36,12 +40,16 @@ public abstract class TestRun {
 
 	private void timedOut(String name) {
 		activetimerTasks.remove(name);
-		onTimeout(name);
+		onTimeout(name, sut);
 	}
 
-	abstract void run() throws Exception;
+	public void run() throws IOException {
+		run(sut);
+	}
 
-	protected void onTimeout(String name) {
+	protected abstract void run(T sut) throws IOException;
+
+	protected void onTimeout(String name, T sut) {
 
 	}
 }

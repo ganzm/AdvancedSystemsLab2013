@@ -8,20 +8,19 @@ public class BrokerTestRunSimpleShutdown extends BrokerTestRun {
 	private final Logger logger = Logger.getLogger(BrokerTestRunSimpleShutdown.class.getSimpleName());
 
 	private final long shutdownDelay;
-	private final Broker broker;
 
 	public BrokerTestRunSimpleShutdown(Broker broker, long shutdownDelay) {
-		this.broker = broker;
+		super(broker);
 		this.shutdownDelay = shutdownDelay;
 	}
 
 	@Override
-	void run() {
+	protected void run(Broker broker) {
 		super.startTimer("timer", shutdownDelay);
 	}
 
 	@Override
-	protected void onTimeout(String name) {
+	protected void onTimeout(String name, Broker broker) {
 		logger.info("Timeout " + name);
 		broker.shutdown();
 	}
