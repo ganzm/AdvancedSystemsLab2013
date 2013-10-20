@@ -10,7 +10,7 @@ import ch.ethz.mlmq.util.ConfigurationUtil;
 /**
  * Holds configuration like database connection information, tuning parameters, etc for one single broker
  */
-public class BrokerConfiguration {
+public class BrokerConfiguration implements Configuration {
 
 	public static final String LISTENPORT2 = "listenport";
 	public static final String WORKERTHREAD_COUNT = "workerthread.count";
@@ -132,6 +132,21 @@ public class BrokerConfiguration {
 
 	public long getCommandFileCheckIntervall() {
 		return commandoFileCheckIntervall;
+	}
+
+	@Override
+	public String getName() {
+		// TODO: make this dynamic?
+		return "broker";
+	}
+
+	/**
+	 * This configures how long this test is running
+	 * 
+	 * @return
+	 */
+	public long getShutdownDelay() {
+		return 1 * 60 * 1000;
 	}
 
 }

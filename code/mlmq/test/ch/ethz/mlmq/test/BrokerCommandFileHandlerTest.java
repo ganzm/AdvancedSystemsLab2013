@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ch.ethz.mlmq.common.CommandFileHandler;
+import ch.ethz.mlmq.common.CommandListener;
 import ch.ethz.mlmq.logging.LoggerUtil;
-import ch.ethz.mlmq.server.BrokerCommandFileHandler;
-import ch.ethz.mlmq.server.CommandListener;
 
 /**
  * TODO stabilize UnitTest fails from time to time on the build server
@@ -23,7 +23,7 @@ public class BrokerCommandFileHandlerTest {
 
 	private static final Logger logger = Logger.getLogger(BrokerCommandFileHandlerTest.class.getSimpleName());
 
-	private BrokerCommandFileHandler fileHandler;
+	private CommandFileHandler fileHandler;
 
 	private String pathToFileToWatch = "test" + File.separator + "blub" + File.separator + "commando.txt";
 
@@ -47,7 +47,7 @@ public class BrokerCommandFileHandlerTest {
 			}
 		};
 
-		fileHandler = new BrokerCommandFileHandler(pathToFileToWatch, fileCheckIntervall, commandListener);
+		fileHandler = new CommandFileHandler(pathToFileToWatch, fileCheckIntervall, commandListener);
 		fileHandler.start();
 	}
 
@@ -66,20 +66,20 @@ public class BrokerCommandFileHandlerTest {
 		File file = new File(pathToFileToWatch);
 
 		try (FileOutputStream fout = new FileOutputStream(file)) {
-			fout.write(BrokerCommandFileHandler.COMMAND_SHUTDOWN.getBytes());
+			fout.write(CommandFileHandler.COMMAND_SHUTDOWN.getBytes());
 			Thread.sleep(1000);
 		}
 
-		Assert.assertEquals(BrokerCommandFileHandler.COMMAND_SHUTDOWN, receivedCommand);
+		Assert.assertEquals(CommandFileHandler.COMMAND_SHUTDOWN, receivedCommand);
 
 		// and again
 		receivedCommand = null;
 
 		try (FileOutputStream fout = new FileOutputStream(file)) {
-			fout.write(BrokerCommandFileHandler.COMMAND_LOG_STACKTRACE.getBytes());
+			fout.write(CommandFileHandler.COMMAND_LOG_STACKTRACE.getBytes());
 			Thread.sleep(1000);
 		}
 
-		Assert.assertEquals(BrokerCommandFileHandler.COMMAND_LOG_STACKTRACE, receivedCommand);
+		Assert.assertEquals(CommandFileHandler.COMMAND_LOG_STACKTRACE, receivedCommand);
 	}
 }
