@@ -136,7 +136,6 @@ public class BrokerConfiguration implements Configuration {
 
 	@Override
 	public String getName() {
-		// TODO: make this dynamic?
 		return "broker";
 	}
 
@@ -146,6 +145,7 @@ public class BrokerConfiguration implements Configuration {
 	 * @return
 	 */
 	public long getShutdownDelay() {
+		// TODO this is a scenario configuration not a broker configuration
 		return 1 * 60 * 1000;
 	}
 

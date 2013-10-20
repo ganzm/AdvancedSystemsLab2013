@@ -27,7 +27,14 @@ public class ClientConfiguration implements Configuration {
 	protected String commandoFilePath = "./commando.txt";
 	protected long commandoFileCheckIntervall = 5000;
 
+	/**
+	 * TODO this is Scenario config
+	 */
 	protected int numMessages = 100000;
+
+	/**
+	 * TODO this is Scenario config
+	 */
 	protected long waitTimeBetweenMessages = 5;
 
 	/**
