@@ -140,4 +140,13 @@ public class BrokerConfiguration implements Configuration {
 		return "broker";
 	}
 
+	/**
+	 * This configures how long this test is running
+	 * 
+	 * @return
+	 */
+	public long getShutdownDelay() {
+		return 1 * 60 * 1000;
+	}
+
 }

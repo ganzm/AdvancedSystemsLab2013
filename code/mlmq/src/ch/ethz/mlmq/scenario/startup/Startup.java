@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.main;
+package ch.ethz.mlmq.scenario.startup;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -9,31 +9,36 @@ import ch.ethz.mlmq.common.CommandListener;
 import ch.ethz.mlmq.common.InvalidConfigurationException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
+import ch.ethz.mlmq.scenario.Startable;
 import ch.ethz.mlmq.server.Configuration;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
-public abstract class RunningJar<T extends Configuration> implements CommandListener {
+public abstract class Startup<T_SUT extends Startable, T_CONFIG extends Configuration> implements CommandListener {
 
-	protected abstract T initConfig(String configurationFile) throws InvalidConfigurationException, IOException;
+	protected abstract T_CONFIG initConfig(String configurationFile) throws InvalidConfigurationException, IOException;
 
-	protected abstract boolean processCommand(String command);
+	protected boolean processCommand(String command) {
+		return false;
+	}
 
-	protected abstract void doStartup() throws Exception;
+	protected abstract T_SUT initSut() throws Exception;
 
-	protected abstract void doRun() throws Exception;
+	protected void doStart() throws Exception {
+	}
 
 	protected abstract void executeShutdown() throws Exception;
 
-	private static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(BrokerStartup.class.getSimpleName());
 	protected CommandFileHandler commandFileHandler;
-	private T config;
+	private T_CONFIG config;
+	private T_SUT sut;
 
 	protected Properties getProperties(String configurationFile) throws IOException {
 		Properties props = ConfigurationUtil.loadPropertiesFromFile(configurationFile);
 		return props;
 	}
 
-	protected void initPerformanceLog(T config) {
+	protected void initPerformanceLog(T_CONFIG config) {
 		logger.info("Configuring Performance Logger");
 		PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
 	}
@@ -45,37 +50,26 @@ public abstract class RunningJar<T extends Configuration> implements CommandList
 		logger.info("CommandFileHandler started");
 	}
 
-	protected void setConfig(T config) {
+	protected void setConfig(T_CONFIG config) {
 		this.config = config;
 	}
 
-	protected T getConfig() {
-		return config;
-	}
+	public void start(String configurationFile) throws Exception {
+		setConfig(initConfig(configurationFile));
+		initPerformanceLog(getConfig());
 
-	public int run(String configurationFile) {
-		try {
-			setConfig(initConfig(configurationFile));
-			initPerformanceLog(getConfig());
+		logger.info("Starting " + getName());
+		this.sut = initSut();
+		logger.info("Started " + getName());
 
-			logger.info("Starting " + getName());
-			doStartup();
-			logger.info("Started " + getName());
+		initCommandFileHandler();
 
-			initCommandFileHandler();
-
-			doRun();
-
-			return 0;
-		} catch (Exception e) {
-			logger.severe("Exception " + LoggerUtil.getStackTraceString(e));
-			return -1;
-		}
+		sut.startup();
+		doStart();
 	}
 
 	private String getName() {
-		String msg = this.getClass().getSimpleName() + " " + getConfig().getName();
-		return msg;
+		return this.getClass().getSimpleName() + " " + getConfig().getName();
 	}
 
 	public void onCommand(String command) {
@@ -110,6 +104,14 @@ public abstract class RunningJar<T extends Configuration> implements CommandList
 		}
 
 		PerformanceLoggerManager.shutDown();
+	}
+
+	public T_CONFIG getConfig() {
+		return config;
+	}
+
+	public T_SUT getSut() {
+		return sut;
 	}
 
 }
