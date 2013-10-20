@@ -65,4 +65,31 @@ public class ScenarioConfigurationTest {
 		BalancedScenarioConfiguration s = new BalancedScenarioConfiguration(m, 0, "");
 		Assert.assertEquals(8099, s.getBrokerPort());
 	}
+
+	@Test
+	public void testMyPosition() throws InvalidConfigurationException {
+		String m1 = "special:127.0.0.1,127.0.0.2,127.0.0.3;client:127.0.0.1";
+		BalancedScenarioConfiguration s1 = new BalancedScenarioConfiguration(m1, 0, "special");
+		Assert.assertEquals(0, s1.getMyPosition());
+		BalancedScenarioConfiguration s2 = new BalancedScenarioConfiguration(m1, 1, "special");
+		Assert.assertEquals(1, s2.getMyPosition());
+		BalancedScenarioConfiguration s3 = new BalancedScenarioConfiguration(m1, 2, "special");
+		Assert.assertEquals(2, s3.getMyPosition());
+
+		Assert.assertEquals(3, s1.getTotalLikeMe());
+		Assert.assertEquals(3, s2.getTotalLikeMe());
+		Assert.assertEquals(3, s3.getTotalLikeMe());
+
+		m1 = "client:127.0.0.1;special:127.0.0.1,127.0.0.2,127.0.0.3";
+		s1 = new BalancedScenarioConfiguration(m1, 0, "special");
+		Assert.assertEquals(0, s1.getMyPosition());
+		s2 = new BalancedScenarioConfiguration(m1, 1, "special");
+		Assert.assertEquals(1, s2.getMyPosition());
+		s3 = new BalancedScenarioConfiguration(m1, 2, "special");
+		Assert.assertEquals(2, s3.getMyPosition());
+
+		Assert.assertEquals(3, s1.getTotalLikeMe());
+		Assert.assertEquals(3, s2.getTotalLikeMe());
+		Assert.assertEquals(3, s3.getTotalLikeMe());
+	}
 }
