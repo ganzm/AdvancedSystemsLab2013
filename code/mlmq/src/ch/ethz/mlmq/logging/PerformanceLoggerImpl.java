@@ -47,7 +47,7 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 		write(logMessage);
 	}
 
-	protected void write(String logMessage) {
+	protected synchronized void write(String logMessage) {
 		try {
 			if (writer == null) {
 				initWriter();

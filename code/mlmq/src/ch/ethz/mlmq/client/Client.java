@@ -8,11 +8,12 @@ import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.scenario.Startable;
 
 /**
  * The client interface
  */
-public interface Client extends Closeable {
+public interface Client extends Closeable, Startable {
 
 	/**
 	 * Initializes the client and connects it to the Broker
@@ -130,4 +131,5 @@ public interface Client extends Closeable {
 	 * @throws IOException
 	 */
 	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException;
+
 }

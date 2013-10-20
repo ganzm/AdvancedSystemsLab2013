@@ -13,13 +13,16 @@ dbscript -url jdbc:postgresql://localhost:5432 -db mlmq -user postgres -password
 Creates an empty database
 dbscript -url jdbc:postgresql://localhost:5432 -db mlmq -user postgres -password postgres -createDatabase -createTables
 
-Start a Broker
-Copy resource/brokerconfig.example.properties to resource/brokerconfig.properties and adjust to your needs. Then:
-broker -config resource/brokerconfig.properties
 
-Start a client
-Copy resource/clientconfig.example.properties to resource/clientconfig.properties and adjust to your needs. Then:
-client -config resource/clientconfig.properties
+Start a scenario (see class names of ch.ethz.mlmq.scenario.scenarios)
+--------------------------------------------------------------------
+Example for SimpleShutdownBroker:
+Copy resource/brokerconfig.example.properties to resource/config.properties and adjust to your needs. Then:
+SimpleShutdownBroker -config resource/config.properties
+
+Example for SimpleSendClient:
+Copy resource/clientconfig.example.properties to resource/config.properties and adjust to your needs. Then:
+SimpleSendClient -config resource/config.properties
 
 
 Some useful vm arguments

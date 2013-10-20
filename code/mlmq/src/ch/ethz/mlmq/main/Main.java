@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.scenario.Scenario;
+import ch.ethz.mlmq.scenario.ScenarioFinder;
 
 public class Main {
 	private static final Logger logger = Logger.getLogger(Main.class.getSimpleName());
@@ -22,20 +24,44 @@ public class Main {
 		initLogging(argList);
 
 		switch (args[0]) {
-		case "client":
-			mainClient(argList);
-			break;
-		case "broker":
-			mainBroker(argList);
-			break;
 		case "dbscript":
 			mainDbScript(argList);
 			break;
 		default:
-			showHelpAndExit();
-			return;
+			try {
+				ScenarioFinder f = new ScenarioFinder();
+				Scenario<?, ?> s = f.findScenario(args[0]);
+				System.exit(startScenario(s, getConfig(argList)));
+			} catch (Exception e) {
+				System.out.println("Undefinded scenario " + args[0] + "\n\n");
+				showHelpAndExit();
+			}
 		}
 
+	}
+
+	private static String getConfig(Map<String, String> argList) throws Exception {
+		String config = argList.remove("config");
+
+		if (!argList.isEmpty()) {
+			throw new Exception("Parameters not understood " + argList);
+		}
+
+		if (config == null) {
+			throw new Exception("Missing Parameter -config");
+		}
+
+		return config;
+	}
+
+	private static int startScenario(Scenario<?, ?> scenario, String config) {
+		try {
+			scenario.start(config);
+			return 0;
+		} catch (Exception e) {
+			logger.severe("Exception: " + e.getStackTrace());
+			return -1;
+		}
 	}
 
 	private static void initLogging(Map<String, String> argList) throws IOException {
@@ -47,36 +73,6 @@ public class Main {
 			LoggerUtil.initFromFile(loggerConfigFile);
 			logger.info("Logger initialized from " + loggerConfigFile);
 		}
-	}
-
-	private static void mainClient(Map<String, String> argList) {
-		String config = argList.remove("config");
-
-		if (!argList.isEmpty()) {
-			System.out.println("Parameters not understood " + argList);
-		}
-
-		if (config == null) {
-			System.out.println("Missing Parameter -config");
-		}
-
-		ClientMain clientMain = new ClientMain();
-		clientMain.run(config);
-	}
-
-	private static int mainBroker(Map<String, String> argList) {
-		String config = argList.remove("config");
-
-		if (!argList.isEmpty()) {
-			System.out.println("Parameters not understood " + argList);
-		}
-
-		if (config == null) {
-			System.out.println("Missing Parameter -config");
-		}
-
-		BrokerMain main = new BrokerMain();
-		return main.run(config);
 	}
 
 	private static Map<String, String> parseArgs(String[] args) {
@@ -107,14 +103,10 @@ public class Main {
 	private static void showHelpAndExit() {
 
 		//@formatter:off
-		System.out.println("usage: java -jar target.jar <type>\n");
-		System.out.println("Types:");
-		System.out.println("\tclient\tStarts a client instance"
-				+ "\n\t\t\t-config [ConfigFilePath] Client Configuration Property file"
-				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
-				);
-		System.out.println("\tbroker\tStarts a broker instance (for the middleware)"
-				+ "\n\t\t\t-config [ConfigFilePath] Broker Configuration Property file"
+		System.out.println("usage: java -jar target.jar <scenario>\n");
+		System.out.println("Scenarios:");
+		System.out.println("\t<any class in ch.ethz.mlmq.scenario.scenarios package>\tStarts an instance"
+				+ "\n\t\t\t-config [ConfigFilePath] Configuration Property file"
 				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
 				);
 		System.out.println("\tdbscript"
