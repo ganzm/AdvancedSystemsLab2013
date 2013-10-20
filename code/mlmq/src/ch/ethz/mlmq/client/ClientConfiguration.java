@@ -48,6 +48,8 @@ public class ClientConfiguration implements Configuration {
 	protected int numberOfConnectionAtempts = -1;
 
 	protected PerformanceLoggerConfig performanceLoggerConfig = new PerformanceLoggerConfig("log");
+	private int totalLikeMe;
+	private int myPosition;
 
 	public ClientConfiguration() {
 
@@ -59,14 +61,25 @@ public class ClientConfiguration implements Configuration {
 
 	private void initFromProps(Properties props) throws InvalidConfigurationException {
 		BalancedScenarioConfiguration scenario = new BalancedScenarioConfiguration(props.getProperty(SCENARIO_MAPPING), Integer.parseInt(props
-				.getProperty(SCENARIO_MYPOSITION)));
+				.getProperty(SCENARIO_MYPOSITION)), props.getProperty(SCENARIO_MYTYPE));
 		brokerHost = scenario.getBrokerHost();
 		brokerPort = scenario.getBrokerPort();
+		totalLikeMe = scenario.getTotalLikeMe();
+		myPosition = scenario.getMyPosition();
+
 		name = props.getProperty(SCENARIO_MYTYPE) + ": " + props.getProperty(CLIENT_NAME);
 		responseTimeoutTime = Long.parseLong(props.getProperty(RESPONSE_TIMEOUTTIME));
 		commandoFilePath = props.getProperty(COMMANDOFILE_PATH);
 		commandoFileCheckIntervall = Long.parseLong(props.getProperty(COMMANDOFILE_CHECKINTERVALL));
 		performanceLoggerConfig = new PerformanceLoggerConfig(props.getProperty(PERFORMANCELOGGER_PATH));
+	}
+
+	public int getTotalLikeMe() {
+		return totalLikeMe;
+	}
+
+	public int getMyPosition() {
+		return myPosition;
 	}
 
 	public String getBrokerHost() {
