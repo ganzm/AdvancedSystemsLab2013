@@ -21,7 +21,7 @@ public class PerformanceLoggerConfig {
 	}
 
 	public String getFileName() {
-		return getDirectoryPath() + File.separator + Thread.currentThread().getId() + "_" + count + ".log";
+		return getDirectoryPath() + File.separator + count + ".log";
 	}
 
 }

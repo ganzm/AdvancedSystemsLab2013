@@ -6,16 +6,11 @@ public class PerformanceLoggerManager {
 
 	private static final Logger julLogger = Logger.getLogger(PerformanceLoggerManager.class.getSimpleName());
 
-	private static ThreadLocal<PerformanceLogger> logger;
+	private static PerformanceLogger logger;
 
 	public static void configureLogger(PerformanceLoggerConfig loggerConfig) {
 		final PerformanceLoggerConfig config = loggerConfig;
-		logger = new ThreadLocal<PerformanceLogger>() {
-			@Override
-			protected PerformanceLogger initialValue() {
-				return new PerformanceLoggerImpl(config);
-			}
-		};
+		logger = new PerformanceLoggerImpl(config);
 	}
 
 	public static void shutDown() {
@@ -26,15 +21,10 @@ public class PerformanceLoggerManager {
 	 * disable performance logging
 	 */
 	public static void configureDisabled() {
-		logger = new ThreadLocal<PerformanceLogger>() {
+		logger = new PerformanceLogger() {
 			@Override
-			protected PerformanceLogger initialValue() {
-				return new PerformanceLogger() {
-					@Override
-					public void log(long executionTime, String type) {
-						julLogger.info("PerformanceLogger - ExecutionTime [" + executionTime + "]ms " + type);
-					}
-				};
+			public void log(long executionTime, String type) {
+				julLogger.info("PerformanceLogger - ExecutionTime [" + executionTime + "]ms " + type);
 			}
 		};
 	}
@@ -43,7 +33,7 @@ public class PerformanceLoggerManager {
 		if (logger == null) {
 			throw new RuntimeException("PerformanceLogger is not configured");
 		}
-		return logger.get();
+		return logger;
 	}
 
 }
