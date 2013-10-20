@@ -16,7 +16,6 @@ public class ClientMain extends RunningJar<ClientConfiguration> {
 	private static final Logger logger = Logger.getLogger(ClientMain.class.getSimpleName());
 
 	private Client client;
-	private TestRunManager testScenarioMgr;
 
 	protected ClientConfiguration initConfig(String configurationFile) throws InvalidConfigurationException, IOException {
 		return new ClientConfiguration(getProperties(configurationFile));
@@ -39,7 +38,7 @@ public class ClientMain extends RunningJar<ClientConfiguration> {
 		}
 		logger.info("Client started");
 
-		testScenarioMgr = new TestRunManager(client, config);
+		TestRunManager testScenarioMgr = new TestRunManager(client, config);
 		testScenarioMgr.runTest();
 	}
 

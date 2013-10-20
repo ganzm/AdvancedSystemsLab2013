@@ -1,8 +1,9 @@
-package ch.ethz.mlmq.testrun;
+package ch.ethz.mlmq.testrun.instances;
 
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.server.Broker;
+import ch.ethz.mlmq.testrun.BrokerTestRun;
 
 public class BrokerTestRunSimpleShutdown extends BrokerTestRun {
 	private final Logger logger = Logger.getLogger(BrokerTestRunSimpleShutdown.class.getSimpleName());

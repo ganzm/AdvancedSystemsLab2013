@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 
@@ -28,8 +29,7 @@ public class Main {
 			break;
 		default:
 			try {
-				String config = getConfig(argList);
-				System.exit(startScenario(args[0], config));
+				System.exit(startScenario(args[0], getConfig(argList)));
 			} catch (Exception e) {
 				showHelpAndExit();
 			}
@@ -70,9 +70,8 @@ public class Main {
 	}
 
 	private static int mainClient(String scenarioName, String config) {
-		ClientMain clientMain = new ClientMain();
-		clientMain.run(config);
-		return 0;
+		RunningJar<ClientConfiguration> main = new ClientMain();
+		return main.run(config);
 	}
 
 	private static int mainBroker(String config) {

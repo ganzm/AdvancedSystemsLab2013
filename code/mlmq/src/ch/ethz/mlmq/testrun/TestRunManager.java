@@ -6,6 +6,8 @@ import ch.ethz.mlmq.client.Client;
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.server.Broker;
+import ch.ethz.mlmq.testrun.instances.BrokerTestRunSimpleShutdown;
+import ch.ethz.mlmq.testrun.instances.TestRunSimpleSend;
 
 public class TestRunManager {
 
@@ -18,24 +20,24 @@ public class TestRunManager {
 	 */
 	private Broker broker = null;
 	private ClientConfiguration config;
-	private int testRunId;
+	private int testScenarioName;
 
 	public TestRunManager(Client client, ClientConfiguration config) {
 		this.client = client;
 		this.config = config;
 
 		// TODO wait for Config refactoring
-		this.testRunId = config.getTestScenario();
+		this.testScenarioName = config.getTestScenario();
 	}
 
 	public TestRunManager(Broker broker, int testRunId) {
 		this.broker = broker;
-		this.testRunId = testRunId;
+		this.testScenarioName = testRunId;
 	}
 
 	public void runTest() throws MlmqException {
 		try {
-			if (testRunId == 1) {
+			if (testScenarioName == 1) {
 				runTestRun1(config);
 			} else {
 				throw new MlmqException("Unknown TestScenario " + config.getTestScenario());

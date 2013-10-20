@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.testrun;
+package ch.ethz.mlmq.testrun.instances;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -7,6 +7,7 @@ import ch.ethz.mlmq.client.Client;
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.testrun.ClientTestRun;
 
 public class TestRunSimpleSend extends ClientTestRun {
 	private final Logger logger = Logger.getLogger(TestRunSimpleSend.class.getSimpleName());

@@ -13,12 +13,11 @@ public class BrokerMain extends RunningJar<BrokerConfiguration> {
 	static final Logger logger = Logger.getLogger(BrokerMain.class.getSimpleName());
 
 	private BrokerImpl broker;
-	private TestRunManager testScenarioMgr;
 
 	@Override
 	protected void doRun() throws MlmqException {
 		// TODO make configurable
-		testScenarioMgr = new TestRunManager(broker, 1);
+		TestRunManager testScenarioMgr = new TestRunManager(broker, 1);
 		testScenarioMgr.runTest();
 	}
 
