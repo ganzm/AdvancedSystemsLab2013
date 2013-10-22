@@ -42,12 +42,12 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 	}
 
 	@Override
-	public void log(long executionTime, String type) {
+	public synchronized void log(long executionTime, String type) {
 		String logMessage = String.format(LOG_FORMAT, executionTime, getCurrentDate().getTime(), type);
 		write(logMessage);
 	}
 
-	protected void write(String logMessage) {
+	protected synchronized void write(String logMessage) {
 		try {
 			if (writer == null) {
 				initWriter();
