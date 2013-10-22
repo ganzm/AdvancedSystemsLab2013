@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.test.nio;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.junit.Assert;
@@ -45,11 +46,8 @@ public class ByteBufferPoolTest {
 	}
 
 	private BrokerConfiguration getTestConfig() {
-		return new BrokerConfiguration() {
-			@Override
-			public int getMaxMessageSize() {
-				return bufferSize;
-			}
-		};
+		Properties props = new Properties();
+		props.put(BrokerConfiguration.MAX_MESSAGE_SIZE, bufferSize + "");
+		return new BrokerConfiguration(props);
 	}
 }

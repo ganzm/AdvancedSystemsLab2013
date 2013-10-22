@@ -35,13 +35,13 @@ public class ClientImpl implements Client {
 
 	private final String name;
 
-	public ClientImpl(String name, BrokerDto defaultBroker, long responseTimeoutTime) throws IOException {
+	public ClientImpl(String name, BrokerDto defaultBroker, long responseTimeoutTime) {
 		this.name = name;
 		this.defaultBroker = defaultBroker;
 		this.connection = new ClientConnection(defaultBroker.getHost(), defaultBroker.getPort(), responseTimeoutTime);
 	}
 
-	public ClientImpl(ClientConfiguration config) throws IOException {
+	public ClientImpl(ClientConfiguration config) {
 		this(config.getName(), new BrokerDto(config.getBrokerHost(), config.getBrokerPort()), config.getResponseTimeoutTime());
 	}
 

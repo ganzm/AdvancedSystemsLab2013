@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
 
+//TODO rename and move this class
 public class BrokerCommandFileHandler implements Runnable {
 
 	private static final Logger logger = Logger.getLogger(BrokerCommandFileHandler.class.getSimpleName());

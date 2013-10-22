@@ -4,50 +4,28 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import ch.ethz.mlmq.logging.PerformanceLoggerConfig;
+import ch.ethz.mlmq.common.BrokerScenarioMapping;
+import ch.ethz.mlmq.common.Configuration;
+import ch.ethz.mlmq.common.ScenarioMapping;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
 /**
  * Holds configuration like database connection information, tuning parameters, etc for one single broker
  */
-public class BrokerConfiguration {
+public class BrokerConfiguration extends Configuration {
 
-	public static final String LISTENPORT2 = "listenport";
-	public static final String WORKERTHREAD_COUNT = "workerthread.count";
-	public static final String DB_CONNECTIONPOOL_SIZE = "db.connectionpool.size";
-	public static final String DB_USERNAME = "db.username";
-	public static final String DB_PASSWORD = "db.password";
-	public static final String DB_URL = "db.url";
-	public static final String DB_NAME = "db.name";
-	public static final String REQUESTQUEUE_SIZE = "requestqueue.size";
-	public static final String MAX_MESSAGE_SIZE = "message.maxsize";
-	public static final String PERFORMANCELOGGER_PATH = "performancelogger.logfilepath";
-	public static final String COMMANDOFILE_PATH = "commandofile.path";
-	public static final String COMMANDOFILE_CHECKINTERVALL = "commandofile.checkintervall";
+	public static final String WORKERTHREAD_COUNT = "broker.workerthread.count";
+	public static final String REQUESTQUEUE_SIZE = "broker.requestqueue.size";
+	public static final String MAX_MESSAGE_SIZE = "broker.message.maxsize";
+	public static final String DB_CONNECTIONPOOL_SIZE = "broker.db.connectionpool.size";
 
-	protected int listenPort = 8099;
-	protected int workerThreadCount = 5;
-	protected int dbConnectionPoolSize = 3;
-	protected String dbUserName = "postgres";
-	protected String dbPassword = "postgres";
-	protected String dbUrl = "jdbc:postgresql://localhost:5432";
-	protected String dbName = "mlmq";
-	protected int requestQueueSize = 10;
-	protected int maxMessageSize = 4000;
-	protected String commandoFilePath = "./commando.txt";
-	protected long commandoFileCheckIntervall = 5000;
-	protected PerformanceLoggerConfig performanceLoggerConfig = new PerformanceLoggerConfig("log");
-
-	/**
-	 * describes the test scenario
-	 */
-	protected int testRunId = 1;
-
-	public BrokerConfiguration() {
-	}
+	public static final String DB_USERNAME = "broker.db.username";
+	public static final String DB_PASSWORD = "broker.db.password";
+	public static final String DB_URL = "broker.db.url";
+	public static final String DB_NAME = "broker.db.name";
 
 	public BrokerConfiguration(Properties props) {
-		initFromProps(props);
+		super(props);
 	}
 
 	public static BrokerConfiguration loadFromJar(String fileName) throws IOException {
@@ -58,56 +36,46 @@ public class BrokerConfiguration {
 		Properties props = new Properties();
 		props.load(inStream);
 
-		BrokerConfiguration config = new BrokerConfiguration();
-		config.initFromProps(props);
-		return config;
-	}
-
-	private void initFromProps(Properties props) {
-		listenPort = Integer.parseInt(props.getProperty(LISTENPORT2));
-		workerThreadCount = Integer.parseInt(props.getProperty(WORKERTHREAD_COUNT));
-		dbConnectionPoolSize = Integer.parseInt(props.getProperty(DB_CONNECTIONPOOL_SIZE));
-		dbUserName = props.getProperty(DB_USERNAME);
-		dbPassword = props.getProperty(DB_PASSWORD);
-		dbUrl = props.getProperty(DB_URL);
-		dbName = props.getProperty(DB_NAME);
-		requestQueueSize = Integer.parseInt(props.getProperty(REQUESTQUEUE_SIZE));
-		maxMessageSize = Integer.parseInt(props.getProperty(MAX_MESSAGE_SIZE));
-		commandoFilePath = props.getProperty(COMMANDOFILE_PATH);
-		commandoFileCheckIntervall = Long.parseLong(props.getProperty(COMMANDOFILE_CHECKINTERVALL));
-		performanceLoggerConfig = new PerformanceLoggerConfig(props.getProperty(PERFORMANCELOGGER_PATH));
-
+		return new BrokerConfiguration(props);
 	}
 
 	public int getListenPort() {
-		return listenPort;
+		ScenarioMapping mapping = getMyMapping();
+		if (mapping instanceof BrokerScenarioMapping) {
+			return ((BrokerScenarioMapping) mapping).getPort();
+		} else {
+			throw new RuntimeException("Something is wrong with the configuration");
+		}
 	}
 
 	public int getWorkerThreadCount() {
-		return workerThreadCount;
+		return getIntConfig(WORKERTHREAD_COUNT);
 	}
 
 	public int getDbConnectionPoolSize() {
-		return dbConnectionPoolSize;
+		return getIntConfig(DB_CONNECTIONPOOL_SIZE);
 	}
 
 	public String getDbUserName() {
-		return dbUserName;
+		return getStringConfig(DB_USERNAME);
 	}
 
 	public String getDbPassword() {
-		return dbPassword;
+		return getStringConfig(DB_PASSWORD);
 	}
 
 	public String getDbUrl() {
-		return dbUrl;
+		return getStringConfig(DB_URL);
 	}
 
 	public String getDbName() {
-		return dbName;
+		return getStringConfig(DB_NAME);
 	}
 
 	public String getDbUrlWithDbName() {
+		String dbUrl = getDbUrl();
+		String dbName = getDbName();
+
 		if (dbUrl.endsWith("/")) {
 			return dbUrl + dbName;
 		}
@@ -115,23 +83,11 @@ public class BrokerConfiguration {
 	}
 
 	public int getRequestQueueSize() {
-		return requestQueueSize;
+		return getIntConfig(REQUESTQUEUE_SIZE);
 	}
 
 	public int getMaxMessageSize() {
-		return maxMessageSize;
-	}
-
-	public String getCommandoFilePath() {
-		return commandoFilePath;
-	}
-
-	public PerformanceLoggerConfig getPerformanceLoggerConfig() {
-		return performanceLoggerConfig;
-	}
-
-	public long getCommandFileCheckIntervall() {
-		return commandoFileCheckIntervall;
+		return getIntConfig(MAX_MESSAGE_SIZE);
 	}
 
 }

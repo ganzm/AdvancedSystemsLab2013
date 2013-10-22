@@ -3,6 +3,7 @@ package ch.ethz.mlmq.common;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class BalancedScenarioConfiguration {
 
 	private final int position;

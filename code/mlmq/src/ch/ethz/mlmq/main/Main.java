@@ -6,12 +6,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.common.Initializer;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.scenario.Scenario;
 
 public class Main {
 	private static final Logger logger = Logger.getLogger(Main.class.getSimpleName());
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, MlmqException {
 		if (args.length == 0) {
 			showHelpAndExit();
 			return;
@@ -22,19 +25,32 @@ public class Main {
 		initLogging(argList);
 
 		switch (args[0]) {
-		case "client":
-			mainClient(argList);
-			break;
-		case "broker":
-			mainBroker(argList);
-			break;
 		case "dbscript":
 			mainDbScript(argList);
+			break;
+		case "scenario":
+			mainScenario(argList);
 			break;
 		default:
 			showHelpAndExit();
 			return;
 		}
+
+	}
+
+	private static void mainScenario(Map<String, String> argList) throws IOException, MlmqException {
+		String configFilePath = argList.remove("config");
+
+		if (!argList.isEmpty()) {
+			System.out.println("Parameters not understood " + argList);
+		}
+
+		if (configFilePath == null) {
+			System.out.println("Missing Parameter -config");
+		}
+
+		Initializer initializer = new Initializer();
+		Scenario scenario = initializer.initScenario(configFilePath);
 
 	}
 
@@ -49,35 +65,35 @@ public class Main {
 		}
 	}
 
-	private static void mainClient(Map<String, String> argList) {
-		String config = argList.remove("config");
-
-		if (!argList.isEmpty()) {
-			System.out.println("Parameters not understood " + argList);
-		}
-
-		if (config == null) {
-			System.out.println("Missing Parameter -config");
-		}
-
-		ClientMain clientMain = new ClientMain();
-		clientMain.run(config);
-	}
-
-	private static int mainBroker(Map<String, String> argList) {
-		String config = argList.remove("config");
-
-		if (!argList.isEmpty()) {
-			System.out.println("Parameters not understood " + argList);
-		}
-
-		if (config == null) {
-			System.out.println("Missing Parameter -config");
-		}
-
-		BrokerMain main = new BrokerMain();
-		return main.run(config);
-	}
+	// private static void mainClient(Map<String, String> argList) {
+	// String config = argList.remove("config");
+	//
+	// if (!argList.isEmpty()) {
+	// System.out.println("Parameters not understood " + argList);
+	// }
+	//
+	// if (config == null) {
+	// System.out.println("Missing Parameter -config");
+	// }
+	//
+	// ClientMain clientMain = new ClientMain();
+	// clientMain.run(config);
+	// }
+	//
+	// private static int mainBroker(Map<String, String> argList) {
+	// String config = argList.remove("config");
+	//
+	// if (!argList.isEmpty()) {
+	// System.out.println("Parameters not understood " + argList);
+	// }
+	//
+	// if (config == null) {
+	// System.out.println("Missing Parameter -config");
+	// }
+	//
+	// BrokerMain main = new BrokerMain();
+	// return main.run(config);
+	// }
 
 	private static Map<String, String> parseArgs(String[] args) {
 		Map<String, String> result = new HashMap<String, String>();

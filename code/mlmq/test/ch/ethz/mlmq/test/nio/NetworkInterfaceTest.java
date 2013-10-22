@@ -2,6 +2,7 @@ package ch.ethz.mlmq.test.nio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Properties;
 import java.util.logging.Logger;
 
 import org.junit.After;
@@ -43,7 +44,8 @@ public class NetworkInterfaceTest {
 
 	@Before
 	public void before() throws IOException, MlmqException {
-		config = new BrokerConfiguration();
+		Properties props = new Properties();
+		config = new BrokerConfiguration(props);
 
 		setupNetworkInterface();
 		setupClient();
