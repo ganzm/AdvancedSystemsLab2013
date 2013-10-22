@@ -9,7 +9,7 @@ import ch.ethz.mlmq.common.Configuration;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.BrokerCommandFileHandler;
+import ch.ethz.mlmq.server.CommandFileHandler;
 import ch.ethz.mlmq.server.CommandListener;
 
 public abstract class Scenario implements CommandListener {
@@ -20,13 +20,13 @@ public abstract class Scenario implements CommandListener {
 
 	private final ConcurrentHashMap<String, TimerTask> activetimerTasks = new ConcurrentHashMap<>();
 
-	private final BrokerCommandFileHandler commandFileHandler;
+	private final CommandFileHandler commandFileHandler;
 
 	private final Configuration config;
 
 	protected Scenario(Configuration config) {
 		this.config = config;
-		commandFileHandler = new BrokerCommandFileHandler(config.getCommandFileHandlerPath(), config.getCommandFileHandlerCheckIntervall(), this);
+		commandFileHandler = new CommandFileHandler(config.getCommandFileHandlerPath(), config.getCommandFileHandlerCheckIntervall(), this);
 	}
 
 	/**
@@ -100,13 +100,13 @@ public abstract class Scenario implements CommandListener {
 		logger.info("BrokerCommandFile - onCommand [" + command + "]");
 
 		command = command.toLowerCase();
-		if (command.contains(BrokerCommandFileHandler.COMMAND_SHUTDOWN)) {
+		if (command.contains(CommandFileHandler.COMMAND_SHUTDOWN)) {
 			shutdown();
 			return;
-		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_STACKTRACE)) {
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_STACKTRACE)) {
 			LoggerUtil.logStackTrace(logger);
 			return;
-		} else if (command.contains(BrokerCommandFileHandler.COMMAND_LOG_MEMORY)) {
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_MEMORY)) {
 			LoggerUtil.logMemory(logger);
 			return;
 		} else {

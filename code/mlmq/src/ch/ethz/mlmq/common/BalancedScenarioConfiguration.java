@@ -3,6 +3,8 @@ package ch.ethz.mlmq.common;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.ethz.mlmq.exception.InvalidConfigurationException;
+
 @Deprecated
 public class BalancedScenarioConfiguration {
 

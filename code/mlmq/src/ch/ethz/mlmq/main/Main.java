@@ -7,14 +7,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.common.Initializer;
-import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.Scenario;
 
 public class Main {
 	private static final Logger logger = Logger.getLogger(Main.class.getSimpleName());
 
-	public static void main(String[] args) throws IOException, MlmqException {
+	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
 			showHelpAndExit();
 			return;
@@ -38,7 +37,7 @@ public class Main {
 
 	}
 
-	private static void mainScenario(Map<String, String> argList) throws IOException, MlmqException {
+	private static void mainScenario(Map<String, String> argList) throws Exception {
 		String configFilePath = argList.remove("config");
 
 		if (!argList.isEmpty()) {
@@ -52,6 +51,12 @@ public class Main {
 		Initializer initializer = new Initializer();
 		Scenario scenario = initializer.initScenario(configFilePath);
 
+		scenario.init();
+		try {
+			scenario.run();
+		} finally {
+			scenario.shutdown();
+		}
 	}
 
 	private static void initLogging(Map<String, String> argList) throws IOException {

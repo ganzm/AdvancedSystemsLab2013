@@ -14,7 +14,9 @@ public class PerformanceLoggerManager {
 	}
 
 	public static void shutDown() {
-		// TODO
+		if (logger != null) {
+			logger.close();
+		}
 	}
 
 	/**
@@ -25,6 +27,11 @@ public class PerformanceLoggerManager {
 			@Override
 			public void log(long executionTime, String type) {
 				julLogger.info("PerformanceLogger - ExecutionTime [" + executionTime + "]ms " + type);
+			}
+
+			@Override
+			public void close() {
+				// do nothing
 			}
 		};
 	}

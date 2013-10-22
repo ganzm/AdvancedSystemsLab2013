@@ -1,6 +1,5 @@
 package ch.ethz.mlmq.logging;
 
-
 public interface PerformanceLogger {
 
 	/**
@@ -9,4 +8,6 @@ public interface PerformanceLogger {
 	 *            in milliseconds
 	 */
 	void log(long executionTime, String type);
+
+	void close();
 }

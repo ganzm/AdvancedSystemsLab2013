@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.common;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,6 +15,8 @@ public class Configuration {
 	public static final String COMMANDFILEHANDLER_FILEPATH = "common.commandofile.path";
 	public static final String COMMANDFILEHANDLER_CHECKINTERVALL = "common.commandofile.checkintervall";
 
+	public static final String SCENARIO_MAPPING_BROKER = "common.scenario.mapping.broker";
+	public static final String SCENARIO_MAPPING_CLIENT = "common.scenario.mapping.client";
 	public static final String SCENARIO_MYTYPE = "common.scenario.mytype";
 	public static final String SCENARIO_MYTYPE_CLIENT_VALUE = "client";
 	public static final String SCENARIO_MYTYPE_BROKER_VALUE = "broker";
@@ -42,10 +45,20 @@ public class Configuration {
 	}
 
 	protected void parseScenarioMapping(Properties props) {
-		throw new RuntimeException("TODO");
-		// brokerScenarioMappings = new ArrayList<>();
-		// clientScenarioMappings = new ArrayList<>();
-		// myMapping = null;
+
+		props.getProperty(SCENARIO_MAPPING_BROKER);
+		props.getProperty(SCENARIO_MAPPING_CLIENT);
+		brokerScenarioMappings = new ArrayList<>();
+		clientScenarioMappings = new ArrayList<>();
+		myMapping = null;
+	}
+
+	public List<BrokerScenarioMapping> getAllBrokerScenarioMapping() {
+		return brokerScenarioMappings;
+	}
+
+	public List<ClientScenarioMapping> getAllClientScenarioMapping() {
+		return clientScenarioMappings;
 	}
 
 	/**

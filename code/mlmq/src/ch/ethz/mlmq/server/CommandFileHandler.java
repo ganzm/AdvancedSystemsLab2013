@@ -10,10 +10,10 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
 
-//TODO rename and move this class
-public class BrokerCommandFileHandler implements Runnable {
+//TODO move this class
+public class CommandFileHandler implements Runnable {
 
-	private static final Logger logger = Logger.getLogger(BrokerCommandFileHandler.class.getSimpleName());
+	private static final Logger logger = Logger.getLogger(CommandFileHandler.class.getSimpleName());
 
 	public static final String COMMAND_SHUTDOWN = "shutdown";
 	public static final String COMMAND_LOG_STACKTRACE = "logstacktrace";
@@ -36,7 +36,7 @@ public class BrokerCommandFileHandler implements Runnable {
 
 	private final CommandListener commandListener;
 
-	public BrokerCommandFileHandler(String pathToFileToWatch, long fileCheckIntervall, CommandListener commandListener) {
+	public CommandFileHandler(String pathToFileToWatch, long fileCheckIntervall, CommandListener commandListener) {
 		this.pathToFileToWatch = pathToFileToWatch;
 		this.fileCheckIntervall = fileCheckIntervall;
 		this.commandListener = commandListener;
