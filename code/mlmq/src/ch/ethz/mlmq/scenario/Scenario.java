@@ -5,12 +5,12 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.command.CommandFileHandler;
+import ch.ethz.mlmq.command.CommandListener;
 import ch.ethz.mlmq.common.Configuration;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.CommandFileHandler;
-import ch.ethz.mlmq.server.CommandListener;
 
 public abstract class Scenario implements CommandListener {
 

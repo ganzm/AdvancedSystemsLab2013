@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.server;
+package ch.ethz.mlmq.command;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

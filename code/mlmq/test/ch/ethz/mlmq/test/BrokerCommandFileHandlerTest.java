@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import ch.ethz.mlmq.command.CommandFileHandler;
+import ch.ethz.mlmq.command.CommandListener;
 import ch.ethz.mlmq.logging.LoggerUtil;
-import ch.ethz.mlmq.server.CommandFileHandler;
-import ch.ethz.mlmq.server.CommandListener;
 
 /**
  * TODO stabilize UnitTest fails from time to time on the build server
