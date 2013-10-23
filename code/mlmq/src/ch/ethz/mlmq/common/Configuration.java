@@ -6,6 +6,9 @@ import java.util.Properties;
 
 import ch.ethz.mlmq.logging.PerformanceLoggerConfig;
 
+/**
+ * Wrapper for the configuration properties file
+ */
 public class Configuration {
 
 	public static final String PERFORMANCELOGGER_PATH = "common.performancelogger.logfilepath";

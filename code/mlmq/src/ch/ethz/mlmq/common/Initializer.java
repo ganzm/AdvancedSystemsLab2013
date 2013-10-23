@@ -12,6 +12,9 @@ import ch.ethz.mlmq.scenario.Scenario;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
+/**
+ * Helps you to set up Scenario, Broker, Client infrastructure
+ */
 public class Initializer {
 
 	private static final Logger logger = Logger.getLogger(Initializer.class.getSimpleName());

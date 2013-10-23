@@ -10,7 +10,9 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
 
-//TODO move this class
+/**
+ * This class periodically checks a file whether it has been modified. If so content from the file is read and interpreted as a command
+ */
 public class CommandFileHandler implements Runnable {
 
 	private static final Logger logger = Logger.getLogger(CommandFileHandler.class.getSimpleName());
@@ -19,6 +21,9 @@ public class CommandFileHandler implements Runnable {
 	public static final String COMMAND_LOG_STACKTRACE = "logstacktrace";
 	public static final String COMMAND_LOG_MEMORY = "logmemory";
 
+	/**
+	 * Path to the file which is being watched
+	 */
 	private final String pathToFileToWatch;
 
 	private File fileToWatch;
@@ -31,9 +36,14 @@ public class CommandFileHandler implements Runnable {
 
 	/**
 	 * Intervall in ms
+	 * 
+	 * How often the command file is checked
 	 */
 	private final long fileCheckIntervall;
 
+	/**
+	 * Single callback instance which is notified about new commands read from the file
+	 */
 	private final CommandListener commandListener;
 
 	public CommandFileHandler(String pathToFileToWatch, long fileCheckIntervall, CommandListener commandListener) {
