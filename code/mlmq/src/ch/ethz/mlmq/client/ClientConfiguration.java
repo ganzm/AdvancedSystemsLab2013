@@ -16,6 +16,9 @@ public class ClientConfiguration extends Configuration {
 	public static final String COMMANDOFILE_CHECKINTERVALL = "commandofile.checkintervall";
 	public static final String PERFORMANCELOGGER_PATH = "performancelogger.logfilepath";
 
+	public static final String CLIENT_RECONNECT_SLEEPTIME = "client.reconnect.sleeptime";
+	public static final String CLIENT_RECONNECT_COUNT = "client.reconnect.count";
+
 	public static final String SCENARIO_MAPPING = "scenario.mapping";
 	public static final String SCENARIO_MYTYPE = "scenario.mytype";
 	public static final String SCENARIO_MYPOSITION = "scenario.myposition";
@@ -55,5 +58,13 @@ public class ClientConfiguration extends Configuration {
 
 	public long getResponseTimeoutTime() {
 		return getLongConfig(RESPONSE_TIMEOUTTIME);
+	}
+
+	public long getReconnectSleepTime() {
+		return getLongConfig(CLIENT_RECONNECT_SLEEPTIME);
+	}
+
+	public int getNumberOfConnectionAtempts() {
+		return getIntConfig(CLIENT_RECONNECT_COUNT);
 	}
 }

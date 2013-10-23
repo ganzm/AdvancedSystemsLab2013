@@ -10,7 +10,6 @@ import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
-import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.ClientConnection;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
@@ -42,7 +41,15 @@ public class ClientImpl implements Client {
 
 	private final String name;
 
-	int numberOfInitialReconnects = -1;
+	/**
+	 * how long to wait before trying to connect again
+	 */
+	private long reconnectSleepTime = 5000;
+
+	/**
+	 * defines how many times we try to connect to a broker at startup
+	 */
+	private int numberOfInitialReconnects = 10;
 
 	public ClientImpl(String name, BrokerDto broker, long responseTimeoutTime) {
 		this.name = name;
@@ -52,35 +59,32 @@ public class ClientImpl implements Client {
 
 	public ClientImpl(ClientConfiguration config) {
 		this(config.getName(), new BrokerDto(config.getBrokerHost(), config.getBrokerPort()), config.getResponseTimeoutTime());
+
+		reconnectSleepTime = config.getReconnectSleepTime();
+		numberOfInitialReconnects = config.getNumberOfConnectionAtempts();
 	}
 
 	public void init() throws IOException {
 
-		if (numberOfInitialReconnects <= 0) {
-			numberOfInitialReconnects = Integer.MAX_VALUE;
-		}
-
-		for (int i = 0; i < numberOfInitialReconnects && !connection.isConnected(); i++) {
-
-			if (i != 0) {
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					logger.fine("Interrupted Exception - ignore me");
-				}
-			}
-
+		for (int i = 0; !isConnected() && (i < numberOfInitialReconnects || numberOfInitialReconnects == -1); i++) {
 			try {
-				logger.fine("Try to connect for the " + (i + 1) + "th time");
+				logger.info("Client init");
 				connection.connect();
 			} catch (IOException ex) {
-				logger.warning("Exception while connecting to " + broker);
-				logger.warning(LoggerUtil.getStackTraceString(ex));
+				logger.warning("Could not connect to Broker " + broker);
+
+				try {
+					Thread.sleep(reconnectSleepTime);
+				} catch (InterruptedException e) {
+					logger.info("InterruptedException");
+				}
 			}
 		}
 
-		if (!connection.isConnected()) {
-			throw new IOException("Could not establish connection to " + broker);
+		if (isConnected()) {
+			logger.info("Client started");
+		} else {
+			throw new IOException("Could not connect to Broker " + broker);
 		}
 	}
 

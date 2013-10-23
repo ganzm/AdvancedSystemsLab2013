@@ -3,7 +3,6 @@ package ch.ethz.mlmq.net;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Timer;
@@ -145,7 +144,7 @@ public class ClientConnection implements Closeable {
 		ioBuffer.clear();
 	}
 
-	public void connect() throws UnknownHostException, IOException {
+	public void connect() throws IOException {
 
 		logger.info("Try connect to " + host + ":" + port + "...");
 
@@ -168,7 +167,7 @@ public class ClientConnection implements Closeable {
 				clientSocket.close();
 			}
 
-			throw ex;
+			throw new IOException(ex);
 		}
 	}
 
