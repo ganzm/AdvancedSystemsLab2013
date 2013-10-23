@@ -44,7 +44,7 @@ public class BrokerConfiguration extends Configuration {
 		if (mapping instanceof BrokerScenarioMapping) {
 			return ((BrokerScenarioMapping) mapping).getPort();
 		} else {
-			throw new RuntimeException("Something is wrong with the configuration");
+			throw new RuntimeException("Could not read Broker listen port - my ScenarioMapping is " + mapping);
 		}
 	}
 

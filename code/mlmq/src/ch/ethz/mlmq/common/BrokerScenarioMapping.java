@@ -17,4 +17,9 @@ public class BrokerScenarioMapping extends ScenarioMapping {
 	public int getPort() {
 		return port;
 	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " Port[" + port + "]";
+	}
 }

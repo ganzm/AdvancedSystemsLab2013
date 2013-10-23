@@ -36,4 +36,9 @@ public class ScenarioMapping {
 	public int getPosition() {
 		return position;
 	}
+
+	@Override
+	public String toString() {
+		return getClass().getSimpleName() + " Name[" + name + "] Host[" + host + "] Position[" + position + "]";
+	}
 }
