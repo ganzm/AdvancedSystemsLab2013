@@ -18,7 +18,7 @@ public class SimpleSendClient extends ClientScenario {
 
 	private long waitTimeBetweenMessages;
 
-	protected SimpleSendClient(ClientConfiguration config) {
+	public SimpleSendClient(ClientConfiguration config) {
 		super(config);
 
 		numMessages = config.getIntConfig(NUMMESSAGE_KEY);

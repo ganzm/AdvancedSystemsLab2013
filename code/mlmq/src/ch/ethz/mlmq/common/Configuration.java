@@ -53,7 +53,7 @@ public class Configuration {
 		String brokersToParse = getStringConfig(SCENARIO_MAPPING_BROKER);
 		brokerScenarioMappings = parseBrokerScenarioMapping(brokersToParse);
 
-		String clientsToParse = getStringConfig(SCENARIO_MAPPING_BROKER);
+		String clientsToParse = getStringConfig(SCENARIO_MAPPING_CLIENT);
 		clientScenarioMappings = parseClientScenarioMapping(clientsToParse);
 
 		int myPosition = getIntConfig(SCENARIO_MYPOSITION);
@@ -144,11 +144,11 @@ public class Configuration {
 	}
 
 	public int getIntConfig(String configKey) {
-		return Integer.parseInt(getStringConfig(configKey));
+		return Integer.parseInt(getStringConfig(configKey).trim());
 	}
 
 	public long getLongConfig(String configKey) {
-		return Long.parseLong(getStringConfig(configKey));
+		return Long.parseLong(getStringConfig(configKey).trim());
 	}
 
 	public String getStringConfig(String configKey) {

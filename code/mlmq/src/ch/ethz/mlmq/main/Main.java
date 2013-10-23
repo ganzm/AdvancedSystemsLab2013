@@ -11,6 +11,7 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.Scenario;
 
 public class Main {
+
 	private static final Logger logger = Logger.getLogger(Main.class.getSimpleName());
 
 	public static void main(String[] args) throws Exception {
@@ -70,36 +71,6 @@ public class Main {
 		}
 	}
 
-	// private static void mainClient(Map<String, String> argList) {
-	// String config = argList.remove("config");
-	//
-	// if (!argList.isEmpty()) {
-	// System.out.println("Parameters not understood " + argList);
-	// }
-	//
-	// if (config == null) {
-	// System.out.println("Missing Parameter -config");
-	// }
-	//
-	// ClientMain clientMain = new ClientMain();
-	// clientMain.run(config);
-	// }
-	//
-	// private static int mainBroker(Map<String, String> argList) {
-	// String config = argList.remove("config");
-	//
-	// if (!argList.isEmpty()) {
-	// System.out.println("Parameters not understood " + argList);
-	// }
-	//
-	// if (config == null) {
-	// System.out.println("Missing Parameter -config");
-	// }
-	//
-	// BrokerMain main = new BrokerMain();
-	// return main.run(config);
-	// }
-
 	private static Map<String, String> parseArgs(String[] args) {
 		Map<String, String> result = new HashMap<String, String>();
 
@@ -130,12 +101,8 @@ public class Main {
 		//@formatter:off
 		System.out.println("usage: java -jar target.jar <type>\n");
 		System.out.println("Types:");
-		System.out.println("\tclient\tStarts a client instance"
-				+ "\n\t\t\t-config [ConfigFilePath] Client Configuration Property file"
-				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
-				);
-		System.out.println("\tbroker\tStarts a broker instance (for the middleware)"
-				+ "\n\t\t\t-config [ConfigFilePath] Broker Configuration Property file"
+		System.out.println("\tscenario\tStarts a client or ab broker (depending on config)"
+				+ "\n\t\t\t-config [ConfigFilePath] Configuration Property file"
 				+ "\n\t\t\t-l [Logger Configuration] Logger Configuration Property file (optional) overrides default configuration"
 				);
 		System.out.println("\tdbscript"

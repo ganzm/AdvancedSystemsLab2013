@@ -22,10 +22,11 @@ public abstract class Scenario implements CommandListener {
 
 	private final CommandFileHandler commandFileHandler;
 
-	private final Configuration config;
-
 	protected Scenario(Configuration config) {
-		this.config = config;
+		// init PerformanceLogger
+		PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
+
+		// init command file Handler
 		commandFileHandler = new CommandFileHandler(config.getCommandFileHandlerPath(), config.getCommandFileHandlerCheckIntervall(), this);
 	}
 
@@ -35,7 +36,6 @@ public abstract class Scenario implements CommandListener {
 	 * @throws MlmqException
 	 */
 	public void init() throws MlmqException {
-		PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
 		commandFileHandler.start();
 	}
 

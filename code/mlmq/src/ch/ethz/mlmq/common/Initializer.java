@@ -58,8 +58,8 @@ public class Initializer {
 	}
 
 	public static Class<? extends Scenario> findScenario(String scenarioName) throws Exception {
-		String packageName = "ch.ethz.mlmq.scenario";
-		String fullName = packageName + "." + scenarioName;
+		String packageName = "ch.ethz.mlmq.scenario.impl.";
+		String fullName = packageName + scenarioName;
 
 		logger.info("Find scenario " + fullName);
 		return Class.forName(fullName).asSubclass(Scenario.class);

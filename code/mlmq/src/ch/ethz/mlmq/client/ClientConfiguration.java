@@ -10,7 +10,7 @@ import ch.ethz.mlmq.common.ScenarioMapping;
 public class ClientConfiguration extends Configuration {
 
 	public static final String CLIENT_NAME = "client.name";
-	public static final String RESPONSE_TIMEOUTTIME = "response.timeout";
+	public static final String RESPONSE_TIMEOUTTIME = "client.response.timeout";
 	public static final String TESTSCENARIO_NR = "testscenario.nr";
 	public static final String COMMANDOFILE_PATH = "commandofile.path";
 	public static final String COMMANDOFILE_CHECKINTERVALL = "commandofile.checkintervall";

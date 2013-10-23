@@ -21,10 +21,10 @@ public class SimpleShutdownBroker extends BrokerScenario {
 	 */
 	private volatile boolean isTimedOut;
 
-	protected SimpleShutdownBroker(BrokerConfiguration config) {
+	public SimpleShutdownBroker(BrokerConfiguration config) {
 		super(config);
 
-		shutdownDelay = config.getLongConfig(SHUTDOWNDELAY_KEY);
+		shutdownDelay = config.getLongConfig(SHUTDOWNDELAY_KEY) * 1000;
 	}
 
 	@Override
