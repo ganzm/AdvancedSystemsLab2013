@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.server;
+package ch.ethz.mlmq.common;
 
 public interface CommandListener {
 

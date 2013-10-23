@@ -1,16 +1,22 @@
-package ch.ethz.mlmq.testrun;
+package ch.ethz.mlmq.scenario;
 
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class TestRun {
+import ch.ethz.mlmq.scenario.startup.Startup;
+import ch.ethz.mlmq.server.Configuration;
 
+public abstract class Scenario<T_SUT extends Startable, T_CONFIG extends Configuration> {
 	private final Timer timer = new Timer(true);
 
 	private final ConcurrentHashMap<String, TimerTask> activetimerTasks = new ConcurrentHashMap<>();
 
-	public TestRun() {
+	private T_SUT sut;
+
+	private T_CONFIG config;
+
+	public Scenario() {
 	}
 
 	protected void startTimer(final String name, long timeout) {
@@ -36,12 +42,21 @@ public abstract class TestRun {
 
 	private void timedOut(String name) {
 		activetimerTasks.remove(name);
-		onTimeout(name);
+		onTimeout(name, sut);
 	}
 
-	abstract void run() throws Exception;
+	protected abstract void run(T_SUT sut, T_CONFIG config) throws Exception;
 
-	protected void onTimeout(String name) {
+	protected abstract Startup<T_SUT, T_CONFIG> initSut();
 
+	protected void onTimeout(String name, T_SUT sut) {
+	}
+
+	public void start(String pathToConfig) throws Exception {
+		Startup<T_SUT, T_CONFIG> rj = initSut();
+		rj.start(pathToConfig);
+		config = rj.getConfig();
+		sut = rj.getSut();
+		run(sut, config);
 	}
 }
