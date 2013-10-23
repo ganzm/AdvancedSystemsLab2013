@@ -1,24 +1,59 @@
-package ch.ethz.mlmq.testrun;
+package ch.ethz.mlmq.scenario;
 
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
-public abstract class TestRun<T> {
+import ch.ethz.mlmq.command.CommandFileHandler;
+import ch.ethz.mlmq.command.CommandListener;
+import ch.ethz.mlmq.common.Configuration;
+import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 
-public abstract class Scenario<T_SUT extends Startable, T_CONFIG extends Configuration> {
+public abstract class Scenario implements CommandListener {
+
+	private static final Logger logger = Logger.getLogger(Scenario.class.getSimpleName());
+
 	private final Timer timer = new Timer(true);
 
 	private final ConcurrentHashMap<String, TimerTask> activetimerTasks = new ConcurrentHashMap<>();
 
-	private final T sut;
+	private final CommandFileHandler commandFileHandler;
 
-	public TestRun(T sut) {
-		this.sut = sut;
+	protected Scenario(Configuration config) {
+		// init PerformanceLogger
+		PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
+
+		// init command file Handler
+		commandFileHandler = new CommandFileHandler(config.getCommandFileHandlerPath(), config.getCommandFileHandlerCheckIntervall(), this);
+	}
+
+	/**
+	 * initializes stuff
+	 * 
+	 * @throws MlmqException
+	 */
+	public void init() throws MlmqException {
+		commandFileHandler.start();
+	}
+
+	/**
+	 * Performs a specific scenario
+	 * 
+	 * as soon as this method terminates the system will shutdown by calling shutdown()
+	 */
+	public abstract void run() throws Exception;
+
+	public void shutdown() {
+		commandFileHandler.stop();
+		PerformanceLoggerManager.shutDown();
 	}
 
 	protected void startTimer(final String name, long timeout) {
+		logger.fine("Start Timer [" + name + "] with timeout [" + timeout + "]ms");
+
 		TimerTask timerTask = new TimerTask() {
 			@Override
 			public void run() {
@@ -31,6 +66,8 @@ public abstract class Scenario<T_SUT extends Startable, T_CONFIG extends Configu
 	}
 
 	protected boolean clearTimer(String name) {
+		logger.fine("Clear Timer [" + name + "]");
+
 		TimerTask toStop = activetimerTasks.remove(name);
 		if (toStop != null) {
 			toStop.cancel();
@@ -39,18 +76,41 @@ public abstract class Scenario<T_SUT extends Startable, T_CONFIG extends Configu
 		return false;
 	}
 
-	private void timedOut(String name) {
-		activetimerTasks.remove(name);
-		onTimeout(name, sut);
+	private void timedOut(String timerName) {
+		activetimerTasks.remove(timerName);
+
+		logger.info("Timer Timeout [" + timerName + "]");
+		onTimeout(timerName);
 	}
 
-	public void run() throws IOException {
-		run(sut);
+	/**
+	 * Override this method to listen to timer timeouts
+	 * 
+	 * @param timerName
+	 */
+	protected void onTimeout(String timerName) {
+
 	}
 
-	protected abstract void run(T sut) throws IOException;
+	/**
+	 * Callback from CommandoFileHandler
+	 */
+	@Override
+	public void onCommand(String command) {
+		logger.info("BrokerCommandFile - onCommand [" + command + "]");
 
-	protected void onTimeout(String name, T sut) {
-
+		command = command.toLowerCase();
+		if (command.contains(CommandFileHandler.COMMAND_SHUTDOWN)) {
+			shutdown();
+			return;
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_STACKTRACE)) {
+			LoggerUtil.logStackTrace(logger);
+			return;
+		} else if (command.contains(CommandFileHandler.COMMAND_LOG_MEMORY)) {
+			LoggerUtil.logMemory(logger);
+			return;
+		} else {
+			logger.info("BrokerCommand unexpected command [" + command + "]");
+		}
 	}
 }

@@ -1,7 +1,6 @@
 package ch.ethz.mlmq.client;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,7 +41,6 @@ public class ClientImpl implements Client {
 	private ClientConnection connection;
 
 	private final String name;
-	private ClientConfiguration config;
 
 	int numberOfInitialReconnects = -1;
 
@@ -54,7 +52,6 @@ public class ClientImpl implements Client {
 
 	public ClientImpl(ClientConfiguration config) {
 		this(config.getName(), new BrokerDto(config.getBrokerHost(), config.getBrokerPort()), config.getResponseTimeoutTime());
-		this.config = config;
 	}
 
 	public void init() throws IOException {
@@ -191,20 +188,6 @@ public class ClientImpl implements Client {
 		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio, context);
 		SendClientMessageResponse response = (SendClientMessageResponse) sendRequest(sendMessageRequest);
 		return response.getConversationContext();
-	}
-
-	@Override
-	public void startup() throws InterruptedException, IOException {
-		for (int i = 0; !isConnected() && (i < config.getNumberOfConnectionAtempts() || config.getNumberOfConnectionAtempts() == -1); i++) {
-			try {
-				logger.info("Client init");
-				init();
-			} catch (ConnectException ex) {
-				logger.warning("Could not connect to Broker " + config.getBrokerHost() + ":" + config.getBrokerPort());
-				Thread.sleep(config.getReconnectSleepTime());
-			}
-		}
-		logger.info("Client started");
 	}
 
 }
