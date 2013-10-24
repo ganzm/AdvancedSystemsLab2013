@@ -1,0 +1,24 @@
+Factors and performance test guidelines
+=======================================
+
+* Primary factors (about 5-6)
+* Secondary factors (e.g. GC, network (Jitter?))
+Difference:
+Primary: High effect on performance, concentration when running experiments
+Secondary: Things which may affect the performance, but are either not as important or cannot be influenced
+
+Response variables: Response time (latency) and throughput
+Which factors influence the response time or latency
+E.g. # open connections to database
+
+Summary: E.g.: Factor A has 40% impact on latency, factor B has 20% impact on latency, factor A&B combined have 10% impact on latency.
+
+Define ranges, what levels to run
+=> Hypothesis
+=> If yes => explain why
+=> If no => Hypothesis
+
+Think a step ahead => read up the queuing theory => cover the things needed in the last part
+=> see book (start with chapter 16 + slides (+ chapters 17-22))
+=> exam: questions depending on the milestones
+=> understand what's going on
