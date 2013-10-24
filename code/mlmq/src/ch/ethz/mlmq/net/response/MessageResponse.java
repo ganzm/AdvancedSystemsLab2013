@@ -3,7 +3,7 @@ package ch.ethz.mlmq.net.response;
 import java.nio.ByteBuffer;
 
 import ch.ethz.mlmq.dto.MessageDto;
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class MessageResponse implements Response {
@@ -55,7 +55,7 @@ public class MessageResponse implements Response {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		messageDto = (MessageDto) ByteBufferUtil.deserialize(new MessageDto(), buffer);
 		return this;
 	}

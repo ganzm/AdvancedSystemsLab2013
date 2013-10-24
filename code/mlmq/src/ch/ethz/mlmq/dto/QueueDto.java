@@ -3,7 +3,7 @@ package ch.ethz.mlmq.dto;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 
 /**
  * Data Transfer Object
@@ -11,7 +11,7 @@ import ch.ethz.mlmq.net.HomeMadeSerializable;
  * used for data transport between Database and broker
  * 
  */
-public class QueueDto implements Serializable, HomeMadeSerializable {
+public class QueueDto implements Serializable, MlmqSerializable {
 
 	private static final long serialVersionUID = -27123459784219113L;
 

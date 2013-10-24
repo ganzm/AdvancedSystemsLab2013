@@ -30,6 +30,13 @@ public class ConfigurationUtil {
 		}
 	}
 
+	/**
+	 * Properties loading via ClassLoader - works for files contained in the deployed jar file
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
 	public static Properties loadPropertiesFromJar(String fileName) throws IOException {
 		logger.info("Load BrokerConfiguration from " + fileName);
 

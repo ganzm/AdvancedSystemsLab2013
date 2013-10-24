@@ -3,7 +3,7 @@ package ch.ethz.mlmq.net.request;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class SendClientMessageRequest implements Request {
@@ -142,7 +142,7 @@ public class SendClientMessageRequest implements Request {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		clientId = buffer.getLong();
 		prio = buffer.getInt();
 		conversation = ByteBufferUtil.getBoolean(buffer);

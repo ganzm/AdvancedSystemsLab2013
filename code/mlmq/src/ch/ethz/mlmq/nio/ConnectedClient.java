@@ -2,7 +2,6 @@ package ch.ethz.mlmq.nio;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.util.logging.Logger;
 
 import ch.ethz.mlmq.net.Protocol;
 import ch.ethz.mlmq.server.ClientApplicationContext;
@@ -13,9 +12,9 @@ import ch.ethz.mlmq.server.ClientApplicationContext;
  */
 public class ConnectedClient {
 
-	@SuppressWarnings("unused")
-	private static final Logger logger = Logger.getLogger(ConnectedClient.class.getSimpleName());
-
+	/**
+	 * For debugging purpouses only
+	 */
 	private final String name;
 
 	private CloseableByteBuffer rxBuffer;

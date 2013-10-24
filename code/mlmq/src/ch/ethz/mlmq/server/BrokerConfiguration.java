@@ -16,6 +16,7 @@ public class BrokerConfiguration extends Configuration {
 
 	public static final String WORKERTHREAD_COUNT = "broker.workerthread.count";
 	public static final String REQUESTQUEUE_SIZE = "broker.requestqueue.size";
+	public static final String RESPONSEQUEUE_SIZE = "broker.responsequeue.size";
 	public static final String MAX_MESSAGE_SIZE = "broker.message.maxsize";
 	public static final String DB_CONNECTIONPOOL_SIZE = "broker.db.connectionpool.size";
 
@@ -82,12 +83,26 @@ public class BrokerConfiguration extends Configuration {
 		return dbUrl + "/" + dbName;
 	}
 
+	/**
+	 * Size of the Queue where the Broker Network Interface puts received Requests
+	 * 
+	 * @return
+	 */
 	public int getRequestQueueSize() {
 		return getIntConfig(REQUESTQUEUE_SIZE);
 	}
 
 	public int getMaxMessageSize() {
 		return getIntConfig(MAX_MESSAGE_SIZE);
+	}
+
+	/**
+	 * Size of the Queue where Workers put their Responses which are ready to be sent back to the clients
+	 * 
+	 * @return
+	 */
+	public int getResponseQueueSize() {
+		return getIntConfig(RESPONSEQUEUE_SIZE);
 	}
 
 }

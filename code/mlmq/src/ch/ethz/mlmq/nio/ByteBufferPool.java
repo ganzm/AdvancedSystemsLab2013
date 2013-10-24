@@ -5,6 +5,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import ch.ethz.mlmq.server.BrokerConfiguration;
 
+/**
+ * Handles Pooling of the Buffers used to store Requests/Responses
+ * 
+ * By pooling them we avoid excessive garbage collection
+ */
 public class ByteBufferPool {
 
 	private final int defaultBufferCapacity;

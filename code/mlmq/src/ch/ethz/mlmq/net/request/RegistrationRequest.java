@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.request;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 /**
@@ -63,7 +63,7 @@ public class RegistrationRequest implements Request {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		clientName = ByteBufferUtil.getString(buffer);
 		return this;
 	}

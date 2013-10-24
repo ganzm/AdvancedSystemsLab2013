@@ -3,6 +3,12 @@ package ch.ethz.mlmq.util;
 import java.io.File;
 
 public class FileHelper {
+
+	/**
+	 * does what is says
+	 * 
+	 * @param pathToFileOrDirectory
+	 */
 	public static void deleteRecursive(String pathToFileOrDirectory) {
 		deleteRecursive(new File(pathToFileOrDirectory));
 	}

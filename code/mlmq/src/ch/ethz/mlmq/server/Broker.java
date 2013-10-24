@@ -5,7 +5,7 @@ import ch.ethz.mlmq.exception.MlmqException;
 /**
  * Interface to the broker which we expose to the TestRunManager
  * 
- * All calls on this interface need to be thread safe
+ * All calls on this interface need to be thread safe on the implementation
  */
 public interface Broker {
 

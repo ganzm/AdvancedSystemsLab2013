@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 /**
@@ -13,7 +13,7 @@ import ch.ethz.mlmq.util.ByteBufferUtil;
  * used for data transport between Database and broker
  * 
  */
-public class MessageDto implements Serializable, HomeMadeSerializable {
+public class MessageDto implements Serializable, MlmqSerializable {
 
 	private static final long serialVersionUID = -5253100231478702803L;
 
@@ -134,7 +134,7 @@ public class MessageDto implements Serializable, HomeMadeSerializable {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		id = buffer.getLong();
 		queue = (QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer);
 		content = ByteBufferUtil.getByteArray(buffer);

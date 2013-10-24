@@ -3,7 +3,7 @@ package ch.ethz.mlmq.dto;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 /**
@@ -11,7 +11,7 @@ import ch.ethz.mlmq.util.ByteBufferUtil;
  * 
  * used to filter messages.
  */
-public class MessageQueryInfoDto implements Serializable, HomeMadeSerializable {
+public class MessageQueryInfoDto implements Serializable, MlmqSerializable {
 	private static final long serialVersionUID = 1658560065690073547L;
 
 	/**
@@ -113,7 +113,7 @@ public class MessageQueryInfoDto implements Serializable, HomeMadeSerializable {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		queue = (QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer);
 		sender = (ClientDto) ByteBufferUtil.deserialize(new ClientDto(), buffer);
 		shouldOrderByPriority = ByteBufferUtil.getBoolean(buffer);

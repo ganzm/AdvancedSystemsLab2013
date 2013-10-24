@@ -8,21 +8,22 @@ import ch.ethz.mlmq.server.processing.WorkerTask;
 import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
 /**
- * 
- * Belongs to BrokerNetworkInterface
+ * Belongs to the BrokerNetworkInterface
  * 
  * thats where works on the broker post their responses.
  * 
+ * @see BrokerNetworkInterface
  */
 public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
 
-	private static final int QUEUE_SIZE = 100;
-
 	private final Logger logger = Logger.getLogger(NetworkIntefaceResponseQueue.class.getSimpleName());
-	private ArrayBlockingQueue<WorkerTask> queue = new ArrayBlockingQueue<WorkerTask>(QUEUE_SIZE);
+
+	private final ArrayBlockingQueue<WorkerTask> queue;
+
 	private Runnable wakeupReactorRunnable;
 
-	protected NetworkIntefaceResponseQueue() {
+	protected NetworkIntefaceResponseQueue(int queueSize) {
+		this.queue = new ArrayBlockingQueue<WorkerTask>(queueSize);
 	}
 
 	public void setWakeupReactorRunnable(Runnable wakeupReactorRunnable) {

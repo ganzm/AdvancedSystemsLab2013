@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.response;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 
 public class DeleteQueueResponse implements Response {
 
@@ -13,7 +13,7 @@ public class DeleteQueueResponse implements Response {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		return this;
 	}
 

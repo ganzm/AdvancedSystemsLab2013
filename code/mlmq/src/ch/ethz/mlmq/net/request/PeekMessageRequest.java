@@ -3,7 +3,7 @@ package ch.ethz.mlmq.net.request;
 import java.nio.ByteBuffer;
 
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class PeekMessageRequest implements Request {
@@ -59,7 +59,7 @@ public class PeekMessageRequest implements Request {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		messageQueryInfo = (MessageQueryInfoDto) ByteBufferUtil.deserialize(new MessageQueryInfoDto(), buffer);
 		return this;
 	}

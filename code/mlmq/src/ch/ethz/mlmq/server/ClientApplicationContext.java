@@ -2,11 +2,14 @@ package ch.ethz.mlmq.server;
 
 import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.nio.ConnectedClient;
 
 /**
  * Broker stores context information for each connected client
  * 
+ * This is closely related to ConnectedClient but does not contain networking specific state but rather application state per client
  * 
+ * @see ConnectedClient
  */
 public class ClientApplicationContext {
 

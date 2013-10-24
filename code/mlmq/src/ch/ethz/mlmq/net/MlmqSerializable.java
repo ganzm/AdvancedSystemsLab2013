@@ -2,8 +2,8 @@ package ch.ethz.mlmq.net;
 
 import java.nio.ByteBuffer;
 
-public interface HomeMadeSerializable {
+public interface MlmqSerializable {
 	void serialize(ByteBuffer buffer);
 
-	HomeMadeSerializable deserialize(ByteBuffer buffer);
+	MlmqSerializable deserialize(ByteBuffer buffer);
 }

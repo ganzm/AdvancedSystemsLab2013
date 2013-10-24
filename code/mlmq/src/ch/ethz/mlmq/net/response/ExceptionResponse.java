@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.response;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class ExceptionResponse implements Response {
@@ -54,7 +54,7 @@ public class ExceptionResponse implements Response {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		exception = (Exception) ByteBufferUtil.deserializeAny(buffer);
 		return this;
 	}

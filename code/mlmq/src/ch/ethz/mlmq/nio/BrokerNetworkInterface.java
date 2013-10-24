@@ -24,12 +24,18 @@ import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.processing.WorkerTask;
 import ch.ethz.mlmq.server.processing.WorkerTaskQueue;
 
+/**
+ * This class does the networking for the broker by using java NIO
+ */
 public class BrokerNetworkInterface implements Runnable, Closeable {
 
 	private static final Logger logger = Logger.getLogger(BrokerNetworkInterface.class.getSimpleName());
 
 	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
+	/**
+	 * Selector which handles the nonblockings Channels
+	 */
 	private Selector selector;
 
 	/**
@@ -72,7 +78,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 	public BrokerNetworkInterface(BrokerConfiguration config, WorkerTaskQueue requstQueue) {
 		this.listenPort = config.getListenPort();
-		this.responseQueue = new NetworkIntefaceResponseQueue();
+		this.responseQueue = new NetworkIntefaceResponseQueue(config.getResponseQueueSize());
 		this.requestQueue = requstQueue;
 		this.byteBufferPool = new ByteBufferPool(config);
 	}

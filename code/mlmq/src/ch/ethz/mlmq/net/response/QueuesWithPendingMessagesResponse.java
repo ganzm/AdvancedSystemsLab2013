@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.ethz.mlmq.dto.QueueDto;
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class QueuesWithPendingMessagesResponse implements Response {
@@ -60,7 +60,7 @@ public class QueuesWithPendingMessagesResponse implements Response {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		int listSize = buffer.getInt();
 		for (int i = 0; i < listSize; i++) {
 			queues.add((QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer));

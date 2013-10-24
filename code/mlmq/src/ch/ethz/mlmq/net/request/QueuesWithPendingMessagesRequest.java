@@ -2,7 +2,7 @@ package ch.ethz.mlmq.net.request;
 
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 
 public class QueuesWithPendingMessagesRequest implements Request {
 
@@ -32,7 +32,7 @@ public class QueuesWithPendingMessagesRequest implements Request {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		return this;
 	}
 

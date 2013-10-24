@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
 public class SendMessageRequest implements Request {
@@ -95,7 +95,7 @@ public class SendMessageRequest implements Request {
 	}
 
 	@Override
-	public HomeMadeSerializable deserialize(ByteBuffer buffer) {
+	public MlmqSerializable deserialize(ByteBuffer buffer) {
 		int queueIdsSize = buffer.getInt();
 		for (int i = 0; i < queueIdsSize; i++) {
 			queueIds.add(ByteBufferUtil.getLong(buffer));

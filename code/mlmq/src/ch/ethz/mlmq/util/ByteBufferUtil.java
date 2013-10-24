@@ -6,7 +6,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
 
-import ch.ethz.mlmq.net.HomeMadeSerializable;
+import ch.ethz.mlmq.net.MlmqSerializable;
 
 public class ByteBufferUtil {
 
@@ -35,7 +35,7 @@ public class ByteBufferUtil {
 		}
 	}
 
-	public static HomeMadeSerializable deserialize(HomeMadeSerializable obj, ByteBuffer serializeBuffer) {
+	public static MlmqSerializable deserialize(MlmqSerializable obj, ByteBuffer serializeBuffer) {
 		byte b = serializeBuffer.get();
 		if (b == trueByte) {
 			return obj.deserialize(serializeBuffer);
@@ -44,7 +44,7 @@ public class ByteBufferUtil {
 		}
 	}
 
-	public static void serialize(HomeMadeSerializable obj, ByteBuffer buffer) {
+	public static void serialize(MlmqSerializable obj, ByteBuffer buffer) {
 		if (obj != null) {
 			buffer.put(trueByte);
 			obj.serialize(buffer);
