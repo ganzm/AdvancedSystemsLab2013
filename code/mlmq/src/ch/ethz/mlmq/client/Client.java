@@ -29,7 +29,7 @@ public interface Client extends Closeable {
 	boolean isConnected();
 
 	/**
-	 * Registers a new client.
+	 * Register as a new client.
 	 * 
 	 * @return
 	 * @throws IOException
@@ -42,6 +42,15 @@ public interface Client extends Closeable {
 	 * @return
 	 */
 	QueueDto createQueue(String queueName) throws IOException;
+
+	/**
+	 * Tries to find the where we can send personal messages to a client
+	 * 
+	 * @param clientId
+	 * @return Queue may be null if not found
+	 * @throws IOException
+	 */
+	QueueDto lookupClientQueue(long clientId) throws IOException;
 
 	/**
 	 * Deletes a queue.
@@ -107,11 +116,16 @@ public interface Client extends Closeable {
 	/**
 	 * Query for queues with pending messages.
 	 * 
+	 * This method returns number of message in the client's queue and a list of queues which are not empty.
+	 * 
+	 * @param queues
+	 *            output parameter containing Queues which contain messages. This method simply appends the results to this list
 	 * @param maxNumQueues
 	 *            maximum number of returned QueueDto's
+	 * @return number of messages in the client's personal queue
 	 * @throws IOException
 	 */
-	List<QueueDto> queuesWithPendingMessages(int maxNumQueues) throws IOException;
+	int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException;
 
 	/**
 	 * Reads the first message without removing it.

@@ -89,6 +89,18 @@ public class MessageDao implements Closeable {
 		} catch (SQLException e) {
 			logger.severe("Error while closing generateNewConversationContextStmt" + LoggerUtil.getStackTraceString(e));
 		}
+
+		try {
+			getNumMsgPerQueueStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing getNumMsgPerQueueStmt" + LoggerUtil.getStackTraceString(e));
+		}
+
+		try {
+			getPublicQueuesContainingMessagesStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing getPublicQueuesContainingMessagesStmt" + LoggerUtil.getStackTraceString(e));
+		}
 	}
 
 	public void insertMessage(SendMessageRequest request, ClientApplicationContext clientContext) throws SQLException {

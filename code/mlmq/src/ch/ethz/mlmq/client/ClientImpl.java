@@ -14,13 +14,14 @@ import ch.ethz.mlmq.net.ClientConnection;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
-import ch.ethz.mlmq.net.response.CreateQueueResponse;
+import ch.ethz.mlmq.net.response.QueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
@@ -135,7 +136,14 @@ public class ClientImpl implements Client {
 
 	@Override
 	public QueueDto createQueue(String queueName) throws IOException {
-		CreateQueueResponse repsonse = (CreateQueueResponse) sendRequest(new CreateQueueRequest(queueName));
+		QueueResponse repsonse = (QueueResponse) sendRequest(new CreateQueueRequest(queueName));
+		return repsonse.getQueueDto();
+	}
+
+	@Override
+	public QueueDto lookupClientQueue(long clientId) throws IOException {
+
+		QueueResponse repsonse = (QueueResponse) sendRequest(new LookupQueueRequest(clientId));
 		return repsonse.getQueueDto();
 	}
 
@@ -169,9 +177,15 @@ public class ClientImpl implements Client {
 	}
 
 	@Override
-	public List<QueueDto> queuesWithPendingMessages(int maxNumQueues) throws IOException {
+	public int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException {
+		if (queues == null) {
+			throw new IllegalArgumentException("Parameter queues must not be null");
+		}
+
 		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) sendRequest(new QueuesWithPendingMessagesRequest(maxNumQueues));
-		return response.getQueues();
+		queues.addAll(response.getQueues());
+		return response.getNumMessagesInMyQueue();
+
 	}
 
 	@Override

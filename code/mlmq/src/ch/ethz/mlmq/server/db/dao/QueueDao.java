@@ -17,7 +17,8 @@ public class QueueDao implements Closeable {
 
 	private PreparedStatement createQueueStmt;
 	private PreparedStatement deleteQueueStmt;
-	private PreparedStatement queryQueueIdByClientIdStmt;
+	private PreparedStatement queryQueueByClientIdStmt;
+	private PreparedStatement queryQueueByQueueNameStmt;
 
 	public QueueDao() {
 
@@ -26,11 +27,13 @@ public class QueueDao implements Closeable {
 	public void init(Connection connection) throws SQLException {
 
 		// prepare statements
-		createQueueStmt = connection.prepareStatement("SELECT createQueue(?)");
+		createQueueStmt = connection.prepareStatement("SELECT createQueue(?, ?)");
 
 		deleteQueueStmt = connection.prepareStatement("DELETE FROM queue WHERE id = ?");
 
-		queryQueueIdByClientIdStmt = connection.prepareStatement("SELECT id FROM queue WHERE client_id = ?");
+		queryQueueByClientIdStmt = connection.prepareStatement("SELECT id, name FROM queue WHERE client_id = ?");
+
+		queryQueueByQueueNameStmt = connection.prepareStatement("SELECT id, name FROM queue WHERE name = ?");
 	}
 
 	public void close() {
@@ -47,23 +50,31 @@ public class QueueDao implements Closeable {
 		}
 
 		try {
-			queryQueueIdByClientIdStmt.close();
+			queryQueueByClientIdStmt.close();
 		} catch (SQLException e) {
 			logger.severe("Error while closing queryQueueIdByClientIdStmt" + LoggerUtil.getStackTraceString(e));
 		}
+
+		try {
+			queryQueueByQueueNameStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing queryQueueByQueueNameStmt" + LoggerUtil.getStackTraceString(e));
+		}
 	}
 
-	public QueueDto createQueue() throws SQLException {
-		return createClientQueue(null);
+	public QueueDto createQueue(String name) throws SQLException {
+		return createClientQueue(null, name);
 	}
 
-	public QueueDto createClientQueue(Integer clientId) throws SQLException {
+	public QueueDto createClientQueue(Integer clientId, String name) throws SQLException {
 
 		if (clientId == null) {
 			createQueueStmt.setNull(1, Types.INTEGER);
 		} else {
 			createQueueStmt.setInt(1, clientId);
 		}
+
+		createQueueStmt.setString(2, name);
 
 		try (ResultSet rs = createQueueStmt.executeQuery()) {
 			if (!rs.next()) {
@@ -86,16 +97,32 @@ public class QueueDao implements Closeable {
 		deleteQueueStmt.execute();
 	}
 
-	public long getQueueByClientId(long clientId) throws SQLException {
+	public QueueDto getQueueByClientId(long clientId) throws SQLException {
 
-		queryQueueIdByClientIdStmt.setLong(1, clientId);
-		try (ResultSet rs = queryQueueIdByClientIdStmt.executeQuery()) {
+		queryQueueByClientIdStmt.setLong(1, clientId);
+		try (ResultSet rs = queryQueueByClientIdStmt.executeQuery()) {
 
 			if (rs.next()) {
-				return rs.getLong(1);
+				long queueId = rs.getLong(1);
+				String name = rs.getString(2);
+				return new QueueDto(queueId, name);
 			}
 
 			throw new SQLException("ClientQueue not found for ClientId [" + clientId + "]");
+		}
+	}
+
+	public QueueDto getQueueByName(String queueName) throws SQLException {
+		queryQueueByQueueNameStmt.setString(1, queueName);
+		try (ResultSet rs = queryQueueByQueueNameStmt.executeQuery()) {
+
+			if (rs.next()) {
+				long queueId = rs.getLong(1);
+				String name = rs.getString(2);
+				return new QueueDto(queueId, name);
+			}
+
+			throw new SQLException("Queue not found with Name [" + queueName + "]");
 		}
 	}
 }

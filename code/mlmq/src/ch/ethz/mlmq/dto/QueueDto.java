@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 
 import ch.ethz.mlmq.net.MlmqSerializable;
+import ch.ethz.mlmq.util.ByteBufferUtil;
 
 /**
  * Data Transfer Object
@@ -17,20 +18,27 @@ public class QueueDto implements Serializable, MlmqSerializable {
 
 	private long id;
 
+	private String name = null;
+
 	public QueueDto() {
 		// deserialisation constructor
 	}
 
 	public QueueDto(long id) {
-		this.setId(id);
+		this.id = id;
+	}
+
+	public QueueDto(long queueId, String name) {
+		this.id = queueId;
+		this.name = name;
 	}
 
 	public long getId() {
 		return id;
 	}
 
-	private void setId(long id) {
-		this.id = id;
+	public String getName() {
+		return name;
 	}
 
 	@Override
@@ -57,16 +65,18 @@ public class QueueDto implements Serializable, MlmqSerializable {
 
 	public void serialize(ByteBuffer buffer) {
 		buffer.putLong(id);
+		ByteBufferUtil.putString(buffer, name);
 	}
 
 	@Override
-	public QueueDto deserialize(ByteBuffer serializeBuffer) {
-		id = serializeBuffer.getLong();
+	public QueueDto deserialize(ByteBuffer buffer) {
+		id = buffer.getLong();
+		name = ByteBufferUtil.getString(buffer);
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return "Queue Id[" + id + "]";
+		return "Queue Id[" + id + "] Name[" + name + "]";
 	}
 }

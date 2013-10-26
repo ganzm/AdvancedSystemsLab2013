@@ -1,11 +1,11 @@
-CREATE OR REPLACE FUNCTION createQueue(client_id integer)
+CREATE OR REPLACE FUNCTION createQueue(client_id integer, queue_name varchar)
 RETURNS integer AS $$
 
 DECLARE
     newid BIGINT;
 BEGIN
 
-   INSERT INTO queue(client_id) VALUES ($1)  RETURNING id INTO newid;
+   INSERT INTO queue(client_id, name) VALUES ($1, $2)  RETURNING id INTO newid;
     return newid;
 END
 $$

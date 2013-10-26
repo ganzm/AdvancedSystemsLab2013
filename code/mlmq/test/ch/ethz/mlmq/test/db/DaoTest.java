@@ -73,7 +73,7 @@ public class DaoTest {
 			queueDao.init(connection);
 
 			int beforeCreate = getQueueCount(connection);
-			QueueDto queue = queueDao.createQueue();
+			QueueDto queue = queueDao.createQueue("SampleQueue");
 			int afterCreate = getQueueCount(connection);
 
 			Assert.assertNotNull(queue);

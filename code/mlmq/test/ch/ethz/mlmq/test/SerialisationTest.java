@@ -16,6 +16,7 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
@@ -23,9 +24,9 @@ import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
-import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
+import ch.ethz.mlmq.net.response.QueueResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
@@ -62,7 +63,12 @@ public class SerialisationTest {
 	@Test
 	public void testDeleteQueueRequest() {
 		DeleteQueueRequest request = new DeleteQueueRequest((long) Math.random());
+		testRequest(request);
+	}
 
+	@Test
+	public void testLookupQueueRequest() {
+		LookupQueueRequest request = new LookupQueueRequest((long) Math.random());
 		testRequest(request);
 	}
 
@@ -114,7 +120,7 @@ public class SerialisationTest {
 	@Test
 	public void testCreateQueueResponse() {
 		QueueDto queue = new QueueDto(42);
-		CreateQueueResponse response = new CreateQueueResponse(queue);
+		QueueResponse response = new QueueResponse(queue);
 		testResponse(response);
 	}
 

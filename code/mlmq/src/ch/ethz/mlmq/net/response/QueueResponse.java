@@ -3,19 +3,25 @@ package ch.ethz.mlmq.net.response;
 import java.nio.ByteBuffer;
 
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.net.request.CreateQueueRequest;
+import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.util.ByteBufferUtil;
 
-public class CreateQueueResponse implements Response {
+/**
+ * @see CreateQueueRequest
+ * @see LookupQueueRequest
+ */
+public class QueueResponse implements Response {
 
 	public static final long serialVersionUID = 1533054714047954400L;
 
 	private QueueDto queue;
 
-	public CreateQueueResponse() {
+	public QueueResponse() {
 
 	}
 
-	public CreateQueueResponse(QueueDto queue) {
+	public QueueResponse(QueueDto queue) {
 		this.queue = queue;
 	}
 
@@ -39,7 +45,7 @@ public class CreateQueueResponse implements Response {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CreateQueueResponse other = (CreateQueueResponse) obj;
+		QueueResponse other = (QueueResponse) obj;
 		if (queue == null) {
 			if (other.queue != null)
 				return false;
@@ -54,7 +60,7 @@ public class CreateQueueResponse implements Response {
 	}
 
 	@Override
-	public CreateQueueResponse deserialize(ByteBuffer buffer) {
+	public QueueResponse deserialize(ByteBuffer buffer) {
 		queue = (QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer);
 		return this;
 	}

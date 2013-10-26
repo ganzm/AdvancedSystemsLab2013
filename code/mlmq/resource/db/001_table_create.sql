@@ -6,12 +6,13 @@ CREATE SEQUENCE message_context START 1;
 
 CREATE TABLE client (
   id INTEGER PRIMARY KEY DEFAULT nextval('client_id'),
-  name VARCHAR UNIQUE
+  name VARCHAR(50) UNIQUE
 );
 
 
 CREATE TABLE queue (
   id INTEGER PRIMARY KEY DEFAULT nextval('queue_id'),
+  name VARCHAR(50) UNIQUE,
   client_id INTEGER REFERENCES client (id)
 );
 

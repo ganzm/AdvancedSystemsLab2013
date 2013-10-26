@@ -13,15 +13,16 @@ import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
 import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
-import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
+import ch.ethz.mlmq.net.response.QueueResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
@@ -55,6 +56,9 @@ public class RequestProcessor {
 
 			if (request instanceof CreateQueueRequest) {
 				return processCreateQueueRequest((CreateQueueRequest) request, pool);
+
+			} else if (request instanceof LookupQueueRequest) {
+				return processLookupQueueRequest((LookupQueueRequest) request, clientApplicationContext, pool);
 
 			} else if (request instanceof QueuesWithPendingMessagesRequest) {
 				return processQueuesWithPendingMessagesRequest((QueuesWithPendingMessagesRequest) request, clientApplicationContext, pool);
@@ -95,7 +99,8 @@ public class RequestProcessor {
 
 			QueueDao queueDao = connection.getQueueDao();
 
-			long receivingClientQueueId = queueDao.getQueueByClientId(request.getClientId());
+			QueueDto receivingClientQueue = queueDao.getQueueByClientId(request.getClientId());
+			long receivingClientQueueId = receivingClientQueue.getId();
 
 			MessageDao messageDao = connection.getMessageDao();
 
@@ -231,20 +236,50 @@ public class RequestProcessor {
 
 	}
 
+	private QueueResponse processLookupQueueRequest(LookupQueueRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
+			QueueDao queueDao = connection.getQueueDao();
+
+			Long clientId = request.getClientId();
+			QueueDto queue = null;
+
+			if (clientId != null) {
+				queue = queueDao.getQueueByClientId(clientId);
+			} else {
+				queue = queueDao.getQueueByName(request.getQueueName());
+			}
+
+			QueueResponse response = new QueueResponse(queue);
+			return response;
+
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException("Error creating Queue " + request.getQueueName(), ex);
+		} finally {
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
+		}
+	}
+
 	private Response processCreateQueueRequest(CreateQueueRequest request, DbConnectionPool pool) throws MlmqException {
 		DbConnection connection = null;
 		try {
 			connection = pool.getConnection();
 
 			QueueDao queueDao = connection.getQueueDao();
-			QueueDto queue = queueDao.createQueue();
+			QueueDto queue = queueDao.createQueue(request.getQueueName());
 
-			CreateQueueResponse response = new CreateQueueResponse(queue);
+			QueueResponse response = new QueueResponse(queue);
 			return response;
 
 		} catch (SQLException ex) {
 			connection.close();
-			throw new MlmqException(ex);
+			throw new MlmqException("Error creating Queue " + request.getQueueName(), ex);
 		} finally {
 			if (connection != null) {
 				pool.returnConnection(connection);
@@ -272,10 +307,11 @@ public class RequestProcessor {
 				clientId = newClientId;
 
 				// insert new ClientQueue
-				clientQueue = queueDao.createClientQueue(newClientId);
+				clientQueue = queueDao.createClientQueue(newClientId, "ClientQueue" + newClientId);
 			} else {
 
-				long queueId = queueDao.getQueueByClientId(clientId);
+				QueueDto queue = queueDao.getQueueByClientId(clientId);
+				long queueId = queue.getId();
 				clientQueue = new QueueDto(queueId);
 
 				logger.info("Welcome back " + name + " ClientId [" + clientId + "] ClientQueue [" + queueId + "]");

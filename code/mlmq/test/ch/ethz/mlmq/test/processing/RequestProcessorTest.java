@@ -29,7 +29,7 @@ import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
-import ch.ethz.mlmq.net.response.CreateQueueResponse;
+import ch.ethz.mlmq.net.response.QueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
@@ -128,7 +128,7 @@ public class RequestProcessorTest {
 			String queueName = "testSendToMultipleQueues" + i;
 			logger.info("Creating Queue " + queueName);
 			CreateQueueRequest createQueueRequest = new CreateQueueRequest(queueName);
-			CreateQueueResponse response = (CreateQueueResponse) processor.process(defaultContext, createQueueRequest, pool);
+			QueueResponse response = (QueueResponse) processor.process(defaultContext, createQueueRequest, pool);
 			queueIdList.add(response.getQueueDto().getId());
 		}
 
@@ -248,7 +248,7 @@ public class RequestProcessorTest {
 		ClientApplicationContext context3 = registerClient("Client3");
 
 		// create Queue
-		CreateQueueResponse createQueueResponse = (CreateQueueResponse) processor.process(context1, new CreateQueueRequest("AnyQueue"), pool);
+		QueueResponse createQueueResponse = (QueueResponse) processor.process(context1, new CreateQueueRequest("AnyQueue"), pool);
 		long queueId = createQueueResponse.getQueueDto().getId();
 		logger.info("Created public Queue " + queueId);
 
@@ -276,7 +276,7 @@ public class RequestProcessorTest {
 	public void testCreateAndDeleteQueueRequest() throws MlmqException {
 
 		Request request = new CreateQueueRequest("SampleQueue");
-		CreateQueueResponse response = (CreateQueueResponse) processor.process(defaultContext, request, pool);
+		QueueResponse response = (QueueResponse) processor.process(defaultContext, request, pool);
 		Assert.assertNotNull(response);
 		Assert.assertNotNull(response.getQueueDto());
 

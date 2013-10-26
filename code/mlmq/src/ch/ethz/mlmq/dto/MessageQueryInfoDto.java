@@ -15,18 +15,39 @@ public class MessageQueryInfoDto implements Serializable, MlmqSerializable {
 	private static final long serialVersionUID = 1658560065690073547L;
 
 	/**
-	 * only get messages which belong to this queue
+	 * Optional Parameter - only get messages which belong to this queue
 	 */
 	private QueueDto queue;
 
 	/**
-	 * only get message which were sent by a specific sender
+	 * Optional Parameter - only get message which were sent by a specific sender
 	 */
 	private ClientDto sender;
 
 	private boolean shouldOrderByPriority;
 
 	private Integer conversationContext = null;
+
+	/**
+	 * Use this constructor if you want to get the oldest message from a specific queue
+	 * 
+	 * @param queueFilter
+	 */
+	public MessageQueryInfoDto(QueueDto queueFilter) {
+		this.queue = queueFilter;
+	}
+
+	/**
+	 * Use this constructor if you want to check if you got a response for a specific conversation
+	 * 
+	 * @param myQueue
+	 *            you need to specify your own client queue here
+	 * @param conversationContext
+	 */
+	public MessageQueryInfoDto(QueueDto myQueue, int conversationContext) {
+		this.queue = myQueue;
+		this.conversationContext = conversationContext;
+	}
 
 	public MessageQueryInfoDto(QueueDto queueFilter, ClientDto sender, boolean shouldOrderByPriority) {
 		this.queue = queueFilter;
