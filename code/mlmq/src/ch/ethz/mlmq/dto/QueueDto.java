@@ -64,4 +64,9 @@ public class QueueDto implements Serializable, MlmqSerializable {
 		id = serializeBuffer.getLong();
 		return this;
 	}
+
+	@Override
+	public String toString() {
+		return "Queue Id[" + id + "]";
+	}
 }

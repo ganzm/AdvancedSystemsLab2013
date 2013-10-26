@@ -108,8 +108,6 @@ public class RequestProcessorTest {
 		testSendMessageRequest();
 		testDequeueMessageRequest();
 		testPeekMessageRequest();
-		// TODO fix this?
-		// testQueuesWithPendingMessagesRequest();
 	}
 
 	/**

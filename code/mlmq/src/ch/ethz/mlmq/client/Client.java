@@ -107,11 +107,11 @@ public interface Client extends Closeable {
 	/**
 	 * Query for queues with pending messages.
 	 * 
-	 * @param queues
-	 * @param message
+	 * @param maxNumQueues
+	 *            maximum number of returned QueueDto's
 	 * @throws IOException
 	 */
-	List<QueueDto> queuesWithPendingMessages() throws IOException;
+	List<QueueDto> queuesWithPendingMessages(int maxNumQueues) throws IOException;
 
 	/**
 	 * Reads the first message without removing it.

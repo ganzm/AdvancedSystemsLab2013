@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.dto.ClientDto;
@@ -24,6 +26,8 @@ public class MessageDao implements Closeable {
 	private PreparedStatement peekMessageStmt;
 	private PreparedStatement deleteMessageStmt;
 	private PreparedStatement generateNewConversationContextStmt;
+	private PreparedStatement getPublicQueuesContainingMessagesStmt;
+	private PreparedStatement getNumMsgPerQueueStmt;
 
 	public MessageDao() {
 
@@ -46,6 +50,19 @@ public class MessageDao implements Closeable {
 		deleteMessageStmt = connection.prepareStatement(deleteMessageSqlStmt);
 
 		generateNewConversationContextStmt = connection.prepareStatement("SELECT nextval('message_context')");
+
+		String getNumMsgPerQueueSqlStmt = "SELECT count(*) FROM message WHERE queue_id = ?";
+		getNumMsgPerQueueStmt = connection.prepareStatement(getNumMsgPerQueueSqlStmt);
+
+		//@formatter:off
+		String getPublicQueuesContainingMessagesSqlStmt = ""
+				+ "SELECT * FROM queue q "
+				+ "WHERE client_id IS NULL "
+				+ "AND EXISTS (SELECT 1 FROM message WHERE queue_id = q.id LIMIT 1) "
+				+ "LIMIT ?";
+		//@formatter:on
+		getPublicQueuesContainingMessagesStmt = connection.prepareStatement(getPublicQueuesContainingMessagesSqlStmt);
+
 	}
 
 	public void close() {
@@ -169,7 +186,39 @@ public class MessageDao implements Closeable {
 			if (rs.next()) {
 				return rs.getLong(1);
 			}
-			throw new SQLException("No Value found for generateNewConversationContext()");
+			throw new SQLException("No Value found for generateNewConversationContext");
+		}
+	}
+
+	/**
+	 * 
+	 * @param maxNumQueues
+	 *            constrains the maximum results returned
+	 * @return
+	 * @throws SQLException
+	 */
+	public List<QueueDto> getPublicQueuesContainingMessages(int maxNumQueues) throws SQLException {
+		List<QueueDto> result = new ArrayList<>();
+
+		getPublicQueuesContainingMessagesStmt.setInt(1, maxNumQueues);
+		try (ResultSet rs = getPublicQueuesContainingMessagesStmt.executeQuery()) {
+			while (rs.next()) {
+				long queueId = rs.getLong(1);
+				QueueDto queue = new QueueDto(queueId);
+				result.add(queue);
+			}
+		}
+
+		return result;
+	}
+
+	public int getNumberOfMessages(long queueId) throws SQLException {
+		getNumMsgPerQueueStmt.setLong(1, queueId);
+		try (ResultSet rs = getNumMsgPerQueueStmt.executeQuery()) {
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			throw new SQLException("No Value found for getNumMsgPerQueueStmt");
 		}
 	}
 }

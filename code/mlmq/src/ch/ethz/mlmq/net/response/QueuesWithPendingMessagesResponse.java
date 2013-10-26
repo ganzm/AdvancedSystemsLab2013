@@ -12,7 +12,15 @@ public class QueuesWithPendingMessagesResponse implements Response {
 
 	public static final long serialVersionUID = 4798365845603757482L;
 
+	/**
+	 * public queues which contain messages
+	 */
 	private List<QueueDto> queues;
+
+	/**
+	 * Number of messages which are in the clients personal queue
+	 */
+	private int numMessagesInMyQueue;
 
 	public QueuesWithPendingMessagesResponse() {
 		this.queues = new ArrayList<>();
@@ -26,10 +34,19 @@ public class QueuesWithPendingMessagesResponse implements Response {
 		this.queues = queues;
 	}
 
+	public int getNumMessagesInMyQueue() {
+		return numMessagesInMyQueue;
+	}
+
+	public void setNumMessagesInMyQueue(int numMessagesInMyQueue) {
+		this.numMessagesInMyQueue = numMessagesInMyQueue;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + numMessagesInMyQueue;
 		result = prime * result + ((queues == null) ? 0 : queues.hashCode());
 		return result;
 	}
@@ -43,6 +60,8 @@ public class QueuesWithPendingMessagesResponse implements Response {
 		if (getClass() != obj.getClass())
 			return false;
 		QueuesWithPendingMessagesResponse other = (QueuesWithPendingMessagesResponse) obj;
+		if (numMessagesInMyQueue != other.numMessagesInMyQueue)
+			return false;
 		if (queues == null) {
 			if (other.queues != null)
 				return false;
@@ -53,6 +72,7 @@ public class QueuesWithPendingMessagesResponse implements Response {
 
 	@Override
 	public void serialize(ByteBuffer buffer) {
+		buffer.putInt(numMessagesInMyQueue);
 		buffer.putInt(queues.size());
 		for (QueueDto queue : queues) {
 			ByteBufferUtil.serialize(queue, buffer);
@@ -61,6 +81,7 @@ public class QueuesWithPendingMessagesResponse implements Response {
 
 	@Override
 	public MlmqSerializable deserialize(ByteBuffer buffer) {
+		numMessagesInMyQueue = buffer.getInt();
 		int listSize = buffer.getInt();
 		for (int i = 0; i < listSize; i++) {
 			queues.add((QueueDto) ByteBufferUtil.deserialize(new QueueDto(), buffer));
@@ -73,4 +94,5 @@ public class QueuesWithPendingMessagesResponse implements Response {
 	public int getTypeId() {
 		return (int) serialVersionUID;
 	}
+
 }

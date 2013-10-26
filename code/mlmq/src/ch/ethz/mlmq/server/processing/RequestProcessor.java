@@ -1,6 +1,7 @@
 package ch.ethz.mlmq.server.processing;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.dto.ClientDto;
@@ -21,6 +22,7 @@ import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.net.response.CreateQueueResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
+import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
 import ch.ethz.mlmq.net.response.SendClientMessageResponse;
@@ -123,9 +125,17 @@ public class RequestProcessor {
 		DbConnection connection = null;
 		try {
 			connection = pool.getConnection();
+			MessageDao msgDao = connection.getMessageDao();
 
-			throw new SQLException("TODO");
+			List<QueueDto> queues = msgDao.getPublicQueuesContainingMessages(request.getMaxNumQueues());
+			int numMessagesInMyQueue = msgDao.getNumberOfMessages(clientApplicationContext.getClientQueue().getId());
 
+			// create response message
+			QueuesWithPendingMessagesResponse response = new QueuesWithPendingMessagesResponse();
+			response.setQueues(queues);
+			response.setNumMessagesInMyQueue(numMessagesInMyQueue);
+
+			return response;
 		} catch (SQLException ex) {
 			connection.close();
 			throw new MlmqException(ex);

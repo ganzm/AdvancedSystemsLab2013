@@ -169,8 +169,8 @@ public class ClientImpl implements Client {
 	}
 
 	@Override
-	public List<QueueDto> queuesWithPendingMessages() throws IOException {
-		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) sendRequest(new QueuesWithPendingMessagesRequest());
+	public List<QueueDto> queuesWithPendingMessages(int maxNumQueues) throws IOException {
+		QueuesWithPendingMessagesResponse response = (QueuesWithPendingMessagesResponse) sendRequest(new QueuesWithPendingMessagesRequest(maxNumQueues));
 		return response.getQueues();
 	}
 
