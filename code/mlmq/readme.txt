@@ -16,14 +16,10 @@ dbscript -url jdbc:postgresql://localhost:5432 -db mlmq -user postgres -password
 
 Start a scenario (see class names of ch.ethz.mlmq.scenario.scenarios)
 --------------------------------------------------------------------
-Example for SimpleShutdownBroker:
-Copy resource/brokerconfig.example.properties to resource/config.properties and adjust to your needs. Then:
-SimpleShutdownBroker -config resource/config.properties
-
-Example for SimpleSendClient:
-Copy resource/clientconfig.example.properties to resource/config.properties and adjust to your needs. Then:
-SimpleSendClient -config resource/config.properties
-
+Broker:
+scenario -l resource/logging.properties -config config/2hLoadTest/brokerconfig.properties
+Client:
+scenario -l resource/logging.properties -config config/2hLoadTest/clientconfig.properties
 
 Some useful vm arguments
 ================================================
