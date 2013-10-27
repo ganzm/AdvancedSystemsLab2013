@@ -1,5 +1,6 @@
 package ch.ethz.mlmq.common;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -45,7 +46,8 @@ public class Configuration {
 	}
 
 	protected PerformanceLoggerConfig createPerformanceLogger() {
-		return new PerformanceLoggerConfig(getStringConfig(PERFORMANCELOGGER_PATH));
+		String performanceLoggerPath = getStringConfig(PERFORMANCELOGGER_PATH) + File.separator + getStringConfig(SCENARIO_MYPOSITION);
+		return new PerformanceLoggerConfig(performanceLoggerPath);
 	}
 
 	protected void parseScenarioMapping(Properties props) {
