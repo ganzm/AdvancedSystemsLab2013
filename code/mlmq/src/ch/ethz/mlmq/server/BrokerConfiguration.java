@@ -40,13 +40,36 @@ public class BrokerConfiguration extends Configuration {
 		return new BrokerConfiguration(props);
 	}
 
-	public int getListenPort() {
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getClass().getSimpleName());
+		sb.append(" Scenario[");
+		sb.append(getMyBrokerMapping().getName());
+		sb.append("] Port[");
+		sb.append(getListenPort());
+		sb.append("] WorkerThreadCount[");
+		sb.append(getWorkerThreadCount());
+		sb.append("] DbConnectionPoolSize[");
+		sb.append(getDbConnectionPoolSize());
+		sb.append("]");
+
+		return sb.toString();
+	}
+
+	public BrokerScenarioMapping getMyBrokerMapping() {
 		ScenarioMapping mapping = getMyMapping();
 		if (mapping instanceof BrokerScenarioMapping) {
-			return ((BrokerScenarioMapping) mapping).getPort();
+			return (BrokerScenarioMapping) mapping;
 		} else {
-			throw new RuntimeException("Could not read Broker listen port - my ScenarioMapping is " + mapping);
+			throw new RuntimeException("Could not get MyBrokermapping - my ScenarioMapping is " + mapping);
 		}
+	}
+
+	public int getListenPort() {
+		BrokerScenarioMapping mapping = getMyBrokerMapping();
+		return mapping.getPort();
 	}
 
 	public int getWorkerThreadCount() {

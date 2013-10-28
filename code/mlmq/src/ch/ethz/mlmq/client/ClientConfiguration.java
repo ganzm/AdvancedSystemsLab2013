@@ -11,7 +11,6 @@ public class ClientConfiguration extends Configuration {
 
 	public static final String CLIENT_NAME = "client.name";
 	public static final String RESPONSE_TIMEOUTTIME = "client.response.timeout";
-	public static final String TESTSCENARIO_NR = "testscenario.nr";
 	public static final String COMMANDOFILE_PATH = "commandofile.path";
 	public static final String COMMANDOFILE_CHECKINTERVALL = "commandofile.checkintervall";
 	public static final String PERFORMANCELOGGER_PATH = "performancelogger.logfilepath";
@@ -27,6 +26,29 @@ public class ClientConfiguration extends Configuration {
 		super(props);
 	}
 
+	@Override
+	public String toString() {
+		ClientScenarioMapping me = getClientScenarioMapping();
+		BrokerScenarioMapping broker = getBroker();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append(getClass().getSimpleName());
+		sb.append(" ClientName[");
+		sb.append(me.getName());
+		sb.append("] ClientHost[");
+		sb.append(me.getHost());
+		sb.append("] Broker[");
+		sb.append(broker.getHost());
+		sb.append(":");
+		sb.append(broker.getPort());
+		sb.append("] BrokerScenario[");
+		sb.append(broker.getName());
+		sb.append("]");
+
+		return sb.toString();
+	}
+
 	private ClientScenarioMapping getClientScenarioMapping() {
 		ScenarioMapping mapping = getMyMapping();
 		if (mapping instanceof ClientScenarioMapping) {
@@ -40,11 +62,12 @@ public class ClientConfiguration extends Configuration {
 		return getBroker().getHost();
 	}
 
+	/**
+	 * @return The Broker this Client is assigned to
+	 */
 	private BrokerScenarioMapping getBroker() {
 		ClientScenarioMapping myClientMapping = getClientScenarioMapping();
-
-		BrokerScenarioMapping broker = super.getAssignedBroker(myClientMapping);
-		return broker;
+		return super.getAssignedBroker(myClientMapping);
 	}
 
 	public int getBrokerPort() {

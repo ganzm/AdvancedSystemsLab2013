@@ -24,7 +24,7 @@ public abstract class Scenario implements CommandListener {
 
 	protected Scenario(Configuration config) {
 		// init PerformanceLogger
-		PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig());
+		PerformanceLoggerManager.configureLogger(config.getPerformanceLoggerConfig(), config.toString());
 
 		// init command file Handler
 		commandFileHandler = new CommandFileHandler(config.getCommandFileHandlerPath(), config.getCommandFileHandlerCheckIntervall(), this);

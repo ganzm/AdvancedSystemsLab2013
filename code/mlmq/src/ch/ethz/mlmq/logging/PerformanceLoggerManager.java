@@ -8,9 +8,17 @@ public class PerformanceLoggerManager {
 
 	private static PerformanceLogger logger;
 
-	public static void configureLogger(PerformanceLoggerConfig loggerConfig) {
+	public static void configureLogger(PerformanceLoggerConfig loggerConfig, String initialLog) {
 		final PerformanceLoggerConfig config = loggerConfig;
-		logger = new PerformanceLoggerImpl(config);
+		PerformanceLoggerImpl loggerImpl = new PerformanceLoggerImpl(config);
+
+		// write one line of log header data
+		if (initialLog != null) {
+			loggerImpl.write(initialLog);
+			loggerImpl.write("\n");
+		}
+
+		logger = loggerImpl;
 	}
 
 	public static void shutDown() {

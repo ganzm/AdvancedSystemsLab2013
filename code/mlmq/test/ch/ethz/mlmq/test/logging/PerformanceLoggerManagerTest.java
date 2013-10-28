@@ -31,7 +31,7 @@ public class PerformanceLoggerManagerTest {
 	@Test
 	public void testInitializedLogger() {
 		String logPath = LOG_DIR;
-		PerformanceLoggerManager.configureLogger(new PerformanceLoggerConfig(logPath));
+		PerformanceLoggerManager.configureLogger(new PerformanceLoggerConfig(logPath, "logtest"), null);
 		PerformanceLogger logger = PerformanceLoggerManager.getLogger();
 		logger.log(100, "test");
 		Assert.assertTrue(Files.isDirectory(Paths.get(logPath)));

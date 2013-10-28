@@ -47,7 +47,13 @@ public class Configuration {
 
 	protected PerformanceLoggerConfig createPerformanceLogger() {
 		String performanceLoggerPath = getStringConfig(PERFORMANCELOGGER_PATH) + File.separator + getStringConfig(SCENARIO_MYPOSITION);
-		return new PerformanceLoggerConfig(performanceLoggerPath);
+
+		String mappingName = null;
+		ScenarioMapping mapping = getMyMapping();
+		if (mapping != null) {
+			mappingName = mapping.getName();
+		}
+		return new PerformanceLoggerConfig(performanceLoggerPath, mappingName);
 	}
 
 	protected void parseScenarioMapping(Properties props) {

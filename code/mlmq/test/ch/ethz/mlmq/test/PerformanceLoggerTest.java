@@ -17,7 +17,7 @@ public class PerformanceLoggerTest {
 
 	@Test
 	public void testPerformanceLogger() throws FileNotFoundException, IOException {
-		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log");
+		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log", "logtest");
 		try {
 			PerformanceLoggerImpl logger = new PerformanceLoggerImpl(config) {
 				@Override
@@ -48,7 +48,7 @@ public class PerformanceLoggerTest {
 
 	@Test
 	public void testLogRotateConfig() throws FileNotFoundException, IOException {
-		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log");
+		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log", "logtest");
 		PerformanceLoggerImpl logger = new PerformanceLoggerImpl(config);
 
 		logger.log(100, "huhu");
@@ -59,7 +59,7 @@ public class PerformanceLoggerTest {
 
 	@Test
 	public void testLogRotateLogger() {
-		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log");
+		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log", "logtest");
 		String filename = config.getFileName();
 
 		String filenameAfter1Rotation = config.logRotate();

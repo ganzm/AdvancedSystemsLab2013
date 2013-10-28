@@ -4,11 +4,13 @@ import java.io.File;
 
 public class PerformanceLoggerConfig {
 
-	private String directoryPath;
+	private final String directoryPath;
+	private final String filePrefix;
 	private int count = 1;
 
-	public PerformanceLoggerConfig(String directoryPath) {
+	public PerformanceLoggerConfig(String directoryPath, String filePrefix) {
 		this.directoryPath = directoryPath;
+		this.filePrefix = filePrefix;
 	}
 
 	public String getDirectoryPath() {
@@ -21,7 +23,7 @@ public class PerformanceLoggerConfig {
 	}
 
 	public String getFileName() {
-		return getDirectoryPath() + File.separator + count + ".log";
+		return getDirectoryPath() + File.separator + filePrefix + count + ".log";
 	}
 
 }
