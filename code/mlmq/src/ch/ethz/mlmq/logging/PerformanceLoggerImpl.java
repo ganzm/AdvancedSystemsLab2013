@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
-	private static final String LOG_FORMAT = "%d;%2$tY%2$tm%2$td%2$tH%2$tM%2$tS;%3$s\n"; // ignore the timezone: %2$tz
+	private static final String LOG_FORMAT = "%d;%2$tY%2$tm%2$td%2$tH%2$tM%2$tS%2$tL;%3$s\n"; // ignore the timezone: %2$tz
 
 	private final Logger logger = Logger.getLogger(PerformanceLoggerImpl.class.getSimpleName());
 

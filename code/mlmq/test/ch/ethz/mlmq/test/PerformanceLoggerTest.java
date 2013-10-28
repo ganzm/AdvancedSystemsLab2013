@@ -23,13 +23,14 @@ public class PerformanceLoggerTest {
 				@Override
 				protected Calendar getCurrentDate() {
 					Calendar c = Calendar.getInstance();
+					c.set(Calendar.MILLISECOND, 666);
 					c.set(2013, 10, 23, 11, 37, 22);
 					return c;
 				}
 
 				@Override
 				protected void write(String logMessage) {
-					Assert.assertEquals("100;20131123113722;bla\n", logMessage);
+					Assert.assertEquals("100;20131123113722666;bla\n", logMessage);
 					super.write(logMessage);
 				}
 			};
