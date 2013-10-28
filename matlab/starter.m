@@ -1,0 +1,1 @@
+analyzeZipLog('testdata/logs.zip', 'tmp');
