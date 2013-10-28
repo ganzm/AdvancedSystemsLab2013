@@ -41,8 +41,8 @@ public class Configuration {
 	protected Configuration(Properties props) {
 		this.props = props;
 
-		performanceLoggerConfig = createPerformanceLogger();
 		parseScenarioMapping(props);
+		performanceLoggerConfig = createPerformanceLogger();
 	}
 
 	protected PerformanceLoggerConfig createPerformanceLogger() {
