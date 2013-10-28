@@ -21,9 +21,9 @@ import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
-import ch.ethz.mlmq.net.response.QueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
+import ch.ethz.mlmq.net.response.QueueResponse;
 import ch.ethz.mlmq.net.response.QueuesWithPendingMessagesResponse;
 import ch.ethz.mlmq.net.response.RegistrationResponse;
 import ch.ethz.mlmq.net.response.Response;
@@ -142,8 +142,13 @@ public class ClientImpl implements Client {
 
 	@Override
 	public QueueDto lookupClientQueue(long clientId) throws IOException {
-
 		QueueResponse repsonse = (QueueResponse) sendRequest(new LookupQueueRequest(clientId));
+		return repsonse.getQueueDto();
+	}
+
+	@Override
+	public QueueDto lookupClientQueue(String queueName) throws IOException {
+		QueueResponse repsonse = (QueueResponse) sendRequest(new LookupQueueRequest(queueName));
 		return repsonse.getQueueDto();
 	}
 

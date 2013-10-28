@@ -31,6 +31,11 @@ public class ClientDto implements Serializable, MlmqSerializable {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return id + " " + name;
+	}
+
 	public long getId() {
 		return id;
 	}

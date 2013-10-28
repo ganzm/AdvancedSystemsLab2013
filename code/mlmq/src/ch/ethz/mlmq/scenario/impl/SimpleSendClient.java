@@ -28,7 +28,9 @@ public class SimpleSendClient extends ClientScenario {
 	@Override
 	public void run() throws IOException {
 		client.register();
-		QueueDto queue = client.createQueue("QueueOf" + config.getName());
+
+		String queueName = "QueueOf" + config.getName();
+		QueueDto queue = getOrCreateQueue(queueName);
 
 		for (int i = 0; i < numMessages; i++) {
 			byte[] content = ("Some Random Text and message Nr " + i).getBytes();
@@ -45,6 +47,15 @@ public class SimpleSendClient extends ClientScenario {
 			} catch (Exception e) {
 				logger.warning("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
 			}
+		}
+	}
+
+	private QueueDto getOrCreateQueue(String queueName) throws IOException {
+		try {
+			return client.createQueue(queueName);
+		} catch (Exception e) {
+			logger.info("Queue " + queueName + " already exists try to lookup queue");
+			return client.lookupClientQueue(queueName);
 		}
 	}
 }

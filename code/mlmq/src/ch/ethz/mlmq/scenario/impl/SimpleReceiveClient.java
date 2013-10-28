@@ -42,12 +42,21 @@ public class SimpleReceiveClient extends ClientScenario {
 			logger.info("Queues with pending messages " + queues);
 			logger.info("My Queue contains " + messagesForMe + " messages");
 
+			MessageDto msg = null;
+			MessageQueryInfoDto messageQueryInfo = new MessageQueryInfoDto(myQueue);
 			if (messagesForMe > 0) {
-				MessageQueryInfoDto messageQueryInfo = new MessageQueryInfoDto(myQueue);
 
-				MessageDto msg = client.dequeueMessage(messageQueryInfo);
+				do {
+					msg = client.dequeueMessage(messageQueryInfo);
+					messagesForMe--;
+					logger.info("Dequeued personal Message " + new String(msg.getContent()));
+				} while (messagesForMe >= 0 && msg != null && running);
+			}
 
-				logger.info("Dequeued Message " + msg);
+			for (QueueDto queue : queues) {
+				messageQueryInfo = new MessageQueryInfoDto(queue);
+				msg = client.dequeueMessage(messageQueryInfo);
+				logger.info("Dequeued Public Message From " + msg.getSender() + " Content " + new String(msg.getContent()));
 			}
 
 			try {

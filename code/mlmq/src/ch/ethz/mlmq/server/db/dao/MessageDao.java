@@ -142,7 +142,10 @@ public class MessageDao implements Closeable {
 		int result = deleteMessageStmt.executeUpdate();
 
 		if (result != 1) {
-			throw new SQLException("Dequeue did not work - Number of dequeued Messages " + result);
+			logger.fine("Dequeue did not work - DeleteCount[" + result + "] MessageId[" + message.getId() + "]");
+
+			// some other client was faster than you deleting the same message
+			return null;
 		}
 
 		return message;

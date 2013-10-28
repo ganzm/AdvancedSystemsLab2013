@@ -31,10 +31,10 @@ public class MessageQueryInfoDto implements Serializable, MlmqSerializable {
 	/**
 	 * Use this constructor if you want to get the oldest message from a specific queue
 	 * 
-	 * @param queueFilter
+	 * @param queue
 	 */
-	public MessageQueryInfoDto(QueueDto queueFilter) {
-		this.queue = queueFilter;
+	public MessageQueryInfoDto(QueueDto queue) {
+		this.queue = queue;
 	}
 
 	/**

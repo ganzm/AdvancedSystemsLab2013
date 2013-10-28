@@ -46,6 +46,22 @@ public interface Client extends Closeable {
 	/**
 	 * Tries to find the where we can send personal messages to a client
 	 * 
+	 * @param queueName
+	 * @return Queue may be null if not found
+	 * @throws IOException
+	 */
+	QueueDto lookupClientQueue(String queueName) throws IOException;
+
+	/**
+	 * Tries to find the where we can send personal messages to a client
+	 * 
+	 * @param clientId
+	 * @return Queue may be null if not found
+	 * @throws IOException
+	 */
+	/**
+	 * Tries to find the where we can send personal messages to a client
+	 * 
 	 * @param clientId
 	 * @return Queue may be null if not found
 	 * @throws IOException
