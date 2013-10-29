@@ -1,4 +1,4 @@
-function [] = parseLogFile(logFileName, timeWindowSize)
+function [ result ] = parseLogFile(logFileName, timeWindowSize)
 %%
 % parse a single log file
 %
@@ -29,7 +29,12 @@ initCellSize = 20;
 
 % thats where we group rows
 cellsPerWindow = cell(initCellSize, numColumns);
-cellsPerWindowIndex = 1;
+cellsPerWindowIndex = 0;
+
+result = struct;
+result.startTime = timeWindowStart;
+result.name = logFileName;
+result.timeWindowSize = timeWindowSize;
 
 while true   
     % parse line
@@ -41,12 +46,15 @@ while true
         break;
     end
     
+    % remember last timestamp of this log file
+    result.endTime = timestamp;
+    
     if timeWindowStart + timeWindowSize < timestamp
         % this measurment is outside our time window
         
         % evaluate measurments from the previous window
-        evaluateMeasurementCells(cellsPerWindow, cellsPerWindowIndex, timeWindowStart, timeWindowSize);
-        cellsPerWindowIndex = 1;
+        result = evaluateMeasurementBucket(cellsPerWindow, cellsPerWindowIndex, result);
+        cellsPerWindowIndex = 0;
         cellsPerWindow = cell(initCellSize, numColumns);
         
         % go to next time window
@@ -54,7 +62,7 @@ while true
         
         while timeWindowStart + timeWindowSize < timestamp
             % still not there
-            evaluateMeasurementCells([],0, timeWindowStart, timeWindowSize);
+            result = evaluateMeasurementBucket([],0, result);
             
             % further go to next time window
             timeWindowStart = timeWindowStart + timeWindowSize;    
@@ -62,27 +70,22 @@ while true
     end
     
     % this measurement is within our time window
+    cellsPerWindowIndex = cellsPerWindowIndex+1;
     if size(cellsPerWindow,1) < cellsPerWindowIndex
         cellsPerWindow = [cellsPerWindow;cell(size(cellsPerWindow,1), numColumns)];
     end
-    
     cellsPerWindow{cellsPerWindowIndex} = lineCell;
-    cellsPerWindowIndex = cellsPerWindowIndex+1;
-    
-    % read next line
-  % tline = fgetl(fid);
 end
 fclose(fid);
 
+%x = 1:10;
+%y = sin(x);
+%e = std(y)*ones(size(x))/3;
 
+%bar(x,y);
+%hold on;
+%errorbar(x,y,e,'.');
+%hold off;
 
-x = 1:10;
-y = sin(x);
-e = std(y)*ones(size(x))/3;
-
-bar(x,y);
-hold on;
-errorbar(x,y,e,'.');
-hold off;
 
 end

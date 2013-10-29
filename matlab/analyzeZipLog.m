@@ -1,4 +1,4 @@
-function [] = analyzeZipLog(zipFilePath, tempFolder)
+function [results] = analyzeZipLog(zipFilePath, tempFolder)
 
 %% parameters
 timeWindowSizeMs = 50;
@@ -22,13 +22,14 @@ for i=1:numLogFiles
    logFile = logFileList{i};
 
    
-   parseLogFile(logFile, timeWindowSizeMs);   
+   result = parseLogFile(logFile, timeWindowSizeMs);   
+   results(i) = result;
 end
 
 end
 
 
-%% 
+%% Function findLogFile
 % recursively looks for performance log files to analyze
 % returns a list of file pathes of performance log files
 function [logFileList] =  findLogFile(folder)
