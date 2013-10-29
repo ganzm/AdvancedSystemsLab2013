@@ -71,21 +71,18 @@ while true
     
     % this measurement is within our time window
     cellsPerWindowIndex = cellsPerWindowIndex+1;
+    
     if size(cellsPerWindow,1) < cellsPerWindowIndex
+        % double the space in cellsPerWindow (preallocate some space
         cellsPerWindow = [cellsPerWindow;cell(size(cellsPerWindow,1), numColumns)];
     end
+    
     cellsPerWindow{cellsPerWindowIndex} = lineCell;
 end
+
+% evaluate the last bucket
+result = evaluateMeasurementBucket(cellsPerWindow, cellsPerWindowIndex, result);
+
 fclose(fid);
-
-%x = 1:10;
-%y = sin(x);
-%e = std(y)*ones(size(x))/3;
-
-%bar(x,y);
-%hold on;
-%errorbar(x,y,e,'.');
-%hold off;
-
 
 end

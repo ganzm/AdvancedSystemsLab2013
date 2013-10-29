@@ -1,8 +1,4 @@
-function [results] = analyzeZipLog(zipFilePath, tempFolder)
-
-%% parameters
-timeWindowSizeMs = 50;
-
+function [results] = analyzeZipLog(zipFilePath, tempFolder, timeWindowSize)
 
 %% clear temp directory
 if exist(tempFolder, 'dir') ~= 0
@@ -22,7 +18,7 @@ for i=1:numLogFiles
    logFile = logFileList{i};
 
    
-   result = parseLogFile(logFile, timeWindowSizeMs);   
+   result = parseLogFile(logFile, timeWindowSize);   
    results(i) = result;
 end
 
