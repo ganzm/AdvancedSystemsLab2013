@@ -20,7 +20,7 @@
 
 \begin{abstract}
 
-This document, describes the message queuing system which was build. Architecture and design choices are shown and explained. Further test scenarios and test loads are defined. Resulting testoutput is described and analysed.
+This document, describes the message queuing system which was build. Architecture and design choices are shown and explained. Further test scenarios and test loads are defined. Resulting test output is described and analysed.
 
 \end{abstract}
 
@@ -52,10 +52,31 @@ In this section the system under test (or middle ware component) is described.
   \label{fig:middleware-threading}
 \end{figure}
 
+%% ----------------------------------------------
+\section{Design Decisions}
+
+\subsection{Schead Load}
+Schead load
+blocking reqeust response queues suboptimal
+
+If queue full, immediately stop request
+
+\subsection{NIO vs IO}
+
+NIO VS Blocking IO
+
+\subsection{Connection Pooling}
+
+\subsection{Buffer Pooling}
 
 
 \subsection{Message Transmission}
 
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{How We Measured Our System}
+
+\subsection{Hypothesis}
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Notes - to delete}
