@@ -93,8 +93,14 @@ public class Worker extends Thread {
 		factory.serializeResponseWithHeader(response, rawRequest);
 		task.setResponseBuffer(requestBuffer);
 
-		responseQueue.enqueue(task);
+		String responseString = response.getClass().getSimpleName();
+		if (!responseQueue.enqueue(task)) {
+			logger.warning("Queue full - Response dropped for Request " + request);
 
-		perfLog.log(System.currentTimeMillis() - startTime, "ProcessRequest#" + request.getClass().getSimpleName() + ":" + response.getClass().getSimpleName());
+			// Response is dropped
+			responseString = "FailedQueueFull";
+		}
+
+		perfLog.log(System.currentTimeMillis() - startTime, "ProcessRequest#" + request.getClass().getSimpleName() + ":" + responseString);
 	}
 }

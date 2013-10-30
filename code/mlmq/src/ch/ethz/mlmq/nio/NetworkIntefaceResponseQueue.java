@@ -32,8 +32,13 @@ public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
 
 	@Override
 	public boolean enqueue(WorkerTask workerTask) {
-		queue.add(workerTask);
-
+		boolean success = false;
+		try {
+			success = queue.add(workerTask);
+		} catch (IllegalStateException e) {
+			// queue full
+			success = false;
+		}
 		// wake up reactor
 		if (wakeupReactorRunnable == null) {
 			logger.warning("No wakeupReactorRunnable attached to NetworkIntefaceResponseQueue");
@@ -41,7 +46,7 @@ public class NetworkIntefaceResponseQueue implements WorkerTaskQueue {
 			wakeupReactorRunnable.run();
 		}
 
-		return true;
+		return success;
 	}
 
 	/**
