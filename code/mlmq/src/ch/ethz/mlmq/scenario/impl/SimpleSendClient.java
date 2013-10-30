@@ -32,13 +32,20 @@ public class SimpleSendClient extends ClientScenario {
 		String queueName = "QueueOf" + config.getName();
 		QueueDto queue = getOrCreateQueue(queueName);
 
+		// time when we started to send messages
+		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < numMessages; i++) {
 			byte[] content = ("Some Random Text and message Nr " + i).getBytes();
 			try {
 				client.sendMessage(queue.getId(), content, i % 10);
 
-				Thread.sleep(waitTimeBetweenMessages);
+				long dt = System.currentTimeMillis() - startTime;
 
+				if (dt / waitTimeBetweenMessages <= i) {
+					long timeToSleep = waitTimeBetweenMessages - (dt % waitTimeBetweenMessages);
+					Thread.sleep(timeToSleep);
+					// else { We are behind in sending messages - don't sleep }
+				}
 			} catch (IOException e) {
 				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
 
