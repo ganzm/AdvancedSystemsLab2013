@@ -15,3 +15,5 @@ code/mlmq/resource/brokerconfig.properties
 code/mlmq/resource/clientconfig.properties
 commando.txt
 matlab/tmp
+doc/milestone1/milestone1.bbl
+*.blg
