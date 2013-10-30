@@ -239,8 +239,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 			long time = System.currentTimeMillis() - clientInstance.getStartSendResponseTime();
 			long totalTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
 
-			perfLog.log(time, "SendResponse");
-			perfLog.log(totalTime, "TotalRequestResponse");
+			perfLog.log(time, "BSndResp");
+			perfLog.log(totalTime, "BTotReqResp");
 		}
 	}
 
@@ -301,7 +301,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		// do performance logging
 		long receiveTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
-		perfLog.log(receiveTime, "ReceiveRequest");
+		perfLog.log(receiveTime, "BRcvReq");
 
 		if (!requestQueue.enqueue(new WorkerTask(clientInstance.getClientContext(), messageBuffer))) {
 			logger.severe("WorkerTaskQueue full dropping Message from Client " + clientInstance);

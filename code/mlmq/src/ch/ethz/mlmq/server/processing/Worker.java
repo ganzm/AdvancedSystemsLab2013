@@ -101,6 +101,6 @@ public class Worker extends Thread {
 			responseString = "FailedQueueFull";
 		}
 
-		perfLog.log(System.currentTimeMillis() - startTime, "ProcessRequest#" + request.getClass().getSimpleName() + ":" + responseString);
+		perfLog.log(System.currentTimeMillis() - startTime, "BProcReq#" + request.getClass().getSimpleName() + ":" + responseString);
 	}
 }

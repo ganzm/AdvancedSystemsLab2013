@@ -86,7 +86,7 @@ public class RequestProcessor {
 			}
 
 		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "Request Processes - " + request.getClass().getSimpleName());
+			perfLog.log(System.currentTimeMillis() - startTime, "BDbReq-" + request.getClass().getSimpleName());
 		}
 	}
 
