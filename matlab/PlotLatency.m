@@ -43,7 +43,7 @@ for nIndex = 1:n
     agregated{nIndex} = dataN;
 end
 
-%% create plot
+%% calculate pot data
 x_mean = zeros(n,1);
 x_var = zeros(n,1);
 x_min = zeros(n,1);
@@ -59,6 +59,9 @@ for nIndex = 1:n
     x_max(nIndex) = max(agregated{nIndex});
 end
 
+%% create plot
+close all;
+
 figure;
 x = 1:n;
 y = x_mean;
@@ -67,12 +70,14 @@ bar(x,y);
 hold on;
 errorbar(x,y,e,'.');
 hold off;
-title(['with time window ' num2str(timeWindowSize)]);
+title(['mean latency with time window ' num2str(timeWindowSize)]);
+xlabel('');
+ylabel('latency [ms]');
 
-figure
-bar(x_min);
-title('min');
-
-figure
-bar(x_max);
-title('max');
+figure;
+bar([x_min, x_mean, x_max]);
+title('min/max');
+hleg1 = legend('min', 'mean', 'max');
+set(hleg1,'Location','NorthWest')
+set(hleg1,'Interpreter','none')
+ylabel('latency [ms]');
