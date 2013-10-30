@@ -26,11 +26,16 @@ This document, describes the message queuing system which was build. Architectur
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Messaging System}
-In this section the system under test (or middle ware component) is described.
+In this section the system under test (also named as middle ware component) is described.
 
 
 %% ----------------------------------------------
 \subsection{Overview}
+
+Figure \ref{fig:system-overview} shows a generic setup of the messaging system. Multiple middle ware components are connected to a single database and severs a couple of clients. Application state is persisted on the database, therefore a middle ware component can be considered as stateless.
+
+% ------------------------------------------------
+% Figure - system overview
 
 \begin{figure}
   \begin{center}
@@ -40,9 +45,17 @@ In this section the system under test (or middle ware component) is described.
   \label{fig:system-overview}
 \end{figure}
 
+Figure \ref{fig:middleware-threading} shows important software components of a single middle ware. A nonblocking network interface (NIO) handles communication to the clients. Received data is put to a single thread safe request queue.
 
-%% ----------------------------------------------
-\section{Messaging System}
+A configurable number of workers are constantly reading from the request queue. As soon as a worker gets a piece of work (request raw data) it then performs the following tasks:
+\begin{itemize}
+\item decoding: The raw request is parsed and converted into a request java object
+\item process: The request is processes. The database is accesses and a response object is created
+\item encode: The response object is serialized and placed into the response queue of the network interface.
+\end{itemize}
+
+% ------------------------------------------------
+% Figure - threading
 
 \begin{figure}
 	\begin{center}
@@ -54,23 +67,49 @@ In this section the system under test (or middle ware component) is described.
 
 %% ----------------------------------------------
 \section{Design Decisions}
+In this section a selection of the more important design decisions is presented. It is described why these choices were made and how they affect the behaviour of the system.
 
-\subsection{Schead Load}
+\subsection{Blocking vs. Nonblocking Network IO}
+Java basically allows two ways how to handle tcp/ip connections. There is the more straight forward way with blocking io and there is another api which allows nonblocking operation on sockets.
+
+The implementation of the middle ware features a single threaded networking software layer which implements the reactor pattern by using a \textit{java.nio.channels.Selector}. The basic idea is to let the Selector keep track of connections. By a connection based configuration we let the Selector know in which events we are interested in.
+
+\paragraph{Advantages}
+By using nonblocking io over the blocking method, we avoid that the number of threads in the system need to be scaled to the number of clients to simultaneously serve. It is assumed that system scales better in terms concurrent connections thant the blocking method for the simple fact that thread switches takes time and memory.
+
+\subsection{Database Connection Pooling}
+Establishing a jdbc database connection takes time. A Connection Pool keeps a list of database connections which are permanently opened. As soon as a connection is needed by a worker, it simply queries the pool for one.
+
+The pool needs to be accessed in an exclusive fashion. However the cost to avoid concurrent pool access should be way lower than creating a database connection each time one is needed.
+
+A nice effect of having a permanent database connection is that it allows the use of PreparedStatement. Sql statements which can be precompiled on the database system.
+
+\paragraph{Another option}
+Having a connection pool could have been avoided if every client was assigned a dedicated database connection. There would have been no need to synchronize worker threads to retrieve a connection. This however decreases the number of tuning parameter. Database connection would not have been optimally used. Connections would have been idling for each time consuming operation a worker performs.
+
+\subsection{Buffer Pooling}
+Serializing and deserializing messages which are up to 2kb long requires a buffer of at least the same size. In order to avoid excessive garbage collection it was decided to implement a pool containing message buffers.
+
+Pooled buffers are obtained from the networking interface before receiving a message. After processing the message and right before we lose the reference to the buffer it is put back to the pool for later use.
+
+Having this pool should significantly increase the period between garbage collection.
+
+\subsection{Message Transmission}
+Messages are passed on the initiative of a client (There is no way for the messaging system to push information to a specific client). A clients issues a requests and expects a response within a certain time. Each requests generates a response. In case of an error an error response is replied by the middle ware.
+
+A message consists of a 4 byte length field and a variable length field containing the payload.
+
+To send a messages (requests and responses) the first 4 bytes indicate the binary length of the message. After that the request (or response) is serialized.
+
+
+\subsection{Message Serialisation}
+
+
+\subsection{Load Shedding}
 Schead load
 blocking reqeust response queues suboptimal
 
 If queue full, immediately stop request
-
-\subsection{NIO vs IO}
-
-NIO VS Blocking IO
-
-\subsection{Connection Pooling}
-
-\subsection{Buffer Pooling}
-
-
-\subsection{Message Transmission}
 
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
