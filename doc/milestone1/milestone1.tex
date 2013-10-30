@@ -82,13 +82,13 @@ NIO VS Blocking IO
 
 \subsection{Overview}
 
-During a brainstorming session, a broad spectrum of performance relevant features were extracted, see figure~\ref{fig:features_mindmap}. Then, the primary features (PF, blue) and the secondary features (SF, green) were chosen according to the group membmers domain specific knowledge and presumptions.
+During a brainstorming session, a broad spectrum of performance relevant features were extracted, see figure~\ref{fig:features_mindmap}. Then, the primary features (PF, orange) and the secondary features (SF, green) were chosen according to the group membmers domain specific knowledge and presumptions.
 % Later: They were then validated during discussions with other groups and the teachin assistant.
 
 
 %\begin{landscape}
 
-\tikzset{concept/.append style={fill={none}}}
+%\tikzset{concept/.append style={fill={none}}}
 \tikzset{concept/.append style={circle}}
 \tikzset{level 1 concept/.append style={font=\sf, level distance = 44mm}}
 \tikzset{level 2 concept/.append style={font=\sf, level distance = 22mm}}
@@ -98,22 +98,22 @@ During a brainstorming session, a broad spectrum of performance relevant feature
 \begin{figure}
 \center
 \begin{tikzpicture}[grow cyclic, align=flush center]
-  \path[mindmap,concept color=black,text=black]
+  \path[mindmap,concept color=black,text=white]
     node[concept] {Performance Relevant Features}
     %[clockwise from=0]
-    child[concept color=blue] {
+    child[concept color=orange] {
       node[concept] {Setup}
-      child { 
-      	node[concept] {\# of Clients} 
-      }
       child {
+      	node[concept] {\# Clients} 
+      }
+      child[concept color=green!50!black] {
       	node[concept] {Use Shed Load [hanmer2007patterns]} 
       }
       child {
-      	node[concept] {\# of Brokers} 
+      	node[concept] {\# Brokers} 
       }
     }
-    child[concept] {
+    child[concept color=white!35!black] {
       node[concept] {System}
       child[concept color=green!50!black] { 
         node[concept] {Garbage Collection}
@@ -129,24 +129,24 @@ During a brainstorming session, a broad spectrum of performance relevant feature
       }
       child[concept color=green!50!black] { node[concept] {Indices}}
     }
-    child[concept] {
+    child[concept color=white!35!black] {
       node[concept] {Load types}
-      child[concept color=blue] { 
+      child[concept color=orange] { 
+      	node[concept] {Insertions} 
+      }
+      child[concept color=orange] {
       	node[concept] {Selects} 
       }
-      child[concept color=blue] {
-      	node[concept] {Inserts} 
-      }
-      child[concept color=blue] {
+      child[concept color=orange] {
       	node[concept] {Deletions} 
       }
     }
-    child[concept] { 
+    child[concept color=white!35!black] { 
       node[concept] {Queue / Pool Sizes}
-      child[concept color=blue] { 
-      	node[concept] {Worker pool size (per broker)} 
+      child[concept color=orange] { 
+      	node[concept] {Worker pool size} 
       }
-      child[concept color=blue] {
+      child[concept color=orange] {
       	node[concept] {Database connection pool size} 
       }
       child[concept color=green!50!black] {
@@ -156,7 +156,7 @@ During a brainstorming session, a broad spectrum of performance relevant feature
       	node[concept] {Response Queue Lenght} 
       }
     }
-    child[concept] { 
+    child[concept color=white!35!black] { 
       node[concept] {Logging} 
       child { 
       	node[concept] {Perfor-mance Logging} 
@@ -165,7 +165,7 @@ During a brainstorming session, a broad spectrum of performance relevant feature
       	node[concept] {Debug Logging} 
       }
     }
-    child {
+    child[concept color=white!35!black] {
       node[concept] {Data in Database}
       child { 
       	node[concept] {\# Registered Clients} 
@@ -184,6 +184,32 @@ During a brainstorming session, a broad spectrum of performance relevant feature
 \caption{Performance relevant features mind map} \label{fig:features_mindmap}
 \end{figure}
 %\end{landscape}
+
+\subsection{Primary features}
+
+According to figure~\ref{fig:features_mindmap}, the primary features are as follows:
+
+\begin{enumerate}
+  \item \textbf{\# Clients} The amount of clients interacting with the system.
+  \item \textbf{\# Brokers} The amount of brokers interacting with the system.
+  \item \textbf{Database connection pool size} The amount of database connections per broker to the database.
+  \item \textbf{Worker pool size} The amount of workers per broker.
+  \item \textbf{Insertions} When many insertions occur (send a message).
+  \item \textbf{Deletions} When many deletions occur (read a message and remove it from the queue).
+  \item \textbf{Deletions} When many deletions occur (read a message, but don't remove it from the queue).
+\end{enumerate}
+
+
+\subsection{Secondary features}
+
+According to figure~\ref{fig:features_mindmap}, the secondary features are as follows:
+
+\begin{enumerate}
+  \item \textbf{Message Size} The average size of the messages payloads.
+  \item \textbf{Use Shed Load} If the fault tolerance pattern Shed Load [hanmer2007pattern] is used or not.
+  \item \textbf{Garbage Collection} The time it takes for the garbage collection.
+\end{enumerate}
+
 
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{How We Measured Our System}
