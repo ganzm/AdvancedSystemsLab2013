@@ -245,8 +245,11 @@ According to figure~\ref{fig:features_mindmap}, the secondary features are as fo
 
 \begin{enumerate}
   \item \textbf{Message Size} The average size of the messages payloads.
-  \item \textbf{Use Shed Load} If the fault tolerance pattern Shed Load [hanmer2007pattern] is used or not.
+  \item \textbf{Use Shed Load} Whether the fault tolerance pattern Shed Load [hanmer2007pattern] is used or not.
   \item \textbf{Garbage Collection} The time it takes for the garbage collection.
+  \item \textbf{Indices} Whether indices are used or not.
+  \item \textbf{Request Queue Length} The amount of messages on a broker which are buffered until the are processed.
+    \item \textbf{Response Queue Length} The amount of messages on a broker which are buffered until the are sent back to the client.
 \end{enumerate}
 
 
