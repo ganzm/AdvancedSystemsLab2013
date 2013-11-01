@@ -41,6 +41,11 @@ public class PerformanceLoggerManager {
 			public void close() {
 				// do nothing
 			}
+
+			@Override
+			public void setContext(String key, String value) {
+				// do nothing
+			}
 		};
 	}
 

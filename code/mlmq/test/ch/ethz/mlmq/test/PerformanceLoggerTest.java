@@ -30,11 +30,12 @@ public class PerformanceLoggerTest {
 
 				@Override
 				protected void write(String logMessage) {
-					Assert.assertEquals("100;20131123113722666;bla\n", logMessage);
+					Assert.assertEquals("100;20131123113722666;bla;Blub[blubValue]\n", logMessage);
 					super.write(logMessage);
 				}
 			};
 
+			logger.setContext("Blub", "blubValue");
 			logger.log(100, "bla");
 			logger.close();
 

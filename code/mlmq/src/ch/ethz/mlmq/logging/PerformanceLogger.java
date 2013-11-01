@@ -10,4 +10,12 @@ public interface PerformanceLogger {
 	void log(long executionTime, String type);
 
 	void close();
+
+	/**
+	 * Adds context information to each and every logged line
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	void setContext(String key, String value);
 }

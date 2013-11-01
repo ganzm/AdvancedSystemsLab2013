@@ -5,12 +5,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
-	private static final String LOG_FORMAT = "%d;%2$tY%2$tm%2$td%2$tH%2$tM%2$tS%2$tL;%3$s\n"; // ignore the timezone: %2$tz
+	private static final String LOG_FORMAT = "%d;%2$tY%2$tm%2$td%2$tH%2$tM%2$tS%2$tL;%3$s;%4$s\n"; // ignore the timezone: %2$tz
+
+	private final ConcurrentHashMap<String, String> contextMap = new ConcurrentHashMap<>();
+	private String contextString = "";
 
 	private final Logger logger = Logger.getLogger(PerformanceLoggerImpl.class.getSimpleName());
 
@@ -43,7 +49,7 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
 	@Override
 	public synchronized void log(long executionTime, String type) {
-		String logMessage = String.format(LOG_FORMAT, executionTime, getCurrentDate().getTime(), type);
+		String logMessage = String.format(LOG_FORMAT, executionTime, getCurrentDate().getTime(), type, contextString);
 		write(logMessage);
 	}
 
@@ -86,6 +92,25 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
 	public void close() {
 		closeWriter();
+	}
+
+	@Override
+	public void setContext(String key, String value) {
+		contextMap.put(key, value);
+		contextString = contextMapToString();
+	}
+
+	private String contextMapToString() {
+		StringBuilder sb = new StringBuilder();
+		Set<Entry<String, String>> entrySet = contextMap.entrySet();
+		for (Entry<String, String> entry : entrySet) {
+			sb.append(entry.getKey());
+			sb.append("[");
+			sb.append(entry.getValue());
+			sb.append("]");
+		}
+
+		return sb.toString();
 	}
 
 }

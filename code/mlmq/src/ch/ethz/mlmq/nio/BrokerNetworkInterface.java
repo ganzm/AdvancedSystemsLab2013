@@ -184,6 +184,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		}
 
 		connectedClients.remove(clientInstance.getClientContext().getClientNetworkHandle());
+		perfLog.setContext("C", "" + connectedClients.size());
 	}
 
 	/**
@@ -288,6 +289,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		ConnectedClient clientInstance = new ConnectedClient(clientCounter, newClientChannel.getRemoteAddress().toString());
 		connectedClients.put(clientCounter, clientInstance);
+		perfLog.setContext("C", "" + connectedClients.size());
 
 		SelectionKey selectionKey = newClientChannel.register(selector, SelectionKey.OP_READ, clientInstance);
 
