@@ -72,6 +72,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	 */
 	private final Map<Integer, ConnectedClient> connectedClients = new HashMap<Integer, ConnectedClient>();
 
+	/**
+	 * assign each client a number
+	 */
 	private int clientCounter = 0;
 
 	private final ByteBufferPool byteBufferPool;

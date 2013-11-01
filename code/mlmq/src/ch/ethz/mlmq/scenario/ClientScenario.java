@@ -26,11 +26,39 @@ public abstract class ClientScenario extends Scenario {
 	@Override
 	public void init() throws MlmqException {
 		super.init();
-
+		delayClient();
 		try {
 			client.init();
 		} catch (IOException e) {
 			throw new MlmqException(e);
+		}
+	}
+
+	private void delayClient() {
+		int position = config.getMyMapping().getPosition();
+		int groupSize = config.getClientDelayGroupSize();
+		long delayPerGroupInMin = config.getClientDelayPerGroup();
+
+		if (groupSize <= 0 || delayPerGroupInMin <= 0) {
+			// delay feature is disabled
+			return;
+
+		}
+
+		// int division, round off, first group index starts at 0
+		int groupIndex = position / groupSize;
+		if (groupIndex == 0) {
+			// we are the first to start
+			return;
+		}
+		long totalDelayMs = groupIndex * delayPerGroupInMin * 60 * 1000;
+
+		logger.info("Delaying Client at Position[" + position + "] by total [" + (groupIndex * delayPerGroupInMin) + "]min start him with Group [" + groupIndex
+				+ "]");
+		try {
+			Thread.sleep(totalDelayMs);
+		} catch (InterruptedException e) {
+			logger.severe(LoggerUtil.getStackTraceString(e));
 		}
 	}
 

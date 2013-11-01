@@ -22,6 +22,9 @@ public class ClientConfiguration extends Configuration {
 	public static final String SCENARIO_MYTYPE = "scenario.mytype";
 	public static final String SCENARIO_MYPOSITION = "scenario.myposition";
 
+	private static final String CLIENT_DELAY_GROUPSIZE = "client.delay.groupsize";
+	private static final String CLIENT_DELAY_PERGROUP = "client.delay.delaypergroup";
+
 	public ClientConfiguration(Properties props) {
 		super(props);
 	}
@@ -89,5 +92,13 @@ public class ClientConfiguration extends Configuration {
 
 	public int getNumberOfConnectionAtempts() {
 		return getIntConfig(CLIENT_RECONNECT_COUNT);
+	}
+
+	public int getClientDelayGroupSize() {
+		return getIntConfig(CLIENT_DELAY_GROUPSIZE);
+	}
+
+	public long getClientDelayPerGroup() {
+		return getIntConfig(CLIENT_DELAY_PERGROUP);
 	}
 }
