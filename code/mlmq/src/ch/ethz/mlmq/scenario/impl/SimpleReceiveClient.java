@@ -56,7 +56,9 @@ public class SimpleReceiveClient extends ClientScenario {
 			for (QueueDto queue : queues) {
 				messageQueryInfo = new MessageQueryInfoDto(queue);
 				msg = client.dequeueMessage(messageQueryInfo);
-				logger.info("Dequeued Public Message From " + msg.getSender() + " Content " + new String(msg.getContent()));
+				if (msg != null) {
+					logger.info("Dequeued Public Message From " + msg.getSender() + " Content " + new String(msg.getContent()));
+				}
 			}
 
 			try {
