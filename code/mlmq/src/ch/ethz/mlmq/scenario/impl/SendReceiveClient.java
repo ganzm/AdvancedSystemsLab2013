@@ -11,6 +11,7 @@ import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.ClientScenario;
 
@@ -50,7 +51,7 @@ public class SendReceiveClient extends ClientScenario {
 	}
 
 	@Override
-	public void run() throws IOException {
+	public void run() throws IOException, MlmqException {
 		client.register();
 
 		String queueName = "QueueOf" + config.getName();
@@ -70,6 +71,9 @@ public class SendReceiveClient extends ClientScenario {
 					Thread.sleep(timeToSleep);
 					// else { We are behind in sending messages - don't sleep }
 				}
+			} catch (MlmqException e) {
+				logger.severe("MlmQEception while performing action - " + e + " " + LoggerUtil.getStackTraceString(e));
+
 			} catch (IOException e) {
 				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
 
@@ -81,7 +85,7 @@ public class SendReceiveClient extends ClientScenario {
 		}
 	}
 
-	private List<QueueDto> createPublicQueues() throws IOException {
+	private List<QueueDto> createPublicQueues() throws IOException, MlmqException {
 		List<QueueDto> result = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
 			result.add(getOrCreateQueue("Public-" + i));
@@ -89,7 +93,7 @@ public class SendReceiveClient extends ClientScenario {
 		return result;
 	}
 
-	private void performAction() throws IOException {
+	private void performAction() throws IOException, MlmqException {
 
 		if (rnd.nextBoolean()) {
 			// send a message
@@ -141,7 +145,7 @@ public class SendReceiveClient extends ClientScenario {
 		return ("Hi there I am a client with SentMessages[" + sentMessages + "] ReceivedMessages[" + receivedMessages + "] sent at " + new Date()).getBytes();
 	}
 
-	private QueueDto getOrCreateQueue(String queueName) throws IOException {
+	private QueueDto getOrCreateQueue(String queueName) throws IOException, MlmqException {
 		try {
 			return client.createQueue(queueName);
 		} catch (Exception e) {

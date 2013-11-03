@@ -17,8 +17,8 @@ import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
-import ch.ethz.mlmq.server.BrokerImpl;
 import ch.ethz.mlmq.server.BrokerConfiguration;
+import ch.ethz.mlmq.server.BrokerImpl;
 import ch.ethz.mlmq.server.db.util.DatabaseInitializer;
 import ch.ethz.mlmq.util.ConfigurationUtil;
 
@@ -65,7 +65,7 @@ public class SimpleSystemTest {
 	}
 
 	@Test
-	public void testSimple() throws IOException {
+	public void testSimple() throws IOException, MlmqException {
 		logger.info("Start SimpleTest");
 
 		BrokerDto defaultBroker = new BrokerDto();

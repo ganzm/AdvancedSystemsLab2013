@@ -8,6 +8,7 @@ import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.exception.MlmqException;
 
 /**
  * The client interface
@@ -34,14 +35,14 @@ public interface Client extends Closeable {
 	 * @return
 	 * @throws IOException
 	 */
-	ClientDto register() throws IOException;
+	ClientDto register() throws IOException, MlmqException;
 
 	/**
 	 * Creates a queue.
 	 * 
 	 * @return
 	 */
-	QueueDto createQueue(String queueName) throws IOException;
+	QueueDto createQueue(String queueName) throws IOException, MlmqException;
 
 	/**
 	 * Tries to find the where we can send personal messages to a client
@@ -50,7 +51,7 @@ public interface Client extends Closeable {
 	 * @return Queue may be null if not found
 	 * @throws IOException
 	 */
-	QueueDto lookupClientQueue(String queueName) throws IOException;
+	QueueDto lookupClientQueue(String queueName) throws IOException, MlmqException;
 
 	/**
 	 * Tries to find the where we can send personal messages to a client
@@ -66,14 +67,14 @@ public interface Client extends Closeable {
 	 * @return Queue may be null if not found
 	 * @throws IOException
 	 */
-	QueueDto lookupClientQueue(long clientId) throws IOException;
+	QueueDto lookupClientQueue(long clientId) throws IOException, MlmqException;
 
 	/**
 	 * Deletes a queue.
 	 * 
 	 * @param id
 	 */
-	void deleteQueue(long id) throws IOException;
+	void deleteQueue(long id) throws IOException, MlmqException;
 
 	/**
 	 * Sends a message to a specific queue.
@@ -82,7 +83,7 @@ public interface Client extends Closeable {
 	 * @param content
 	 * @param prio
 	 */
-	void sendMessage(long queueId, byte[] content, int prio) throws IOException;
+	void sendMessage(long queueId, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
 	 * Sends a message to multiple queues.
@@ -91,7 +92,7 @@ public interface Client extends Closeable {
 	 * @param message
 	 * @throws IOException
 	 */
-	void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException;
+	void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
 	 * Sends a private message to a client
@@ -101,7 +102,7 @@ public interface Client extends Closeable {
 	 * @param prio
 	 * @throws IOException
 	 */
-	void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException;
+	void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
 	 * 
@@ -117,7 +118,7 @@ public interface Client extends Closeable {
 	 * @throws IOException
 	 * @return returns a context identifier
 	 */
-	long sendRequestToClient(long client, byte[] content, int prio) throws IOException;
+	long sendRequestToClient(long client, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
 	 * 
@@ -127,7 +128,7 @@ public interface Client extends Closeable {
 	 * @param prio
 	 * @throws IOException
 	 */
-	long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException;
+	long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
 	 * Query for queues with pending messages.
@@ -141,7 +142,7 @@ public interface Client extends Closeable {
 	 * @return number of messages in the client's personal queue
 	 * @throws IOException
 	 */
-	int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException;
+	int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException, MlmqException;
 
 	/**
 	 * Reads the first message without removing it.
@@ -150,7 +151,7 @@ public interface Client extends Closeable {
 	 * @return
 	 * @throws IOException
 	 */
-	MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException;
+	MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException;
 
 	/**
 	 * Reads the first message and removes it.
@@ -159,5 +160,5 @@ public interface Client extends Closeable {
 	 * @return
 	 * @throws IOException
 	 */
-	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException;
+	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException;
 }

@@ -81,7 +81,7 @@ public class NetworkInterfaceTest {
 	}
 
 	@Test
-	public void testSendSimpleMessage() throws IOException {
+	public void testSendSimpleMessage() throws IOException, MlmqException {
 		QueueDto response = client.createQueue("UnitTest");
 
 		Assert.assertNotNull(response);

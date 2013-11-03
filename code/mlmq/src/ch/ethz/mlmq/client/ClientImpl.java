@@ -99,7 +99,7 @@ public class ClientImpl implements Client {
 		connection.close();
 	}
 
-	private Response sendRequest(Request request) throws IOException {
+	private Response sendRequest(Request request) throws IOException, MlmqException {
 		return sendRequestToBroker(request, broker);
 	}
 
@@ -113,14 +113,14 @@ public class ClientImpl implements Client {
 	 * @throws IOException
 	 * @throws MlmqException
 	 */
-	private Response sendRequestToBroker(Request request, BrokerDto broker) throws IOException {
+	private Response sendRequestToBroker(Request request, BrokerDto broker) throws IOException, MlmqException {
 		Response response = connection.submitRequest(request);
 
 		if (response instanceof ExceptionResponse) {
 			ExceptionResponse r = (ExceptionResponse) response;
 			Exception e = r.getException();
 			if (e != null) {
-				throw new IOException("Go ExceptionResponse from Server " + e.getMessage(), e);
+				throw new MlmqException("Go ExceptionResponse from Server " + e.getMessage(), e);
 			}
 		}
 
@@ -128,61 +128,61 @@ public class ClientImpl implements Client {
 	}
 
 	@Override
-	public ClientDto register() throws IOException {
+	public ClientDto register() throws IOException, MlmqException {
 		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest(name));
 		registeredAs = repsonse.getClientDto();
 		return registeredAs;
 	}
 
 	@Override
-	public QueueDto createQueue(String queueName) throws IOException {
+	public QueueDto createQueue(String queueName) throws IOException, MlmqException {
 		QueueResponse repsonse = (QueueResponse) sendRequest(new CreateQueueRequest(queueName));
 		return repsonse.getQueueDto();
 	}
 
 	@Override
-	public QueueDto lookupClientQueue(long clientId) throws IOException {
+	public QueueDto lookupClientQueue(long clientId) throws IOException, MlmqException {
 		QueueResponse repsonse = (QueueResponse) sendRequest(new LookupQueueRequest(clientId));
 		return repsonse.getQueueDto();
 	}
 
 	@Override
-	public QueueDto lookupClientQueue(String queueName) throws IOException {
+	public QueueDto lookupClientQueue(String queueName) throws IOException, MlmqException {
 		QueueResponse repsonse = (QueueResponse) sendRequest(new LookupQueueRequest(queueName));
 		return repsonse.getQueueDto();
 	}
 
 	@Override
-	public void deleteQueue(long id) throws IOException {
+	public void deleteQueue(long id) throws IOException, MlmqException {
 		sendRequest(new DeleteQueueRequest(id));
 	}
 
 	@Override
-	public void sendMessage(long queueId, byte[] content, int prio) throws IOException {
+	public void sendMessage(long queueId, byte[] content, int prio) throws IOException, MlmqException {
 		sendRequest(new SendMessageRequest(queueId, content, prio));
 	}
 
 	@Override
-	public void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException {
+	public void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException, MlmqException {
 		for (long q : queueIds) {
 			sendMessage(q, content, prio);
 		}
 	}
 
 	@Override
-	public MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException {
+	public MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException {
 		MessageResponse response = (MessageResponse) sendRequest(new PeekMessageRequest(messageQueryInfo));
 		return response.getMessageDto();
 	}
 
 	@Override
-	public MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException {
+	public MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException {
 		MessageResponse response = (MessageResponse) sendRequest(new DequeueMessageRequest(messageQueryInfo));
 		return response.getMessageDto();
 	}
 
 	@Override
-	public int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException {
+	public int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException, MlmqException {
 		if (queues == null) {
 			throw new IllegalArgumentException("Parameter queues must not be null");
 		}
@@ -194,20 +194,20 @@ public class ClientImpl implements Client {
 	}
 
 	@Override
-	public void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException {
+	public void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException, MlmqException {
 		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio);
 		sendRequest(sendMessageRequest);
 	}
 
 	@Override
-	public long sendRequestToClient(long clientId, byte[] content, int prio) throws IOException {
+	public long sendRequestToClient(long clientId, byte[] content, int prio) throws IOException, MlmqException {
 		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio, true);
 		SendClientMessageResponse response = (SendClientMessageResponse) sendRequest(sendMessageRequest);
 		return response.getConversationContext();
 	}
 
 	@Override
-	public long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException {
+	public long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException, MlmqException {
 		SendClientMessageRequest sendMessageRequest = new SendClientMessageRequest(clientId, content, prio, context);
 		SendClientMessageResponse response = (SendClientMessageResponse) sendRequest(sendMessageRequest);
 		return response.getConversationContext();

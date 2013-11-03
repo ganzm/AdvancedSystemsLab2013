@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.ClientScenario;
 
@@ -26,7 +27,7 @@ public class SimpleSendClient extends ClientScenario {
 	}
 
 	@Override
-	public void run() throws IOException {
+	public void run() throws IOException, MlmqException {
 		client.register();
 
 		String queueName = "QueueOf" + config.getName();
@@ -46,6 +47,8 @@ public class SimpleSendClient extends ClientScenario {
 					Thread.sleep(timeToSleep);
 					// else { We are behind in sending messages - don't sleep }
 				}
+			} catch (MlmqException e) {
+				logger.severe("MlmQEception while sending message - try again - " + e + " " + LoggerUtil.getStackTraceString(e));
 			} catch (IOException e) {
 				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
 
@@ -57,7 +60,7 @@ public class SimpleSendClient extends ClientScenario {
 		}
 	}
 
-	private QueueDto getOrCreateQueue(String queueName) throws IOException {
+	private QueueDto getOrCreateQueue(String queueName) throws IOException, MlmqException {
 		try {
 			return client.createQueue(queueName);
 		} catch (Exception e) {
