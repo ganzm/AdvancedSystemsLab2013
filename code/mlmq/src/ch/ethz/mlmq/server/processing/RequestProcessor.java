@@ -100,6 +100,9 @@ public class RequestProcessor {
 			QueueDao queueDao = connection.getQueueDao();
 
 			QueueDto receivingClientQueue = queueDao.getQueueByClientId(request.getClientId());
+			if (receivingClientQueue == null) {
+				throw new MlmqException("Could not find Queue for ClientId " + request.getClientId());
+			}
 			long receivingClientQueueId = receivingClientQueue.getId();
 
 			MessageDao messageDao = connection.getMessageDao();
@@ -311,6 +314,9 @@ public class RequestProcessor {
 			} else {
 
 				QueueDto queue = queueDao.getQueueByClientId(clientId);
+				if (queue == null) {
+					throw new MlmqException("Could not find Queue for ClientId " + clientId);
+				}
 				long queueId = queue.getId();
 				clientQueue = new QueueDto(queueId);
 

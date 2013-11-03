@@ -97,8 +97,13 @@ public class QueueDao implements Closeable {
 		deleteQueueStmt.execute();
 	}
 
+	/**
+	 * 
+	 * @param clientId
+	 * @return returns null if not found
+	 * @throws SQLException
+	 */
 	public QueueDto getQueueByClientId(long clientId) throws SQLException {
-
 		queryQueueByClientIdStmt.setLong(1, clientId);
 		try (ResultSet rs = queryQueueByClientIdStmt.executeQuery()) {
 
@@ -106,12 +111,18 @@ public class QueueDao implements Closeable {
 				long queueId = rs.getLong(1);
 				String name = rs.getString(2);
 				return new QueueDto(queueId, name);
+			} else {
+				return null;
 			}
-
-			throw new SQLException("ClientQueue not found for ClientId [" + clientId + "]");
 		}
 	}
 
+	/**
+	 * 
+	 * @param queueName
+	 * @return null if queue with that name was not found
+	 * @throws SQLException
+	 */
 	public QueueDto getQueueByName(String queueName) throws SQLException {
 		queryQueueByQueueNameStmt.setString(1, queueName);
 		try (ResultSet rs = queryQueueByQueueNameStmt.executeQuery()) {
@@ -120,9 +131,9 @@ public class QueueDao implements Closeable {
 				long queueId = rs.getLong(1);
 				String name = rs.getString(2);
 				return new QueueDto(queueId, name);
+			} else {
+				return null;
 			}
-
-			throw new SQLException("Queue not found with Name [" + queueName + "]");
 		}
 	}
 }

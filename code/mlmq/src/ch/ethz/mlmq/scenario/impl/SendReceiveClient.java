@@ -37,6 +37,10 @@ public class SendReceiveClient extends ClientScenario {
 
 	private final int totalNrOfClients;
 
+	private int receivedMessages;
+
+	private int sentMessages;
+
 	public SendReceiveClient(ClientConfiguration config) {
 		super(config);
 
@@ -99,12 +103,14 @@ public class SendReceiveClient extends ClientScenario {
 				// send personal message
 				logger.info("Sending personal Message to Client " + clientId);
 				client.sendMessage(receivingClientQueue.getId(), createRandomMessage(), rnd.nextInt(10));
+				sentMessages++;
 
 			} else {
 				// send to a random public queue
 				int queueIndex = rnd.nextInt(publicQueues.size());
 				logger.info("Sending public Message to Queue " + queueIndex);
 				client.sendMessage(publicQueues.get(queueIndex).getId(), createRandomMessage(), rnd.nextInt(10));
+				sentMessages++;
 			}
 
 		} else {
@@ -125,13 +131,14 @@ public class SendReceiveClient extends ClientScenario {
 				MessageDto msg = client.dequeueMessage(msgQueryInfo);
 				if (msg != null) {
 					logger.info("Receive Message " + new String(msg.getContent()));
+					receivedMessages++;
 				}
 			}
 		}
 	}
 
 	private byte[] createRandomMessage() {
-		return ("Hi there sent at " + new Date()).getBytes();
+		return ("Hi there I am a client with SentMessages[" + sentMessages + "] ReceivedMessages[" + receivedMessages + "] sent at " + new Date()).getBytes();
 	}
 
 	private QueueDto getOrCreateQueue(String queueName) throws IOException {
