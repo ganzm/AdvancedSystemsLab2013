@@ -15,17 +15,61 @@
 %- explain the plot/experiment
 
 
+\subsection{2 hour test}
+To verify that the system runs stable over a long period of time an experiment is performed which puts a constant load onto the system for 2 hours.
+
+\paragraph{Experiment setup}
+The experiment is performed on the Amazone cloud with a certain number of clients constantly sending messages and some consuming messages. 
+
+\begin{tabular}{|l|c|}
+\hline 
+Parameter & Value \\
+\hline 
+Where to run & Amazone Cloud \\ 
+Amazone instance type for the database & TODO \\ 
+Amazone instance type for the middle(s) ware& TODO \\ 
+Amazone instance type for the clients & TODO \\ 
+Number of middle wares & 1 \\ 
+Number of sending clients & 4 (2 per machine) \\ 
+Number of sending clients & 4 (2 per machine) \\ 
+Client message send interval & 100ms \\
+\hline 
+\end{tabular}
+
+\paragraph{Hypothesis}
+Since the system will not be saturated we expect no changes over time concerning response time and throughput. There will be sent and received 40 messages per second which should be easy to handle by a single middle ware instance.
+
+\paragraph{Results}
+
+TODO
+
+See Testrun 11
+
+% https://testmaster-asl-eth.renuo.ch/test_runs/11
+
+\paragraph{Interpretation}
+
+TODO
+
 \subsection{$2^k$ Experiment}
-In order to determine the affect of a number of primary factors it was decided to do a $2^k$ analysis on the features described in the following section.
+In order to determine the influence of a number of primary factors on to the system it was decided to do a $2^k$ analysis on the features described in the following section.
 
-\subsubsection{Primary features being evaluated}
+For each feature level an experiment of 20min is performed where clients send 10 messages per second
 
-\paragraph{Number of clients}
+\subsubsection{Factors and Levels}
+
+\paragraph{Number of Clients}
+The number of simultaneously connected clients is varied between 8 and 20
 
 \paragraph{Number of brokers}
 
+The number of middleware components is varied between 1 and 4
 \paragraph{Number of workers}
 
+The number of worker threads running on a single middle ware component is varied between 3 and 10
+
 \paragraph{Number of Db Connections}
+
+The number of db connection a single middleware concurrently has is varied between 3 and 10
 
 \end{document}
