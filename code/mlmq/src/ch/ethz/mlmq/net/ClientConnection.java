@@ -142,7 +142,7 @@ public class ClientConnection implements Closeable {
 		// write message to the socket
 		ioBuffer.flip();
 		int numBytes = clientSocket.write(ioBuffer);
-		logger.fine("Client wrote " + numBytes + " bytes");
+		logger.finer("Client wrote " + numBytes + " bytes");
 
 		ioBuffer.clear();
 	}
