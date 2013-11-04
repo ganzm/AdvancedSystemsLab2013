@@ -17,7 +17,8 @@ public class HeaderInfo {
 	}
 
 	public long getStartBucketTime() {
-		try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)));) {
+		try (BufferedReader din = new BufferedReader(new InputStreamReader(
+				new FileInputStream(file)))) {
 			this.header = din.readLine();
 			this.firstLine = din.readLine();
 		} catch (IOException ex) {
