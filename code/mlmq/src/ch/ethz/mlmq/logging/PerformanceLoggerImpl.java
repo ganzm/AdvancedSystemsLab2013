@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
-	private static final String LOG_FORMAT = "%d;%2$tY%2$tm%2$td%2$tH%2$tM%2$tS%2$tL;%3$s;%4$s\n"; // ignore the timezone: %2$tz
+	private static final String LOG_FORMAT = "%d;%d;%3$s;%4$s\n";
 
 	private final ConcurrentHashMap<String, String> contextMap = new ConcurrentHashMap<>();
 	private String contextString = "";
@@ -49,7 +49,7 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
 	@Override
 	public synchronized void log(long executionTime, String type) {
-		String logMessage = String.format(LOG_FORMAT, executionTime, getCurrentDate().getTime(), type, contextString);
+		String logMessage = String.format(LOG_FORMAT, executionTime, getCurrentDate().getTimeInMillis(), type, contextString);
 		write(logMessage);
 	}
 

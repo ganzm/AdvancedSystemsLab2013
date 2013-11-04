@@ -18,19 +18,22 @@ public class PerformanceLoggerTest {
 	@Test
 	public void testPerformanceLogger() throws FileNotFoundException, IOException {
 		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log", "logtest");
+
+		final long timeInMillis = System.currentTimeMillis();
+
 		try {
 			PerformanceLoggerImpl logger = new PerformanceLoggerImpl(config) {
 				@Override
 				protected Calendar getCurrentDate() {
+
 					Calendar c = Calendar.getInstance();
-					c.set(Calendar.MILLISECOND, 666);
-					c.set(2013, 10, 23, 11, 37, 22);
+					c.setTimeInMillis(timeInMillis);
 					return c;
 				}
 
 				@Override
 				protected void write(String logMessage) {
-					Assert.assertEquals("100;20131123113722666;bla;Blub[blubValue]\n", logMessage);
+					Assert.assertEquals("100;" + timeInMillis + ";bla;Blub[blubValue]\n", logMessage);
 					super.write(logMessage);
 				}
 			};
