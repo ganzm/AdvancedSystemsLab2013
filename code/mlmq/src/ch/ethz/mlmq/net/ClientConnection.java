@@ -112,8 +112,6 @@ public class ClientConnection implements Closeable {
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 		} catch (Exception ex) {
-			logger.severe("Exception while sending Message " + ex + " " + LoggerUtil.getStackTraceString(ex));
-
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 
