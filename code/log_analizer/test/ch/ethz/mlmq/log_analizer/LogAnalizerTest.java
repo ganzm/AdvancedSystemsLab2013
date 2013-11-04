@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class LogSplitTest {
+public class LogAnalizerTest {
 
 	private static final String TEST_LOG1_PATH = "resource/test/test_log.log";
 	private static final String TEST_LOG2_PATH = "resource/test/test2_log.log";
