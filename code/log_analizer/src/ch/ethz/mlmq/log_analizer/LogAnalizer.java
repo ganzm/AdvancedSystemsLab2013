@@ -1,6 +1,10 @@
 package ch.ethz.mlmq.log_analizer;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,12 +27,41 @@ public class LogAnalizer {
 	 * @return
 	 */
 	public ArrayList<Bucket> getBuckets(String messageType, long windowSize) {
-		return crunch(messageType);
+		ArrayList<Bucket> b = new ArrayList<>();
+		long startBucketPosition = getStartBucketTime();
+
+		for (File file : files) {
+			try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+				din.readLine(); // skip header
+				processLines(messageType, windowSize, b, startBucketPosition, din);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
+		return b;
 	}
 
-	private ArrayList<Bucket> crunch(String messageType) {
+	private void processLines(String messageType, long windowSize, ArrayList<Bucket> b, long startBucketPosition, BufferedReader din) throws IOException {
+		while (true) {
+			String line = din.readLine();
+			if (line == null)
+				break;
+			processLine(messageType, b, line, startBucketPosition, windowSize);
+		}
+	}
 
-		return bucketsByName.get(messageType);
+	private void processLine(String messageType, ArrayList<Bucket> b, String line, long startBucketPosition, long windowSize) {
+		LogLine l = LogLineParser.parseLogLine(line);
+		if (!l.getName().equals(messageType))
+			return;
+
+		int pos = l.getBucketPosition(startBucketPosition, windowSize);
+
+		while (b.size() <= pos)
+			b.add(new Bucket());
+
+		b.get(pos).addValue(l.getDuration());
 	}
 
 	public long getStartBucketTime() {
