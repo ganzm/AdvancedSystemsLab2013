@@ -19,7 +19,7 @@ public class LogAnalizerTest {
 		Assert.assertTrue(f.exists());
 
 		LogAnalizer l = new LogAnalizer();
-		l.addFile(testLogPath);
+		l.addFile(FileUtils.getFile(testLogPath));
 		return l;
 	}
 
@@ -33,8 +33,8 @@ public class LogAnalizerTest {
 	@Test
 	public void testCorrectBucketSizeWithMultipleFiles() throws Exception {
 		LogAnalizer l = getLogAnalizer();
-		l.addFile(TEST_LOG2_PATH);
-		l.addFile(TEST_LOG3_PATH);
+		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
+		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
 		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2);
 		Assert.assertEquals(4, b.size());
 	}
@@ -46,25 +46,25 @@ public class LogAnalizerTest {
 		Bucket b1 = b.get(0);
 		Bucket b2 = b.get(1);
 
-		Assert.assertEquals(4, b1.getCount());
-		Assert.assertEquals(1, b2.getCount());
+		Assert.assertEquals(4, b1.count());
+		Assert.assertEquals(1, b2.count());
 	}
 
 	@Test
 	public void testCorrectBucketsWithMultipleFiles() throws Exception {
 		LogAnalizer l = getLogAnalizer();
-		l.addFile(TEST_LOG2_PATH);
-		l.addFile(TEST_LOG3_PATH);
+		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
+		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
 		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2);
 		Bucket b1 = b.get(0);
 		Bucket b2 = b.get(1);
 		Bucket b3 = b.get(2);
 		Bucket b4 = b.get(3);
 
-		Assert.assertEquals(12, b1.getCount());
-		Assert.assertEquals(3, b2.getCount());
-		Assert.assertEquals(0, b3.getCount());
-		Assert.assertEquals(1, b4.getCount());
+		Assert.assertEquals(12, b1.count());
+		Assert.assertEquals(3, b2.count());
+		Assert.assertEquals(0, b3.count());
+		Assert.assertEquals(1, b4.count());
 	}
 
 	@Test
@@ -77,8 +77,8 @@ public class LogAnalizerTest {
 	@Test
 	public void testBucketStartTimeWithMultipleFiles() throws Exception {
 		LogAnalizer l = getLogAnalizer();
-		l.addFile(TEST_LOG2_PATH);
-		l.addFile(TEST_LOG3_PATH);
+		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
+		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
 		long startBucketTime = l.getStartBucketTime();
 		Assert.assertEquals(1022, startBucketTime);
 	}

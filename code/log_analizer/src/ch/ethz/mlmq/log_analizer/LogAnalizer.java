@@ -7,14 +7,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import org.apache.commons.io.FileUtils;
-
 public class LogAnalizer {
 
 	private ArrayList<File> files = new ArrayList<>();
 
-	public void addFile(String testLogPath) {
-		files.add(FileUtils.getFile(testLogPath));
+	public void addFile(File testLogFile) {
+		files.add(testLogFile);
 	}
 
 	/**

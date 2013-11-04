@@ -11,7 +11,7 @@ public class Bucket {
 	private List<Double> values = new ArrayList<>();
 	private double[] primitiveValuesCache;
 
-	public int getCount() {
+	public int count() {
 		return values.size();
 	}
 
