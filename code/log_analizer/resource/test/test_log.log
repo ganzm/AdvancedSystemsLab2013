@@ -1,0 +1,8 @@
+BrokerConfiguration Scenario[SimpleShutdownBroker] Port[8099] WorkerThreadCount[4] DbConnectionPoolSize[3]
+10;2011;BRcvReq;C[3]
+15;3010;BRcvReq;C[3]
+9;3071;BProcReq#DequeueMessageRequest:MessageResponse;C[3]
+11;4062;BRcvReq;C[3]
+14;5296;BRcvReq;C[3]
+9;6010;BDbReq-DequeueMessageRequest;C[3]
+20;123010;BRcvReq;C[3]

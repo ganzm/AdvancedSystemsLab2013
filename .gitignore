@@ -3,7 +3,7 @@ code/mlmq/target/classes/META-INF/
 *.class
 *.aux
 *.nav
-*.log
+#*.log
 *.snm
 *.synctex.gz
 *.toc
@@ -20,3 +20,7 @@ doc/milestone1/milestone1.bbl
 matlab/*.asv
 doc/milestone1/milestone1.pdf
 code/log_analizer/doc
+code/log_analizer/bin
+code/log_analizer/target
+matlab/tmp7
+milestone1.log
