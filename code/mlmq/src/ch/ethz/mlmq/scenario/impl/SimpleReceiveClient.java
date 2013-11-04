@@ -40,8 +40,8 @@ public class SimpleReceiveClient extends ClientScenario {
 			try {
 				queues.clear();
 				int messagesForMe = client.queuesWithPendingMessages(queues, 10);
-				logger.info("Queues with pending messages " + queues);
-				logger.info("My Queue contains " + messagesForMe + " messages");
+				logger.fine("Queues with pending messages " + queues);
+				logger.fine("My Queue contains " + messagesForMe + " messages");
 
 				MessageDto msg = null;
 				MessageQueryInfoDto messageQueryInfo = new MessageQueryInfoDto(myQueue);
@@ -50,7 +50,7 @@ public class SimpleReceiveClient extends ClientScenario {
 					do {
 						msg = client.dequeueMessage(messageQueryInfo);
 						messagesForMe--;
-						logger.info("Dequeued personal Message " + new String(msg.getContent()));
+						logger.fine("Dequeued personal Message " + new String(msg.getContent()));
 					} while (messagesForMe >= 0 && msg != null && running);
 				}
 
@@ -58,7 +58,7 @@ public class SimpleReceiveClient extends ClientScenario {
 					messageQueryInfo = new MessageQueryInfoDto(queue);
 					msg = client.dequeueMessage(messageQueryInfo);
 					if (msg != null) {
-						logger.info("Dequeued Public Message From " + msg.getSender() + " Content " + new String(msg.getContent()));
+						logger.fine("Dequeued Public Message From " + msg.getSender() + " Content " + new String(msg.getContent()));
 					}
 				}
 

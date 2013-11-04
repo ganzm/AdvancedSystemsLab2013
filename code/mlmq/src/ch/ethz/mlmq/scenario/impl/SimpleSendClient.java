@@ -54,6 +54,7 @@ public class SimpleSendClient extends ClientScenario {
 
 				// stop sending messages in case of ioexception
 				i = numMessages;
+				break;
 			} catch (Exception e) {
 				logger.warning("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
 			}
