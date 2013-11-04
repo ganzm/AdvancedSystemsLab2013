@@ -27,10 +27,6 @@ public class DbConnectionPool {
 
 	private int poolSize;
 
-	private int nrOfMissingConnections;
-
-	private final Object lock = new Object();
-
 	public DbConnectionPool(int poolSize, String url, String userName, String password) {
 		connections = new ArrayBlockingQueue<DbConnection>(poolSize);
 		this.poolSize = poolSize;
@@ -68,31 +64,12 @@ public class DbConnectionPool {
 	 * @return
 	 * @throws OutOfConnectionsException
 	 */
-	public DbConnection getConnection() throws OutOfConnectionsException {
-		DbConnection connection = connections.poll();
-		if (connection != null) {
-			return connection;
+	public DbConnection getConnection() throws MlmqException {
+		try {
+			return connections.take();
+		} catch (InterruptedException e1) {
+			throw new MlmqException("Could not get DBConnection from Pool" + e1);
 		}
-
-		if (nrOfMissingConnections > 0) {
-			try {
-				connection = createConnection();
-
-				synchronized (lock) {
-					if (nrOfMissingConnections > 0) {
-						nrOfMissingConnections--;
-						return connection;
-					}
-					// else - there was another thread which called getConnection at the "same" moment
-					// connection was created but should not be given away because connection pool size will be exceeded
-					// throw OutOfConnectinosException instead
-				}
-			} catch (SQLException e) {
-				throw new OutOfConnectionsException("No more connections available - Could not connect ot database", e);
-			}
-		}
-
-		throw new OutOfConnectionsException("No more connections available - try again later - PoolSize is " + poolSize);
 	}
 
 	/**
@@ -104,18 +81,19 @@ public class DbConnectionPool {
 	 */
 	public void returnConnection(DbConnection connection) throws MlmqException {
 		if (connection.isClosed()) {
-			logger.info("Closed connection was returned, create a new one");
+			logger.warning("Closed connection was returned, create a new one");
 
 			try {
-				connections.add(createConnection());
+				connection = createConnection();
 			} catch (SQLException e) {
-				nrOfMissingConnections++;
-				throw new MlmqException("Exception while creating a new connection");
-			} catch (IllegalStateException e) {
-				throw new MlmqException("Internal PoolException - too many connections returned", e);
+				throw new MlmqException(e);
 			}
-		} else {
+		}
+
+		try {
 			connections.add(connection);
+		} catch (IllegalStateException e) {
+			throw new MlmqException("Internal PoolException - too many connections returned", e);
 		}
 	}
 
