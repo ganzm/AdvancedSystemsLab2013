@@ -1,4 +1,4 @@
-function [results] = analyzeZipLog(zipFilePath, tempFolder, timeWindowSize)
+function [results] = analyzeZipLog(zipFilePath, tempFolder, timeWindowSize, logLineCondition)
 
 %% clear temp directory
 if exist(tempFolder, 'dir') ~= 0
@@ -17,8 +17,7 @@ numLogFiles = size(logFileList,2);
 for i=1:numLogFiles
    logFile = logFileList{i};
 
-   
-   result = parseLogFile(logFile, timeWindowSize);   
+   result = parseLogFile(logFile, timeWindowSize, logLineCondition);   
    results(i) = result;
 end
 
@@ -30,7 +29,9 @@ end
 % returns a list of file pathes of performance log files
 function [logFileList] =  findLogFile(folder)
 folderSeparator = '/';
-logFileRegex = '\S*\.log';
+
+perfLogRegex = '\S*\.log';
+sysLogRegex = '\S*\log.log';
 
 logFileList = cell(0,1);
 
@@ -54,7 +55,7 @@ for i=1:numFiles
         
          logFileList = [logFileList, subFileList];
     else
-     if regexp(absFilePath, logFileRegex)
+     if regexp(absFilePath, perfLogRegex) && isempty(regexp(absFilePath, sysLogRegex))
          i = size(logFileList, 1)+1;
          logFileList{i} = absFilePath;
      end

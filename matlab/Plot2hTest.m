@@ -1,8 +1,9 @@
-timeWindowSize = 100;
+timeWindowSize = 5000;
+
 
 logLineCondition = @(t) regexp(t, 'ClientSendRequest');
 
-result = analyzeZipLog('testdata/logs.zip', 'tmp6', timeWindowSize, logLineCondition);
+result = analyzeZipLog('testdata/TestRun17-2htest.zip', 'tmp7', timeWindowSize, logLineCondition);
 
 numFiles = size(result,2);
 

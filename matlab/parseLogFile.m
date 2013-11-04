@@ -1,4 +1,4 @@
-function [ result ] = parseLogFile(logFileName, timeWindowSize)
+function [ result ] = parseLogFile(logFileName, timeWindowSize, logLineCondition)
 %%
 % parse a single log file
 %
@@ -18,6 +18,9 @@ textScanPattern = '%d%d64%s%s';
 %% read files
 fid = fopen(logFileName);
 
+% parse header
+header = fgets(fid);
+
 % parse line and extract TimeWindowStart
 lineCell = textscan(fid,textScanPattern,1, 'delimiter',';');
 
@@ -32,6 +35,7 @@ cellsPerWindow = cell(initCellSize, numColumns);
 cellsPerWindowIndex = 0;
 
 result = struct;
+result.header = header;
 result.startTime = timeWindowStart;
 result.name = logFileName;
 result.timeWindowSize = timeWindowSize;
@@ -53,7 +57,7 @@ while true
         % this measurment is outside our time window
         
         % evaluate measurments from the previous window
-        result = evaluateMeasurementBucket(cellsPerWindow, cellsPerWindowIndex, result);
+        result = evaluateMeasurementBucket(cellsPerWindow, cellsPerWindowIndex, result, logLineCondition);
         cellsPerWindowIndex = 0;
         cellsPerWindow = cell(initCellSize, numColumns);
         
@@ -81,7 +85,7 @@ while true
 end
 
 % evaluate the last bucket
-result = evaluateMeasurementBucket(cellsPerWindow, cellsPerWindowIndex, result);
+result = evaluateMeasurementBucket(cellsPerWindow, cellsPerWindowIndex, result, logLineCondition);
 
 fclose(fid);
 
