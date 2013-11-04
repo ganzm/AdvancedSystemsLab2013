@@ -1,9 +1,10 @@
 timeWindowSize = 5000;
 
 
-logLineCondition = @(t) regexp(t, 'ClientSendRequest');
+%logLineCondition = @(t) regexp(t, 'ClientSendRequest');
+logLineCondition = @(t) regexp(t, 'BTotReqResp');
 
-result = analyzeZipLog('testdata/TestRun17-2htest.zip', 'tmp7', timeWindowSize, logLineCondition);
+result = analyzeZipLog('../../ethz-asl-testmaster-data/zips/2htest/test_run_17.zip', 'tmp7', timeWindowSize, logLineCondition);
 
 numFiles = size(result,2);
 

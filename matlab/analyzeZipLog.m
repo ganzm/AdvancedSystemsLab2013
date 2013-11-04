@@ -1,25 +1,25 @@
 function [results] = analyzeZipLog(zipFilePath, tempFolder, timeWindowSize, logLineCondition)
 
-%% clear temp directory
-if exist(tempFolder, 'dir') ~= 0
-    disp(['remove temp folder ' tempFolder]);
-    rmdir(tempFolder, 's');
-end
+    %% clear temp directory
+    if exist(tempFolder, 'dir') ~= 0
+        disp(['remove temp folder ' tempFolder]);
+        rmdir(tempFolder, 's');
+    end
 
-%% extract zip file
-disp(['Extracting ' zipFilePath ' to ' tempFolder]);
-unzip(zipFilePath, tempFolder);
+    %% extract zip file
+    disp(['Extracting ' zipFilePath ' to ' tempFolder]);
+    unzip(zipFilePath, tempFolder);
 
-%% walk the directory
-logFileList = findLogFile(tempFolder);
+    %% walk the directory
+    logFileList = findLogFile(tempFolder);
 
-numLogFiles = size(logFileList,2);
-for i=1:numLogFiles
-   logFile = logFileList{i};
+    numLogFiles = size(logFileList,2);
+    for i=1:numLogFiles
+       logFile = logFileList{i};
 
-   result = parseLogFile(logFile, timeWindowSize, logLineCondition);   
-   results(i) = result;
-end
+       result = parseLogFile(logFile, timeWindowSize, logLineCondition);   
+       results(i) = result;
+    end
 
 end
 
@@ -35,7 +35,8 @@ sysLogRegex = '\S*\log.log';
 
 logFileList = cell(0,1);
 
-fileList = ls(folder);
+%fileList = ls(folder);
+fileList = arrayfun(@(y) y.name, dir(folder), 'UniformOutput', false);
 [numFiles, ~] = size(fileList);
 
 for i=1:numFiles
@@ -45,8 +46,10 @@ for i=1:numFiles
         % skip . and .. dir
         continue;
     end
+   
     
-    absFilePath = [folder  folderSeparator fileName];
+    absFilePath = strcat(folder, folderSeparator, fileName);
+    absFilePath = absFilePath{1};
     
     if exist(absFilePath, 'dir')
         disp(['checking folder ' absFilePath]);
@@ -55,7 +58,11 @@ for i=1:numFiles
         
          logFileList = [logFileList, subFileList];
     else
-     if regexp(absFilePath, perfLogRegex) && isempty(regexp(absFilePath, sysLogRegex))
+        absFilePath
+        tmp1 = regexp(absFilePath, perfLogRegex);
+        tmp2 = regexp(absFilePath, sysLogRegex);
+        
+     if ~isempty(tmp1) && isempty(tmp2)
          i = size(logFileList, 1)+1;
          logFileList{i} = absFilePath;
      end
