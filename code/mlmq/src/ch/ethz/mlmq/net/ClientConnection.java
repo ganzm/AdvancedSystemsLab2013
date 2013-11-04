@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
@@ -59,12 +60,14 @@ public class ClientConnection implements Closeable {
 
 		Response response = null;
 		TimeoutTimerTask timeoutTask = null;
-		logger.info("Submitting Request " + request.getClass().getSimpleName());
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("Submitting Request " + request.getClass().getSimpleName());
+		}
 
 		try {
 			writeToSocket(request);
 
-			logger.info("Wait for response");
+			logger.fine("Wait for response");
 
 			int numBytes = -1;
 			int responseLenght = -1;

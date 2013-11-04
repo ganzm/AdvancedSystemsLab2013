@@ -302,7 +302,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 	}
 
 	private void onMessage(ConnectedClient clientInstance, CloseableByteBuffer messageBuffer) {
-		logger.info("onmessage " + clientInstance + " " + messageBuffer);
+		if (logger.isLoggable(Level.FINE)) {
+			logger.fine("onmessage " + clientInstance + " " + messageBuffer);
+		}
 
 		// do performance logging
 		long receiveTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();

@@ -51,7 +51,7 @@ public class RequestProcessor {
 			throw new MlmqException("Client not yet registere");
 		}
 
-		logger.info("Process Request " + request);
+		logger.fine("Process Request " + request);
 		try {
 
 			if (request instanceof CreateQueueRequest) {
