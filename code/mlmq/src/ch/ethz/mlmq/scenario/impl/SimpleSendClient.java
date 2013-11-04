@@ -62,7 +62,12 @@ public class SimpleSendClient extends ClientScenario {
 
 	private QueueDto getOrCreateQueue(String queueName) throws IOException, MlmqException {
 		try {
-			return client.createQueue(queueName);
+			QueueDto queue = client.lookupClientQueue(queueName);
+			if (queue == null) {
+				return client.createQueue(queueName);
+			} else {
+				return queue;
+			}
 		} catch (Exception e) {
 			logger.info("Queue " + queueName + " already exists try to lookup queue");
 			return client.lookupClientQueue(queueName);
