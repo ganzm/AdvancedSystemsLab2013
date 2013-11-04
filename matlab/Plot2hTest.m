@@ -1,4 +1,4 @@
-timeWindowSize = 5000;
+timeWindowSize = 2 * 60 * 1000; % 2 min
 
 
 %logLineCondition = @(t) regexp(t, 'ClientSendRequest');
