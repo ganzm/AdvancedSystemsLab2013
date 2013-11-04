@@ -5,6 +5,8 @@ import org.junit.Test;
 
 public class BucketTest {
 
+	private static final int HEAVY_LOAD_TIMES = 10000; // set to 10000000 for really heavy load
+
 	@Test
 	public void testBucketMean() throws Exception {
 		Bucket b = new Bucket();
@@ -35,15 +37,15 @@ public class BucketTest {
 	public void testBucketMeanHeavyLoad() throws Exception {
 		Bucket b = new Bucket();
 
-		for (int i = 0; i < 2000000; i++)
+		for (int i = 0; i < 2 * HEAVY_LOAD_TIMES; i++)
 			b.addValue(10);
 		Assert.assertEquals(10.0, b.mean(), 0.0000001);
 
-		for (int i = 0; i < 1000000; i++)
+		for (int i = 0; i < HEAVY_LOAD_TIMES; i++)
 			b.addValue(25);
 		Assert.assertEquals(15.0, b.mean(), 0.0000001);
 
-		for (int i = 0; i < 1000000; i++)
+		for (int i = 0; i < HEAVY_LOAD_TIMES; i++)
 			b.addValue(35);
 		Assert.assertEquals(20.0, b.mean(), 0.0000001);
 	}
