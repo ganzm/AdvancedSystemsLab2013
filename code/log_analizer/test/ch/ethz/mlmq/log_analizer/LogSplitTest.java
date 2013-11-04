@@ -82,4 +82,5 @@ public class LogSplitTest {
 		long startBucketTime = l.getStartBucketTime();
 		Assert.assertEquals(1022, startBucketTime);
 	}
+
 }
