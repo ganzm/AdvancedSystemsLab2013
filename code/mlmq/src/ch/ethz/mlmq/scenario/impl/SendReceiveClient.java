@@ -105,14 +105,14 @@ public class SendReceiveClient extends ClientScenario {
 
 			if (receivingClientQueue != null && rnd.nextBoolean()) {
 				// send personal message
-				logger.info("Sending personal Message to Client " + clientId);
+				logger.fine("Sending personal Message to Client " + clientId);
 				client.sendMessage(receivingClientQueue.getId(), createRandomMessage(), rnd.nextInt(10));
 				sentMessages++;
 
 			} else {
 				// send to a random public queue
 				int queueIndex = rnd.nextInt(publicQueues.size());
-				logger.info("Sending public Message to Queue " + queueIndex);
+				logger.fine("Sending public Message to Queue " + queueIndex);
 				client.sendMessage(publicQueues.get(queueIndex).getId(), createRandomMessage(), rnd.nextInt(10));
 				sentMessages++;
 			}
@@ -149,7 +149,7 @@ public class SendReceiveClient extends ClientScenario {
 		try {
 			return client.createQueue(queueName);
 		} catch (Exception e) {
-			logger.info("Queue " + queueName + " already exists try to lookup queue");
+			logger.fine("Queue " + queueName + " already exists try to lookup queue");
 			return client.lookupClientQueue(queueName);
 		}
 	}
