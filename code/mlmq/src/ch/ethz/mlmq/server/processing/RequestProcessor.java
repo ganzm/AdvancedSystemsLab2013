@@ -275,7 +275,13 @@ public class RequestProcessor {
 			connection = pool.getConnection();
 
 			QueueDao queueDao = connection.getQueueDao();
-			QueueDto queue = queueDao.createQueue(request.getQueueName());
+
+			// try to lookup queue
+			QueueDto queue = queueDao.getQueueByName(request.getQueueName());
+			if (queue == null) {
+				// Queue not found - actually create queue
+				queue = queueDao.createQueue(request.getQueueName());
+			}
 
 			QueueResponse response = new QueueResponse(queue);
 			return response;
