@@ -44,7 +44,7 @@ public class SimpleReceiveClient extends ClientScenario {
 				}
 
 				queues.clear();
-				int messagesForMe = client.queuesWithPendingMessages(queues, 10);
+				int messagesForMe = client.queuesWithPendingMessages(queues, 3);
 				logger.fine("Queues with pending messages " + queues);
 				logger.fine("My Queue contains " + messagesForMe + " messages");
 

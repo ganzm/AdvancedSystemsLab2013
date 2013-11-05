@@ -56,9 +56,9 @@ public class MessageDao implements Closeable {
 
 		//@formatter:off
 		String getPublicQueuesContainingMessagesSqlStmt = ""
-				+ "SELECT * FROM queue q "
-				+ "WHERE client_id IS NULL "
-				+ "AND EXISTS (SELECT 1 FROM message WHERE queue_id = q.id LIMIT 1) "
+				+ "SELECT m.queue_id "
+				+ "FROM message m "
+				+ "GROUP BY m.queue_id "
 				+ "LIMIT ?";
 		//@formatter:on
 		getPublicQueuesContainingMessagesStmt = connection.prepareStatement(getPublicQueuesContainingMessagesSqlStmt);
