@@ -8,9 +8,13 @@ import java.sql.SQLException;
 import java.util.logging.Logger;
 
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLogger;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 
 public class ClientDao implements Closeable {
 	private static final Logger logger = Logger.getLogger(ClientDao.class.getSimpleName());
+
+	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
 	private PreparedStatement insertNewClientStmt;
 	private PreparedStatement getClientByNameStatement;
@@ -41,6 +45,8 @@ public class ClientDao implements Closeable {
 	}
 
 	public Integer getClientId(String clientName) throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		getClientByNameStatement.setString(1, clientName);
 
 		try (ResultSet rs = getClientByNameStatement.executeQuery()) {
@@ -49,10 +55,14 @@ public class ClientDao implements Closeable {
 			}
 
 			return null;
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#getClientId");
 		}
 	}
 
 	public int insertNewClient(String name) throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		insertNewClientStmt.setString(1, name);
 
 		try (ResultSet rs = insertNewClientStmt.executeQuery()) {
@@ -62,6 +72,8 @@ public class ClientDao implements Closeable {
 
 			int clientId = rs.getInt(1);
 			return clientId;
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#insertNewClient");
 		}
 	}
 }

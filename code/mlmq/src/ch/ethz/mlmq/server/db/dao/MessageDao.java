@@ -15,6 +15,8 @@ import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLogger;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
 import ch.ethz.mlmq.server.ClientApplicationContext;
 
@@ -22,16 +24,14 @@ public class MessageDao implements Closeable {
 
 	private static final Logger logger = Logger.getLogger(MessageDao.class.getSimpleName());
 
+	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
+
 	private PreparedStatement insertMessageStmt;
 	private PreparedStatement peekMessageStmt;
 	private PreparedStatement deleteMessageStmt;
 	private PreparedStatement generateNewConversationContextStmt;
 	private PreparedStatement getPublicQueuesContainingMessagesStmt;
 	private PreparedStatement getNumMsgPerQueueStmt;
-
-	public MessageDao() {
-
-	}
 
 	public void init(Connection connection) throws SQLException {
 		// prepare statements
@@ -104,32 +104,43 @@ public class MessageDao implements Closeable {
 	}
 
 	public void insertMessage(SendMessageRequest request, ClientApplicationContext clientContext) throws SQLException {
+		long startTime = System.currentTimeMillis();
 
-		for (long queueId : request.getQueueIds()) {
-			insertMessageStmt.setLong(1, queueId);
-			insertMessageStmt.setLong(2, clientContext.getClient().getId());
-			insertMessageStmt.setBytes(3, request.getContent());
-			insertMessageStmt.setInt(4, request.getPrio());
-			insertMessageStmt.setNull(5, Types.INTEGER);
+		try {
+			for (long queueId : request.getQueueIds()) {
+				insertMessageStmt.setLong(1, queueId);
+				insertMessageStmt.setLong(2, clientContext.getClient().getId());
+				insertMessageStmt.setBytes(3, request.getContent());
+				insertMessageStmt.setInt(4, request.getPrio());
+				insertMessageStmt.setNull(5, Types.INTEGER);
 
-			insertMessageStmt.execute();
+				insertMessageStmt.execute();
+			}
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#insertMessage");
 		}
-
 	}
 
 	public void insertMessage(long queueId, long clientId, byte[] content, int prio, Long clientContext) throws SQLException {
-		insertMessageStmt.setLong(1, queueId);
-		insertMessageStmt.setLong(2, clientId);
-		insertMessageStmt.setBytes(3, content);
-		insertMessageStmt.setInt(4, prio);
+		long startTime = System.currentTimeMillis();
 
-		if (clientContext == null) {
-			insertMessageStmt.setNull(5, Types.INTEGER);
-		} else {
-			insertMessageStmt.setLong(5, clientContext);
+		try {
+			insertMessageStmt.setLong(1, queueId);
+			insertMessageStmt.setLong(2, clientId);
+			insertMessageStmt.setBytes(3, content);
+			insertMessageStmt.setInt(4, prio);
+
+			if (clientContext == null) {
+				insertMessageStmt.setNull(5, Types.INTEGER);
+			} else {
+				insertMessageStmt.setLong(5, clientContext);
+			}
+
+			insertMessageStmt.execute();
+
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#insertMessage");
 		}
-
-		insertMessageStmt.execute();
 	}
 
 	public MessageDto dequeueMessage(MessageQueryInfoDto queryInfo) throws SQLException {
@@ -138,8 +149,14 @@ public class MessageDao implements Closeable {
 			return null;
 		}
 
-		deleteMessageStmt.setLong(1, message.getId());
-		int result = deleteMessageStmt.executeUpdate();
+		long startTime = System.currentTimeMillis();
+		int result = -1;
+		try {
+			deleteMessageStmt.setLong(1, message.getId());
+			result = deleteMessageStmt.executeUpdate();
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#dequeueMessage");
+		}
 
 		if (result != 1) {
 			logger.fine("Dequeue did not work - DeleteCount[" + result + "] MessageId[" + message.getId() + "]");
@@ -152,6 +169,7 @@ public class MessageDao implements Closeable {
 	}
 
 	public MessageDto peekMessage(MessageQueryInfoDto queryInfo) throws SQLException {
+		long startTime = System.currentTimeMillis();
 
 		if (queryInfo.getQueue() == null) {
 			peekMessageStmt.setNull(1, Types.INTEGER);
@@ -191,17 +209,22 @@ public class MessageDao implements Closeable {
 
 				return message;
 			}
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#peekMessage");
 		}
-
 		return null;
 	}
 
 	public long generateNewConversationContext() throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		try (ResultSet rs = generateNewConversationContextStmt.executeQuery()) {
 			if (rs.next()) {
 				return rs.getLong(1);
 			}
 			throw new SQLException("No Value found for generateNewConversationContext");
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#genConversationCtx");
 		}
 	}
 
@@ -213,6 +236,8 @@ public class MessageDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public List<QueueDto> getPublicQueuesContainingMessages(int maxNumQueues) throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		List<QueueDto> result = new ArrayList<>();
 
 		getPublicQueuesContainingMessagesStmt.setInt(1, maxNumQueues);
@@ -222,18 +247,31 @@ public class MessageDao implements Closeable {
 				QueueDto queue = new QueueDto(queueId);
 				result.add(queue);
 			}
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#getPubQueues");
 		}
 
 		return result;
 	}
 
+	/**
+	 * gets the number of messges contained in the queue
+	 * 
+	 * @param queueId
+	 * @return
+	 * @throws SQLException
+	 */
 	public int getNumberOfMessages(long queueId) throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		getNumMsgPerQueueStmt.setLong(1, queueId);
 		try (ResultSet rs = getNumMsgPerQueueStmt.executeQuery()) {
 			if (rs.next()) {
 				return rs.getInt(1);
 			}
 			throw new SQLException("No Value found for getNumMsgPerQueueStmt");
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#getNumMessages");
 		}
 	}
 }

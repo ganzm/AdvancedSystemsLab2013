@@ -10,10 +10,14 @@ import java.util.logging.Logger;
 
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLogger;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 
 public class QueueDao implements Closeable {
 
 	private static final Logger logger = Logger.getLogger(QueueDao.class.getSimpleName());
+
+	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
 	private PreparedStatement createQueueStmt;
 	private PreparedStatement deleteQueueStmt;
@@ -76,6 +80,7 @@ public class QueueDao implements Closeable {
 
 		createQueueStmt.setString(2, name);
 
+		long startTime = System.currentTimeMillis();
 		try (ResultSet rs = createQueueStmt.executeQuery()) {
 			if (!rs.next()) {
 				throw new SQLException("Expected single column result from " + createQueueStmt);
@@ -83,6 +88,8 @@ public class QueueDao implements Closeable {
 
 			int queueId = rs.getInt(1);
 			return new QueueDto(queueId);
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#createClientQueue");
 		}
 	}
 
@@ -93,8 +100,14 @@ public class QueueDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public void deleteQueue(long queueIdToDelete) throws SQLException {
-		deleteQueueStmt.setLong(1, queueIdToDelete);
-		deleteQueueStmt.execute();
+		long startTime = System.currentTimeMillis();
+
+		try {
+			deleteQueueStmt.setLong(1, queueIdToDelete);
+			deleteQueueStmt.execute();
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#deleteQueue");
+		}
 	}
 
 	/**
@@ -104,9 +117,10 @@ public class QueueDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public QueueDto getQueueByClientId(long clientId) throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		queryQueueByClientIdStmt.setLong(1, clientId);
 		try (ResultSet rs = queryQueueByClientIdStmt.executeQuery()) {
-
 			if (rs.next()) {
 				long queueId = rs.getLong(1);
 				String name = rs.getString(2);
@@ -114,6 +128,8 @@ public class QueueDao implements Closeable {
 			} else {
 				return null;
 			}
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#getQueueByClientId");
 		}
 	}
 
@@ -124,6 +140,8 @@ public class QueueDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public QueueDto getQueueByName(String queueName) throws SQLException {
+		long startTime = System.currentTimeMillis();
+
 		queryQueueByQueueNameStmt.setString(1, queueName);
 		try (ResultSet rs = queryQueueByQueueNameStmt.executeQuery()) {
 
@@ -134,6 +152,8 @@ public class QueueDao implements Closeable {
 			} else {
 				return null;
 			}
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#getQueueByName");
 		}
 	}
 }

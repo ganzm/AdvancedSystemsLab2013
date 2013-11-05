@@ -8,8 +8,6 @@ import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
-import ch.ethz.mlmq.logging.PerformanceLogger;
-import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
@@ -39,54 +37,42 @@ public class RequestProcessor {
 
 	private final Logger logger = Logger.getLogger(RequestProcessor.class.getSimpleName());
 
-	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
-
-	public RequestProcessor() {
-	}
-
 	public Response process(ClientApplicationContext clientApplicationContext, Request request, DbConnectionPool pool) throws MlmqException {
-		long startTime = System.currentTimeMillis();
-
 		if (!clientApplicationContext.isRegistered() && !(request instanceof RegistrationRequest)) {
 			throw new MlmqException("Client not yet registere");
 		}
 
 		logger.fine("Process Request " + request);
-		try {
 
-			if (request instanceof CreateQueueRequest) {
-				return processCreateQueueRequest((CreateQueueRequest) request, pool);
+		if (request instanceof CreateQueueRequest) {
+			return processCreateQueueRequest((CreateQueueRequest) request, pool);
 
-			} else if (request instanceof LookupQueueRequest) {
-				return processLookupQueueRequest((LookupQueueRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof LookupQueueRequest) {
+			return processLookupQueueRequest((LookupQueueRequest) request, clientApplicationContext, pool);
 
-			} else if (request instanceof QueuesWithPendingMessagesRequest) {
-				return processQueuesWithPendingMessagesRequest((QueuesWithPendingMessagesRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof QueuesWithPendingMessagesRequest) {
+			return processQueuesWithPendingMessagesRequest((QueuesWithPendingMessagesRequest) request, clientApplicationContext, pool);
 
-			} else if (request instanceof RegistrationRequest) {
-				return processRegistrationRequest((RegistrationRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof RegistrationRequest) {
+			return processRegistrationRequest((RegistrationRequest) request, clientApplicationContext, pool);
 
-			} else if (request instanceof DeleteQueueRequest) {
-				return processDeleteQueueRequest((DeleteQueueRequest) request, pool);
+		} else if (request instanceof DeleteQueueRequest) {
+			return processDeleteQueueRequest((DeleteQueueRequest) request, pool);
 
-			} else if (request instanceof DequeueMessageRequest) {
-				return processDequeueMessageRequest((DequeueMessageRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof DequeueMessageRequest) {
+			return processDequeueMessageRequest((DequeueMessageRequest) request, clientApplicationContext, pool);
 
-			} else if (request instanceof PeekMessageRequest) {
-				return processPeekMessageRequest((PeekMessageRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof PeekMessageRequest) {
+			return processPeekMessageRequest((PeekMessageRequest) request, clientApplicationContext, pool);
 
-			} else if (request instanceof SendMessageRequest) {
-				return processSendMessageRequest((SendMessageRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof SendMessageRequest) {
+			return processSendMessageRequest((SendMessageRequest) request, clientApplicationContext, pool);
 
-			} else if (request instanceof SendClientMessageRequest) {
-				return processSendClientMessageRequest((SendClientMessageRequest) request, clientApplicationContext, pool);
+		} else if (request instanceof SendClientMessageRequest) {
+			return processSendClientMessageRequest((SendClientMessageRequest) request, clientApplicationContext, pool);
 
-			} else {
-				throw new MlmqException("Unexpected Request to process " + request.getClass().getSimpleName() + " - " + request);
-			}
-
-		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "BDbReq-" + request.getClass().getSimpleName());
+		} else {
+			throw new MlmqException("Unexpected Request to process " + request.getClass().getSimpleName() + " - " + request);
 		}
 	}
 
