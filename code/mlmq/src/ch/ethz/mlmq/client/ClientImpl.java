@@ -48,14 +48,27 @@ public class ClientImpl implements Client {
 	private long reconnectSleepTime = 5000;
 
 	/**
+	 * special request timeout for registration request
+	 * 
+	 * do not timeout registration request
+	 */
+	private long registrationTimeout = 10 * 60 * 1000;
+
+	/**
 	 * defines how many times we try to connect to a broker at startup
 	 */
 	private int numberOfInitialReconnects = 10;
 
+	/**
+	 * Defines how much time our server has to respond to our request in milliseconds
+	 */
+	private final long defaultResponseTimeoutTime;
+
 	public ClientImpl(String name, BrokerDto broker, long responseTimeoutTime) {
 		this.name = name;
 		this.broker = broker;
-		this.connection = new ClientConnection(broker.getHost(), broker.getPort(), responseTimeoutTime);
+		this.defaultResponseTimeoutTime = responseTimeoutTime;
+		this.connection = new ClientConnection(broker.getHost(), broker.getPort());
 	}
 
 	public ClientImpl(ClientConfiguration config) {
@@ -100,21 +113,19 @@ public class ClientImpl implements Client {
 	}
 
 	private Response sendRequest(Request request) throws IOException, MlmqException {
-		return sendRequestToBroker(request, broker);
+		return sendRequest(request, defaultResponseTimeoutTime);
 	}
 
 	/**
-	 * Sends a request to a specific broker.
+	 * Sends a request to the broker
 	 * 
 	 * @param request
-	 * @param broker
-	 * @param timeout
 	 * @return
 	 * @throws IOException
 	 * @throws MlmqException
 	 */
-	private Response sendRequestToBroker(Request request, BrokerDto broker) throws IOException, MlmqException {
-		Response response = connection.submitRequest(request);
+	private Response sendRequest(Request request, long responseTimeoutTime) throws IOException, MlmqException {
+		Response response = connection.submitRequest(request, responseTimeoutTime);
 
 		if (response instanceof ExceptionResponse) {
 			ExceptionResponse r = (ExceptionResponse) response;
@@ -129,7 +140,7 @@ public class ClientImpl implements Client {
 
 	@Override
 	public ClientDto register() throws IOException, MlmqException {
-		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest(name));
+		RegistrationResponse repsonse = (RegistrationResponse) sendRequest(new RegistrationRequest(name), registrationTimeout);
 		registeredAs = repsonse.getClientDto();
 		return registeredAs;
 	}

@@ -12,6 +12,7 @@ import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.exception.MlmqRequestTimeoutException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.ClientScenario;
 
@@ -52,7 +53,7 @@ public class SendReceiveClient extends ClientScenario {
 
 	@Override
 	public void run() throws IOException, MlmqException {
-		client.register();
+		connectClient();
 
 		String queueName = "QueueOf" + config.getName();
 		queue = getOrCreateQueue(queueName);
@@ -71,16 +72,12 @@ public class SendReceiveClient extends ClientScenario {
 					Thread.sleep(timeToSleep);
 					// else { We are behind in sending messages - don't sleep }
 				}
-			} catch (MlmqException e) {
-				logger.severe("MlmQEception while performing action - " + e + " " + LoggerUtil.getStackTraceString(e));
-
-			} catch (IOException e) {
-				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
-
-				// stop sending messages in case of ioexception
-				i = numMessages;
+			} catch (MlmqRequestTimeoutException e) {
+				logger.severe("MlmqRequestTimeoutException - try to reconnect " + LoggerUtil.getStackTraceString(e));
+				connectClient();
 			} catch (Exception e) {
-				logger.warning("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
+				logger.severe("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
+				break;
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.exception.MlmqRequestTimeoutException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.ClientScenario;
 
@@ -28,7 +29,7 @@ public class SimpleSendClient extends ClientScenario {
 
 	@Override
 	public void run() throws IOException, MlmqException {
-		client.register();
+		connectClient();
 
 		String queueName = "QueueOf" + config.getName();
 		QueueDto queue = getOrCreateQueue(queueName);
@@ -36,29 +37,31 @@ public class SimpleSendClient extends ClientScenario {
 		// time when we started to send messages
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < numMessages; i++) {
-			byte[] content = ("Some Random Text and message Nr " + i).getBytes();
 			try {
-				client.sendMessage(queue.getId(), content, i % 10);
+				sendSimpleMessage(queue, i);
 
 				long dt = System.currentTimeMillis() - startTime;
-
 				if (dt / waitTimeBetweenMessages <= i) {
 					long timeToSleep = waitTimeBetweenMessages - (dt % waitTimeBetweenMessages);
 					Thread.sleep(timeToSleep);
 					// else { We are behind in sending messages - don't sleep }
 				}
+
+			} catch (MlmqRequestTimeoutException e) {
+				logger.severe("MlmqRequestTimeoutException - try to reconnect " + LoggerUtil.getStackTraceString(e));
+				connectClient();
 			} catch (MlmqException e) {
 				logger.severe("MlmQEception while sending message - try again - " + e + " " + LoggerUtil.getStackTraceString(e));
-			} catch (IOException e) {
-				logger.severe("IOEception while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
-
-				// stop sending messages in case of ioexception
-				i = numMessages;
-				break;
 			} catch (Exception e) {
-				logger.warning("Error while sending message " + e + " " + LoggerUtil.getStackTraceString(e));
+				logger.severe("Error while sending message - shutdown " + e + " " + LoggerUtil.getStackTraceString(e));
+				break;
 			}
 		}
+	}
+
+	private void sendSimpleMessage(QueueDto queue, int i) throws IOException, MlmqException {
+		byte[] content = ("Some Random Text and message Nr " + i).getBytes();
+		client.sendMessage(queue.getId(), content, i % 10);
 	}
 
 	private QueueDto getOrCreateQueue(String queueName) throws IOException, MlmqException {

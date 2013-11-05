@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import ch.ethz.mlmq.client.Client;
 import ch.ethz.mlmq.client.ClientConfiguration;
 import ch.ethz.mlmq.client.ClientImpl;
+import ch.ethz.mlmq.dto.ClientDto;
 import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 
@@ -27,11 +28,15 @@ public abstract class ClientScenario extends Scenario {
 	public void init() throws MlmqException {
 		super.init();
 		delayClient();
-		try {
-			client.init();
-		} catch (IOException e) {
-			throw new MlmqException(e);
+	}
+
+	protected ClientDto connectClient() throws IOException, MlmqException {
+		if (client.isConnected()) {
+			throw new MlmqException("Client already connected");
 		}
+
+		client.init();
+		return client.register();
 	}
 
 	private void delayClient() {

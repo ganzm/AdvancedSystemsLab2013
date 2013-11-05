@@ -11,6 +11,7 @@ import ch.ethz.mlmq.dto.MessageDto;
 import ch.ethz.mlmq.dto.MessageQueryInfoDto;
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.exception.MlmqException;
+import ch.ethz.mlmq.exception.MlmqRequestTimeoutException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.scenario.ClientScenario;
 
@@ -31,7 +32,7 @@ public class SimpleReceiveClient extends ClientScenario {
 
 	@Override
 	public void run() throws IOException, MlmqException {
-		ClientDto me = client.register();
+		ClientDto me = connectClient();
 		QueueDto myQueue = client.lookupClientQueue(me.getId());
 
 		List<QueueDto> queues = new ArrayList<>();
@@ -68,14 +69,14 @@ public class SimpleReceiveClient extends ClientScenario {
 					logger.severe(LoggerUtil.getStackTraceString(e));
 				}
 
-			} catch (MlmqException e) {
-				logger.severe("MlmQEception while sending message - try again - " + e + " " + LoggerUtil.getStackTraceString(e));
-			} catch (IOException e) {
+			} catch (MlmqRequestTimeoutException e) {
+				logger.severe("MlmqRequestTimeoutException - try to reconnect " + LoggerUtil.getStackTraceString(e));
+				connectClient();
+			} catch (Exception e) {
 				logger.severe("MlmQEception while receiving message - " + e + " " + LoggerUtil.getStackTraceString(e));
 				running = false;
 			}
 		}
-
 	}
 
 	@Override

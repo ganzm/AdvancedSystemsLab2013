@@ -4,12 +4,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.SocketChannel;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ch.ethz.mlmq.exception.MlmqRequestTimeoutException;
 import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.logging.PerformanceLogger;
 import ch.ethz.mlmq.logging.PerformanceLoggerManager;
@@ -35,18 +37,9 @@ public class ClientConnection implements Closeable {
 
 	private final Timer requestTimeoutTimer;
 
-	/**
-	 * Defines how much time our server has to respond to our request in milliseconds
-	 */
-	private final long responseTimeoutTime;
-
-	/**
-	 * TODO Allocate via ByteBufferPool
-	 */
 	private ByteBuffer ioBuffer = ByteBuffer.allocate(Protocol.CLIENT_IO_BUFFER_CAPACITY);
 
-	public ClientConnection(String host, int port, long responseTimeoutTime) {
-		this.responseTimeoutTime = responseTimeoutTime;
+	public ClientConnection(String host, int port) {
 		this.host = host;
 		this.port = port;
 		this.reqRespFactory = new RequestResponseFactory();
@@ -55,7 +48,7 @@ public class ClientConnection implements Closeable {
 		logger.info("Created new ClientConnection to " + host + ":" + port);
 	}
 
-	public Response submitRequest(Request request) throws IOException {
+	public Response submitRequest(Request request, long responseTimeoutTime) throws IOException, MlmqRequestTimeoutException {
 		long requestStartTime = System.currentTimeMillis();
 
 		Response response = null;
@@ -111,6 +104,11 @@ public class ClientConnection implements Closeable {
 
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
+		} catch (AsynchronousCloseException ex) {
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + request.getClass().getSimpleName() + ":"
+					+ (response == null ? "Null" : response.getClass().getSimpleName()));
+
+			throw new MlmqRequestTimeoutException("Request Timeout " + responseTimeoutTime + " reached for " + request, ex);
 		} catch (Exception ex) {
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
