@@ -1,7 +1,10 @@
-package ch.ethz.mlmq.log_analizer;
+package ch.ethz.mlmq.log_analyzer;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import ch.ethz.mlmq.log_analyzer.LogLine;
+import ch.ethz.mlmq.log_analyzer.LogLineParser;
 
 public class LogLineTest {
 	@Test

@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.log_analizer;
+package ch.ethz.mlmq.log_analyzer;
 
 public class LogLineParser {
 

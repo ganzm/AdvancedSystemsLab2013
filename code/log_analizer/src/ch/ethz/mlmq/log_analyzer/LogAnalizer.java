@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.log_analizer;
+package ch.ethz.mlmq.log_analyzer;
 
 import java.io.BufferedReader;
 import java.io.File;

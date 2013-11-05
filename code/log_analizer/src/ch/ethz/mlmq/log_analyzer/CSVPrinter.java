@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.log_analizer;
+package ch.ethz.mlmq.log_analyzer;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;

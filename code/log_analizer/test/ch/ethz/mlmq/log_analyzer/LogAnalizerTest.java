@@ -1,4 +1,4 @@
-package ch.ethz.mlmq.log_analizer;
+package ch.ethz.mlmq.log_analyzer;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import ch.ethz.mlmq.log_analyzer.Bucket;
+import ch.ethz.mlmq.log_analyzer.LogAnalizer;
 
 public class LogAnalizerTest {
 

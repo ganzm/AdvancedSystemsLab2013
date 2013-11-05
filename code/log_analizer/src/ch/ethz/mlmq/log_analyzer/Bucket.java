@@ -1,10 +1,12 @@
-package ch.ethz.mlmq.log_analizer;
+package ch.ethz.mlmq.log_analyzer;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
+import org.apache.commons.math.stat.descriptive.rank.Percentile;
 
 public class Bucket {
 
@@ -32,6 +34,12 @@ public class Bucket {
 		return v.evaluate(getPrimitiveValues());
 	}
 
+	public double percentile(double percentile) {
+		Percentile p = new Percentile();
+		p.setData(getPrimitiveValues());
+		return p.evaluate(percentile);
+	}
+
 	private double[] getPrimitiveValues() {
 		if (primitiveValuesCache != null)
 			return primitiveValuesCache;
@@ -41,6 +49,14 @@ public class Bucket {
 			primitiveValuesCache[i] = values.get(i);
 		}
 		return primitiveValuesCache;
+	}
+
+	public double min() {
+		return Collections.min(values);
+	}
+
+	public double max() {
+		return Collections.max(values);
 	}
 
 }
