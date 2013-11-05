@@ -175,12 +175,12 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		ConnectedClient clientInstance = (ConnectedClient) key.attachment();
 		SocketChannel clientChannel = (SocketChannel) key.channel();
 
-		logger.info("Disconnecting from Client " + clientChannel);
+		logger.info("Disconnecting from Client " + clientChannel + " " + clientInstance);
 		clientInstance.close();
 		try {
 			clientChannel.close();
 		} catch (IOException e) {
-			logger.severe("Error while disconnecting from Client " + clientChannel);
+			logger.severe("Error while disconnecting from Client " + clientChannel + " " + clientInstance);
 		}
 
 		connectedClients.remove(clientInstance.getClientContext().getClientNetworkHandle());
