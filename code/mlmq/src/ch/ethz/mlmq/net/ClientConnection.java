@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousCloseException;
 import java.nio.channels.SocketChannel;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,6 +38,8 @@ public class ClientConnection implements Closeable {
 
 	private ByteBuffer ioBuffer = ByteBuffer.allocate(Protocol.CLIENT_IO_BUFFER_CAPACITY);
 
+	private volatile boolean wasTimedOut = false;
+
 	public ClientConnection(String host, int port) {
 		this.host = host;
 		this.port = port;
@@ -67,6 +68,7 @@ public class ClientConnection implements Closeable {
 
 			// schedule TimeouTimer
 			timeoutTask = new TimeoutTimerTask(responseTimeoutTime);
+			wasTimedOut = false;
 			requestTimeoutTimer.schedule(timeoutTask, responseTimeoutTime);
 
 			while ((numBytes = clientSocket.read(ioBuffer)) >= 0) {
@@ -104,16 +106,15 @@ public class ClientConnection implements Closeable {
 
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
-		} catch (AsynchronousCloseException ex) {
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + request.getClass().getSimpleName() + ":"
-					+ (response == null ? "Null" : response.getClass().getSimpleName()));
-
-			throw new MlmqRequestTimeoutException("Request Timeout " + responseTimeoutTime + " reached for " + request, ex);
 		} catch (Exception ex) {
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 
-			throw ex;
+			if (wasTimedOut) {
+				throw new MlmqRequestTimeoutException("Request Timeout " + responseTimeoutTime + "ms reached for " + request, ex);
+			} else {
+				throw ex;
+			}
 		} finally {
 			// cancel TimeoutTimer
 			if (timeoutTask != null) {
@@ -205,10 +206,12 @@ public class ClientConnection implements Closeable {
 		public void run() {
 			try {
 				logger.severe("Request Timeout " + timeout + " - closing connection");
+				wasTimedOut = true;
 				clientSocket.close();
 			} catch (IOException e) {
 				logger.severe("Error while closing timeouted Socket " + LoggerUtil.getStackTraceString(e));
 			}
 		}
 	};
+
 }

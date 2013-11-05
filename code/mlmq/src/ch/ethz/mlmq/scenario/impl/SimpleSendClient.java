@@ -31,13 +31,20 @@ public class SimpleSendClient extends ClientScenario {
 	public void run() throws IOException, MlmqException {
 		connectClient();
 
+		QueueDto queue = null;
 		String queueName = "QueueOf" + config.getName();
-		QueueDto queue = getOrCreateQueue(queueName);
 
 		// time when we started to send messages
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < numMessages; i++) {
 			try {
+
+				// create queue if necessary
+				if (queue == null) {
+					queue = client.createQueue(queueName);
+				}
+
+				// send message
 				sendSimpleMessage(queue, i);
 
 				long dt = System.currentTimeMillis() - startTime;
@@ -48,7 +55,7 @@ public class SimpleSendClient extends ClientScenario {
 				}
 
 			} catch (MlmqRequestTimeoutException e) {
-				logger.severe("MlmqRequestTimeoutException - try to reconnect " + LoggerUtil.getStackTraceString(e));
+				logger.severe("MlmqRequestTimeoutException - try to reconnect - Cause: " + e);
 				connectClient();
 			} catch (MlmqException e) {
 				logger.severe("MlmQEception while sending message - try again - " + e + " " + LoggerUtil.getStackTraceString(e));
@@ -62,19 +69,5 @@ public class SimpleSendClient extends ClientScenario {
 	private void sendSimpleMessage(QueueDto queue, int i) throws IOException, MlmqException {
 		byte[] content = ("Some Random Text and message Nr " + i).getBytes();
 		client.sendMessage(queue.getId(), content, i % 10);
-	}
-
-	private QueueDto getOrCreateQueue(String queueName) throws IOException, MlmqException {
-		try {
-			QueueDto queue = client.lookupClientQueue(queueName);
-			if (queue == null) {
-				return client.createQueue(queueName);
-			} else {
-				return queue;
-			}
-		} catch (Exception e) {
-			logger.info("Queue " + queueName + " already exists try to lookup queue");
-			return client.lookupClientQueue(queueName);
-		}
 	}
 }

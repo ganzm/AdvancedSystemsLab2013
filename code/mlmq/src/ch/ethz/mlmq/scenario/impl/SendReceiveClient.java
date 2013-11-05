@@ -53,16 +53,23 @@ public class SendReceiveClient extends ClientScenario {
 
 	@Override
 	public void run() throws IOException, MlmqException {
+		boolean initialized = false;
+
 		connectClient();
 
 		String queueName = "QueueOf" + config.getName();
-		queue = getOrCreateQueue(queueName);
-		publicQueues = createPublicQueues();
 
 		// time when we started to send messages
 		long startTime = System.currentTimeMillis();
 		for (int i = 0; i < numMessages; i++) {
 			try {
+
+				if (!initialized) {
+					queue = client.createQueue(queueName);
+					publicQueues = createPublicQueues();
+					initialized = true;
+				}
+
 				performAction();
 
 				long dt = System.currentTimeMillis() - startTime;
@@ -85,7 +92,7 @@ public class SendReceiveClient extends ClientScenario {
 	private List<QueueDto> createPublicQueues() throws IOException, MlmqException {
 		List<QueueDto> result = new ArrayList<>();
 		for (int i = 0; i < 10; i++) {
-			result.add(getOrCreateQueue("Public-" + i));
+			result.add(client.createQueue("Public-" + i));
 		}
 		return result;
 	}
@@ -142,12 +149,4 @@ public class SendReceiveClient extends ClientScenario {
 		return ("Hi there I am a client with SentMessages[" + sentMessages + "] ReceivedMessages[" + receivedMessages + "] sent at " + new Date()).getBytes();
 	}
 
-	private QueueDto getOrCreateQueue(String queueName) throws IOException, MlmqException {
-		try {
-			return client.createQueue(queueName);
-		} catch (Exception e) {
-			logger.fine("Queue " + queueName + " already exists try to lookup queue");
-			return client.lookupClientQueue(queueName);
-		}
-	}
 }

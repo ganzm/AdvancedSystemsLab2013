@@ -33,12 +33,16 @@ public class SimpleReceiveClient extends ClientScenario {
 	@Override
 	public void run() throws IOException, MlmqException {
 		ClientDto me = connectClient();
-		QueueDto myQueue = client.lookupClientQueue(me.getId());
+		QueueDto myQueue = null;
 
 		List<QueueDto> queues = new ArrayList<>();
 		running = true;
 		while (running) {
 			try {
+				if (myQueue == null) {
+					client.lookupClientQueue(me.getId());
+				}
+
 				queues.clear();
 				int messagesForMe = client.queuesWithPendingMessages(queues, 10);
 				logger.fine("Queues with pending messages " + queues);
@@ -70,7 +74,7 @@ public class SimpleReceiveClient extends ClientScenario {
 				}
 
 			} catch (MlmqRequestTimeoutException e) {
-				logger.severe("MlmqRequestTimeoutException - try to reconnect " + LoggerUtil.getStackTraceString(e));
+				logger.severe("MlmqRequestTimeoutException - try to reconnect " + e);
 				connectClient();
 			} catch (Exception e) {
 				logger.severe("MlmQEception while receiving message - " + e + " " + LoggerUtil.getStackTraceString(e));
