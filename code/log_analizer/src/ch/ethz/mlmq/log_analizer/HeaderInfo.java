@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 public class HeaderInfo {
 
 	private final File file;
+	@SuppressWarnings("unused")
 	private String header;
 	private String firstLine;
 

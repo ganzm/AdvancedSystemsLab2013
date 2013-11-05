@@ -12,8 +12,10 @@ public class Main {
 	public static void main(String[] args) throws FileNotFoundException {
 		LogAnalizer l = new LogAnalizer();
 
-		if (args.length != 2 && args.length != 3)
-			System.out.println("usage: java -jar target.jar <directory_to_log_files> <message_type> (out_file optional)\\n");
+		if (args.length != 2 && args.length != 3) {
+			System.out.println("usage: java -jar target.jar <directory_to_log_files> <message_type> (out_file optional)");
+			return;
+		}
 
 		String directoryToLogFiles = args[0];
 		String messageType = args[1];
