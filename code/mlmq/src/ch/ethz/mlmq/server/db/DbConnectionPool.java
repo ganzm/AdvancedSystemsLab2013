@@ -81,7 +81,7 @@ public class DbConnectionPool {
 	 */
 	public void returnConnection(DbConnection connection) throws MlmqException {
 		if (connection.isClosed()) {
-			logger.warning("Closed connection was returned, create a new one");
+			logger.warning("Closed connection was returned by Thread [" + Thread.currentThread().getName() + "], create a new one");
 
 			try {
 				connection = createConnection();
