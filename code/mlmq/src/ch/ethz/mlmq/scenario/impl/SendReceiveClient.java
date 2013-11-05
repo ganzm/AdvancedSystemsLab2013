@@ -134,7 +134,7 @@ public class SendReceiveClient extends ClientScenario {
 			if (msgQueryInfo != null) {
 				MessageDto msg = client.dequeueMessage(msgQueryInfo);
 				if (msg != null) {
-					logger.info("Receive Message " + new String(msg.getContent()));
+					logger.fine("Receive Message " + new String(msg.getContent()));
 					receivedMessages++;
 				}
 			}

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class LogAnalizer {
 
@@ -48,7 +49,7 @@ public class LogAnalizer {
 
 	private void processLine(String messageType, ArrayList<Bucket> b, String line, long startBucketPosition, long windowSize) {
 		LogLine l = LogLineParser.parseLogLine(line);
-		if (!l.getName().equals(messageType))
+		if (!l.getName().startsWith(messageType))
 			return;
 
 		int pos = l.getBucketPosition(startBucketPosition, windowSize);

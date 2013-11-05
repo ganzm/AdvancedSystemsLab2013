@@ -19,7 +19,7 @@ public class LogAnalizerTest {
 		Assert.assertTrue(f.exists());
 
 		LogAnalizer l = new LogAnalizer();
-		l.addFile(FileUtils.getFile(testLogPath));
+		l.addFile(f);
 		return l;
 	}
 
