@@ -56,7 +56,10 @@ public class LogAnalizer {
 		while (b.size() <= pos)
 			b.add(new Bucket());
 
-		b.get(pos).addValue(l.getDuration());
+		Bucket bucket = b.get(pos);
+
+		bucket.addValue(l.getDuration());
+		bucket.addTimestamp(l.getTimestamp());
 	}
 
 	public long getStartBucketTime() {

@@ -9,20 +9,35 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 public class Main {
+
+	//@formatter:off
+	private static String usageString = "usage: java -jar target.jar\n"
+			+ "-d <directory_to_log_files>\n"
+			+ "-type <message_type>\n"
+			+ "-w <window-size(ms) optional>\n"
+			+ "-out (out_file optional)\n"
+			+ "-fmt output format default csv(csv|gnu-png|gnu-eps)";
+	//@formatter:on
+
 	public static void main(String[] args) throws FileNotFoundException {
+
+		ArgUtil argUtil = ArgUtil.parseArgs(args);
+		argUtil.getArgMap();
 		LogAnalizer l = new LogAnalizer();
 
-		if (args.length != 2 && args.length != 3) {
-			System.out.println("usage: java -jar target.jar <directory_to_log_files> <message_type> (out_file optional)");
+		if (argUtil.hasKey("?") || !argUtil.hasKey("d") || !argUtil.hasKey("type")) {
+			System.out.println(usageString);
 			return;
 		}
 
-		String directoryToLogFiles = args[0];
-		String messageType = args[1];
+		String directoryToLogFiles = argUtil.getMandatory("d");
+		String messageType = argUtil.getMandatory("type");
+		String formatString = argUtil.getOptional("fmt", "csv").toLowerCase();
+		int windowSize = Integer.parseInt(argUtil.getOptional("w", "" + (1000 * 60 * 1)));
 
 		PrintStream out;
-		if (args.length == 3) {
-			out = new PrintStream(FileUtils.getFile(args[2])); // Should close the printstream after usage...
+		if (argUtil.hasKey("out")) {
+			out = new PrintStream(FileUtils.getFile(argUtil.getMandatory("out"))); // Should close the printstream after usage...
 		} else {
 			out = System.out;
 		}
@@ -32,10 +47,18 @@ public class Main {
 			l.addFile(file);
 		}
 
-		ArrayList<Bucket> buckets = l.getBuckets(messageType, 1000 * 60 * 2);
+		ArrayList<Bucket> buckets = l.getBuckets(messageType, windowSize);
 
-		CSVPrinter p = new CSVPrinter(buckets, out);
-		p.print();
+		if ("csv".equals(formatString)) {
+			CSVPrinter p = new CSVPrinter(buckets, out);
+			p.print();
+		} else if ("gnu-png".equals(formatString)) {
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, out, true, null);
+			gnuP.print();
+		} else if ("gnu-eps".equals(formatString)) {
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, out, false, null);
+			gnuP.print();
+		}
 	}
 
 	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {

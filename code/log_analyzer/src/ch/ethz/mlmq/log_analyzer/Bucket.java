@@ -13,6 +13,15 @@ public class Bucket {
 	private List<Double> values = new ArrayList<>();
 	private double[] primitiveValuesCache;
 
+	/**
+	 * Timestamp of the first measurement assigned to this bucket
+	 */
+	private long startTimestamp;
+
+	public Bucket() {
+		this.startTimestamp = Long.MAX_VALUE;
+	}
+
 	public int count() {
 		return values.size();
 	}
@@ -22,6 +31,10 @@ public class Bucket {
 			primitiveValuesCache = null;
 
 		values.add((double) duration); // Could do this better...
+	}
+
+	public void addTimestamp(long timestamp) {
+		startTimestamp = Math.min(startTimestamp, timestamp);
 	}
 
 	public double mean() {
@@ -59,4 +72,7 @@ public class Bucket {
 		return Collections.max(values);
 	}
 
+	public long getTime() {
+		return startTimestamp;
+	}
 }
