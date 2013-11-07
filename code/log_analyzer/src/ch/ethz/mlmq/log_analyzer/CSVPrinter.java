@@ -21,10 +21,11 @@ public class CSVPrinter {
 
 	public void print() {
 		try (PrintWriter writer = new PrintWriter(out)) {
-			writer.println("Time" + CSV_SEPERATOR + "Mean" + CSV_SEPERATOR + "Variance" + CSV_SEPERATOR + "Count");
+			writer.println("Time" + CSV_SEPERATOR + "Mean" + CSV_SEPERATOR + "Variance" + CSV_SEPERATOR + "Count" + CSV_SEPERATOR + "Min" + CSV_SEPERATOR
+					+ "Max");
 			for (Bucket b : buckets) {
 				writer.println("\'" + fmt.format(new Date(b.getTime())) + "\'" + CSV_SEPERATOR + b.mean() + CSV_SEPERATOR + b.variance() + CSV_SEPERATOR
-						+ b.count());
+						+ b.count() + CSV_SEPERATOR + b.min() + CSV_SEPERATOR + b.max());
 			}
 		}
 	}
