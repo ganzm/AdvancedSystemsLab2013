@@ -48,13 +48,15 @@ public class GnuPlotPrinter {
 		}
 
 		try (PrintWriter writer = new PrintWriter(out)) {
+			if (formatAsPng) {
+				// Fontscale doesn't work, invalid argument... writer.println("set terminal pngcairo  transparent enhanced font \"arial,10\" fontscale 1.0 size 500, 350");
+				writer.println("set terminal pngcairo transparent enhanced font \"arial,10\" size 500, 350");
+			} else {
+				writer.println("set term postscript eps color blacktext \"Helvetica\" 24");
+			}
 
 			if (outputFile != null) {
-				if (formatAsPng) {
-					writer.println("set terminal pngcairo  transparent enhanced font \"arial,10\" fontscale 1.0 size 500, 350");
-				} else {
-					writer.println("set term postscript eps color blacktext \"Helvetica\" 24");
-				}
+
 				writer.println("set output \'" + outputFile + "'");
 			}
 
