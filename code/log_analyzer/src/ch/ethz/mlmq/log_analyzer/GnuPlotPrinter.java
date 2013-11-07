@@ -21,9 +21,9 @@ public class GnuPlotPrinter {
 
 	private String yLabel = "yLabel";
 
-	private String meanLabel;
+	private String meanLabel = "";
 
-	private String interpolatedLabel;
+	private String interpolatedLabel = "";
 
 	/**
 	 * 
@@ -85,4 +85,17 @@ public class GnuPlotPrinter {
 	private String formatTime(long time, long t0) {
 		return ((time - t0) / 1000) + "";
 	}
+
+	public void setDiagramTitle(String diagramTitle) {
+		this.diagramTitle = diagramTitle;
+	}
+
+	public void setXLabel(String xLabel) {
+		this.xLabel = xLabel;
+	}
+
+	public void setYLabel(String yLabel) {
+		this.yLabel = yLabel;
+	}
+
 }

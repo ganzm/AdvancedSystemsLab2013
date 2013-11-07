@@ -16,7 +16,10 @@ public class Main {
 			+ "-type <message_type>\n"
 			+ "-w <window-size(ms) optional>\n"
 			+ "-out (out_file optional)\n"
-			+ "-fmt output format default csv(csv|gnu-png|gnu-eps)";
+			+ "-fmt output format default csv(csv|gnu-png|gnu-eps)\n"
+			+ "-x xAxis label (optional)\n"
+			+ "-y yAxis label (optional)\n"
+			+ "-t diagram title (optional)";
 	//@formatter:on
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -54,11 +57,22 @@ public class Main {
 			p.print();
 		} else if ("gnu-png".equals(formatString)) {
 			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, out, true, null);
+			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("gnu-eps".equals(formatString)) {
 			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, out, false, null);
+			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		}
+	}
+
+	private static void addOptionalGnuPlotParams(GnuPlotPrinter gnuP, ArgUtil argUtil) {
+		if (argUtil.hasKey("t"))
+			gnuP.setDiagramTitle(argUtil.getMandatory("t"));
+		if (argUtil.hasKey("x"))
+			gnuP.setXLabel(argUtil.getMandatory("x"));
+		if (argUtil.hasKey("y"))
+			gnuP.setYLabel(argUtil.getMandatory("y"));
 	}
 
 	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
