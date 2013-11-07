@@ -49,7 +49,8 @@ public class GnuPlotPrinter {
 
 		try (PrintWriter writer = new PrintWriter(out)) {
 			if (formatAsPng) {
-				// Fontscale doesn't work, invalid argument... writer.println("set terminal pngcairo  transparent enhanced font \"arial,10\" fontscale 1.0 size 500, 350");
+				// Fontscale doesn't work, invalid argument...
+				// writer.println("set terminal pngcairo  transparent enhanced font \"arial,10\" fontscale 1.0 size 500, 350");
 				writer.println("set terminal pngcairo transparent enhanced font \"arial,10\" size 500, 350");
 			} else {
 				writer.println("set term postscript eps color blacktext \"Helvetica\" 24");
@@ -64,6 +65,7 @@ public class GnuPlotPrinter {
 			writer.println("set title \"" + diagramTitle + "\"");
 			writer.println("set xlabel \"" + xLabel + "\"");
 			writer.println("set ylabel \"" + yLabel + "\"");
+			// TODO limit y scale of the plot - use set yrange [0:1000]
 			writer.println("plot \"-\" t \"" + meanLabel + "\" with errorb, \"-\" t \"" + interpolatedLabel + "\" smooth csplines");
 
 			for (Bucket b : buckets) {
