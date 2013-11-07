@@ -41,6 +41,8 @@ public class ClientConfiguration extends Configuration {
 		sb.append(me.getName());
 		sb.append("] ClientHost[");
 		sb.append(me.getHost());
+		sb.append("] ClientPosition[");
+		sb.append(me.getPosition());
 		sb.append("] Broker[");
 		sb.append(broker.getHost());
 		sb.append(":");

@@ -107,7 +107,7 @@ public class ClientConnection implements Closeable {
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 		} catch (Exception ex) {
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#" + (wasTimedOut ? "Timeout" : "Error") + "#"
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + (wasTimedOut ? "Timeout" : ("#" + ex.getMessage())) + "#"
 					+ request.getClass().getSimpleName() + ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
 
 			if (wasTimedOut) {
