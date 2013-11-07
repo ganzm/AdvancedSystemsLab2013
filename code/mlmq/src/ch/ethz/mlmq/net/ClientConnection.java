@@ -107,8 +107,8 @@ public class ClientConnection implements Closeable {
 			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 		} catch (Exception ex) {
-			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#Error#" + request.getClass().getSimpleName() + ":"
-					+ (response == null ? "Null" : response.getClass().getSimpleName()));
+			perfLog.log(System.currentTimeMillis() - requestStartTime, "CSndReq#" + (wasTimedOut ? "Timeout" : "Error") + "#"
+					+ request.getClass().getSimpleName() + ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
 
 			if (wasTimedOut) {
 				throw new MlmqRequestTimeoutException("Request Timeout " + responseTimeoutTime + "ms reached for " + request, ex);
