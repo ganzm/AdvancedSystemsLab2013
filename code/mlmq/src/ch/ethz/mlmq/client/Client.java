@@ -32,15 +32,14 @@ public interface Client extends Closeable {
 	/**
 	 * Register as a new client.
 	 * 
-	 * @return
-	 * @throws IOException
+	 * @return client connection information
 	 */
 	ClientDto register() throws IOException, MlmqException;
 
 	/**
-	 * Creates a queue.
+	 * Creates a queue with a specific name.
 	 * 
-	 * @return
+	 * @return the queue created
 	 */
 	QueueDto createQueue(String queueName) throws IOException, MlmqException;
 
@@ -49,28 +48,19 @@ public interface Client extends Closeable {
 	 * 
 	 * @param queueName
 	 * @return Queue may be null if not found
-	 * @throws IOException
 	 */
 	QueueDto lookupClientQueue(String queueName) throws IOException, MlmqException;
 
 	/**
-	 * Tries to find the where we can send personal messages to a client
+	 * Tries to find the queue where we can send personal messages to a client
 	 * 
 	 * @param clientId
 	 * @return Queue may be null if not found
-	 * @throws IOException
-	 */
-	/**
-	 * Tries to find the where we can send personal messages to a client
-	 * 
-	 * @param clientId
-	 * @return Queue may be null if not found
-	 * @throws IOException
 	 */
 	QueueDto lookupClientQueue(long clientId) throws IOException, MlmqException;
 
 	/**
-	 * Deletes a queue.
+	 * Deletes a queue
 	 * 
 	 * @param id
 	 */
@@ -81,15 +71,20 @@ public interface Client extends Closeable {
 	 * 
 	 * @param queueId
 	 * @param content
+	 *            raw message content
 	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
 	 */
 	void sendMessage(long queueId, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
 	 * Sends a message to multiple queues.
 	 * 
-	 * @param queues
-	 * @param message
+	 * @param queueIds
+	 * @param content
+	 *            raw message content
+	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
 	 * @throws IOException
 	 */
 	void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException, MlmqException;
@@ -99,13 +94,13 @@ public interface Client extends Closeable {
 	 * 
 	 * @param clientId
 	 * @param content
+	 *            raw message content
 	 * @param prio
-	 * @throws IOException
+	 *            number from 1 to 10 (10 indicates maximum priority)
 	 */
 	void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException, MlmqException;
 
 	/**
-	 * 
 	 * Request/Responses are posted to the private client queue it is sent to
 	 * 
 	 * As soon as a client performs a Request it receives a context identifier
@@ -114,9 +109,10 @@ public interface Client extends Closeable {
 	 * 
 	 * @param client
 	 * @param content
+	 *            raw message content
 	 * @param prio
-	 * @throws IOException
-	 * @return returns a context identifier
+	 *            number from 1 to 10 (10 indicates maximum priority)
+	 * @return returns a context identifier which can be used as a filter criteria when reading messages
 	 */
 	long sendRequestToClient(long client, byte[] content, int prio) throws IOException, MlmqException;
 
@@ -124,8 +120,11 @@ public interface Client extends Closeable {
 	 * 
 	 * @param clientId
 	 * @param context
+	 *            context identifier
 	 * @param content
+	 *            raw message content
 	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
 	 * @throws IOException
 	 */
 	long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException, MlmqException;
@@ -140,7 +139,6 @@ public interface Client extends Closeable {
 	 * @param maxNumQueues
 	 *            maximum number of returned QueueDto's
 	 * @return number of messages in the client's personal queue
-	 * @throws IOException
 	 */
 	int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException, MlmqException;
 
@@ -148,8 +146,7 @@ public interface Client extends Closeable {
 	 * Reads the first message without removing it.
 	 * 
 	 * @param messageQueryInfo
-	 * @return
-	 * @throws IOException
+	 * @return message, may be null
 	 */
 	MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException;
 
@@ -157,8 +154,7 @@ public interface Client extends Closeable {
 	 * Reads the first message and removes it.
 	 * 
 	 * @param messageQueryInfo
-	 * @return
-	 * @throws IOException
+	 * @return message, may be null
 	 */
 	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException;
 }
