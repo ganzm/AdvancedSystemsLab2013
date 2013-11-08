@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import ch.ethz.mlmq.dto.QueueDto;
 import ch.ethz.mlmq.logging.LoggerUtil;
+import ch.ethz.mlmq.logging.PerformanceLoggerManager;
 import ch.ethz.mlmq.server.BrokerConfiguration;
 import ch.ethz.mlmq.server.db.dao.ClientDao;
 import ch.ethz.mlmq.server.db.dao.QueueDao;
@@ -35,6 +36,7 @@ public class DaoTest {
 
 	@BeforeClass
 	public static void beforeClass() throws IOException, SQLException {
+		PerformanceLoggerManager.configureDisabled();
 		LoggerUtil.initConsoleDebug();
 
 		config = BrokerConfiguration.loadFromJar("brokerconfig.properties");
