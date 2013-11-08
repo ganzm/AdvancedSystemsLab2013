@@ -1,5 +1,6 @@
 \documentclass[a4paper]{article}
 
+\usepackage{float}
 \usepackage{url}
 \usepackage{graphicx}	% For figure environment
 \usepackage{epstopdf}
@@ -148,9 +149,9 @@ Lists the Broker scenarios to use. Where the first item corresponds to a class n
 \begin{verbatim} 
 common.scenario.mapping.client=...
 \end{verbatim}
-Lists the client scenarios to use. Where the first item corresponds to a class name followed by ip address
+Lists the client scenarios to use. Where the first item corresponds to a class name followed by ip address.
 
-\begin{figure}
+\begin{figure}[H]
 \begin{verbatim} 
 
 ...
@@ -182,7 +183,7 @@ common.scenario.myposition = 0
 \end{figure}  	
 
 \subsubsection{Logging Configuration}
-
+\label{subsub:loggingConfig}
 Both the messaging system and the client implementation use \textit{java.util.logging.*} to log system events like errors, component startup/shutdown. This log is completely separated from the performance log (see \ref{subsub:PerfLogConfig} ), which is performed on a separate basis.
 
 A valid logging configuration can be found here
@@ -211,19 +212,98 @@ java ch.ethz.mlmq.main.Main scenario -config resource/brokerconfig.properties -l
 Since configuration whether to start as a client or as a server is located inside the main configuration file a client is started in the same way as a middle ware.
 
 \subsection{Command Line Interface}
-command line interface commando file
+
+Both client and middle ware instance can be controlled using basic commands. These commands are written into the so called command file which is configured in the main configuration like this.
+
+\begin{verbatim}
+common.commandofile.path = commando.txt
+\end{verbatim}
+
+While the client or the middle ware instance is running one can write a single command into this file to be executed. The middle ware periodically checks whether the file has changed. If so it tries to execute the command contained in the file.
+
+\begin{figure}[H]
+  \begin{center}
+\begin{tabular}{|c|l|}
+\hline 
+command & description \\ 
+\hline 
+shutdown & Gracefully shuts down the middleware \\ 
+logstacktrace & Writes the current stack trace of all threads in the virtual machine to the log \\ 
+logmemory & Writes the current memory consumption to the log \\ 
+\hline
+\end{tabular} 
+  \end{center}
+  \caption{Commando File Commands}
+\end{figure}
+
 
 \subsection{Logging}
-what has been logged
-performance logger
-how to configure logging
+This chapter describes what is logged rather than how the logging is configured. (Check \ref{subsub:PerfLogConfig} and \ref{subsub:loggingConfig} to see how the logging is configured).
 
+As stated logging is performed with \textit{java.util.logging}. This files are for debugging purposes only.
+
+The \textbf{PerformanceLog} contains timing data which are used to reason about the timing behaviour of the system which has been build.
+
+Except for the first line of the file the structure of the \textbf{PerformanceLog} has a csv file format.
+
+
+\paragraph{Columns} represent the following values
+\begin{enumerate}
+\item Time taken for a specific action
+\item UTC timestamp when a specific action was finished
+\item Name of the action
+\item Different runtime dependant context information. (E.g. C[.] indicates the number of connected clients on a middle ware instance)
+\end{enumerate}
+
+\paragraph{Action Names} The following list shows the different types of actions which are logged and their meaning. Action names were chosen to be as short as possible to reduce log file size.
+
+\begin{itemize}
+\item \textbf{CSndReq} - request/response rountrip measured from a client's perspective 
+	\begin{itemize}
+	\item \textbf{BTotReqResp} - time taken from the first received byte to the last sent response byte measured from a broker's perspective.
+	\item \textbf{BRcvReq} - time taken to receive a Request. This measures how long it takes to receive all request bytes on the broker.
+	\item \textbf{BProcReq} - time taken by the worker. Tells you how long a single worker thread is occupied processing a certain request.
+		\begin{itemize}
+   		\item \textbf{BDb} - time taken to perform a specific database operation. Since this is measured by the broker jdbc network communication is included here.
+   		\end{itemize}
+	\item \textbf{BSndResp} - time taken to send a response.
+	\end{itemize}
+\end{itemize}
+
+\paragraph{Example Performance Log}
+An example performance log is shown in figure \ref{fig:sample-perf-log}
+
+\begin{figure}[H]
+  \begin{center}
+	\begin{verbatim}
+BrokerConfiguration Scenario[SimpleShutdownBroker] Port[8099] WorkerThreadCount[4] DbConnectionPoolSize[4]
+4;1383684920403;BRcvReq;C[9]
+0;1383684920443;BRcvReq;C[10]
+93;1383684920533;BDb#getClientId;C[10]
+26;1383684920561;BDb#insertNewClient;C[10]
+7;1383684920568;BDb#createClientQueue;C[10]
+129;1383684920569;BProcReq#RegistrationRequest:RegistrationResponse;C[10]
+0;1383684920570;BSndResp;C[10]
+132;1383684920571;BTotReqResp;C[10]
+1;1383684920571;BDb#getClientId;C[10]
+14;1383684920572;BDb#createClientQueue;C[10]
+166;1383684920572;BProcReq#RegistrationRequest:RegistrationResponse;C[10]
+8;1383684920573;BDb#createClientQueue;C[10]
+132;1383684920573;BProcReq#RegistrationRequest:RegistrationResponse;C[10]
+	\end{verbatim}
+  \end{center}
+  \caption{Sample Performance Log}
+  \label{fig:sample-perf-log}
+\end{figure}
 
 \subsection{Unit Tests}
-unit tests
-system tests
-what do they do
+While developing the system we strictly relied on unittests which are located in the test folder of the mlmq eclipse project.
 
+In order to have the database related and system unittests working you may need to adjust database connection information located in the following file. This file is used by all Unit Tests which need client specific configuration.
+
+\begin{verbatim}
+resource/brokerconfig.properties
+\end{verbatim}
 
 \section{Test Infrastructure}
 describe the testmaster
