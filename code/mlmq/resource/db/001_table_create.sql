@@ -52,5 +52,15 @@ CREATE INDEX idx_message_sent_at
   ON message
   USING btree
   (sent_at);
+
+CREATE INDEX idx_message_client_sender_id
+  ON message
+  USING btree
+  (client_sender_id);
+
+CREATE INDEX idx_message_context
+  ON message
+  USING btree
+  (context);
     
   
