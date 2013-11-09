@@ -62,6 +62,11 @@ public class MessageQueryInfoDto implements Serializable, MlmqSerializable {
 		this.shouldOrderByPriority = shouldOrderByPriority;
 	}
 
+	public MessageQueryInfoDto(long queueId, int conversationContext) {
+		this.conversationContext = conversationContext;
+		this.queue = new QueueDto(queueId);
+	}
+
 	public MessageQueryInfoDto() {
 
 	}

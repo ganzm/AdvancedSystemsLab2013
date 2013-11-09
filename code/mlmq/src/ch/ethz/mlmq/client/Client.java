@@ -52,6 +52,14 @@ public interface Client extends Closeable {
 	QueueDto lookupClientQueue(String queueName) throws IOException, MlmqException;
 
 	/**
+	 * Tries to find a client for a specific name
+	 * 
+	 * @param clientName
+	 * @return
+	 */
+	ClientDto lookupClient(String clientName) throws IOException, MlmqException;
+
+	/**
 	 * Tries to find the queue where we can send personal messages to a client
 	 * 
 	 * @param clientId
