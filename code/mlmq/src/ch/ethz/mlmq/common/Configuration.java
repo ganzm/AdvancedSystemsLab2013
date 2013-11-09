@@ -51,7 +51,7 @@ public class Configuration {
 		String mappingName = null;
 		ScenarioMapping mapping = getMyMapping();
 		if (mapping != null) {
-			mappingName = mapping.getName();
+			mappingName = mapping.getUniqueName();
 		}
 		return new PerformanceLoggerConfig(performanceLoggerPath, mappingName);
 	}

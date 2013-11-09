@@ -28,7 +28,7 @@ public class ScenarioConfigurationTest {
 
 		Assert.assertEquals(1, brokerMappings.size());
 		BrokerScenarioMapping brokerMapping = brokerMappings.get(0);
-		Assert.assertEquals("broker", brokerMapping.getName());
+		Assert.assertEquals("broker", brokerMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.1", brokerMapping.getHost());
 		Assert.assertEquals(1234, brokerMapping.getPort());
 	}
@@ -42,7 +42,7 @@ public class ScenarioConfigurationTest {
 		Assert.assertEquals(1, mappings.size());
 		ClientScenarioMapping clientMapping = mappings.get(0);
 
-		Assert.assertEquals("client", clientMapping.getName());
+		Assert.assertEquals("client", clientMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.2", clientMapping.getHost());
 	}
 
@@ -56,35 +56,35 @@ public class ScenarioConfigurationTest {
 
 		// Broker 0
 		brokerScenarioMapping = mapping.get(0);
-		Assert.assertEquals("brokerType1", brokerScenarioMapping.getName());
+		Assert.assertEquals("brokerType1", brokerScenarioMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.1", brokerScenarioMapping.getHost());
 		Assert.assertEquals(1234, brokerScenarioMapping.getPort());
 		Assert.assertEquals(0, brokerScenarioMapping.getPosition());
 
 		// Broker 1
 		brokerScenarioMapping = mapping.get(1);
-		Assert.assertEquals("brokerType1", brokerScenarioMapping.getName());
+		Assert.assertEquals("brokerType1", brokerScenarioMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.2", brokerScenarioMapping.getHost());
 		Assert.assertEquals(1235, brokerScenarioMapping.getPort());
 		Assert.assertEquals(1, brokerScenarioMapping.getPosition());
 
 		// Broker 2
 		brokerScenarioMapping = mapping.get(2);
-		Assert.assertEquals("brokerType2", brokerScenarioMapping.getName());
+		Assert.assertEquals("brokerType2", brokerScenarioMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.3", brokerScenarioMapping.getHost());
 		Assert.assertEquals(1236, brokerScenarioMapping.getPort());
 		Assert.assertEquals(2, brokerScenarioMapping.getPosition());
 
 		// Broker 3
 		brokerScenarioMapping = mapping.get(3);
-		Assert.assertEquals("brokerType2", brokerScenarioMapping.getName());
+		Assert.assertEquals("brokerType2", brokerScenarioMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.4", brokerScenarioMapping.getHost());
 		Assert.assertEquals(1237, brokerScenarioMapping.getPort());
 		Assert.assertEquals(3, brokerScenarioMapping.getPosition());
 
 		// Broker 4
 		brokerScenarioMapping = mapping.get(4);
-		Assert.assertEquals("brokerType2", brokerScenarioMapping.getName());
+		Assert.assertEquals("brokerType2", brokerScenarioMapping.getScenarioClassName());
 		Assert.assertEquals("127.0.0.5", brokerScenarioMapping.getHost());
 		Assert.assertEquals(1238, brokerScenarioMapping.getPort());
 		Assert.assertEquals(4, brokerScenarioMapping.getPosition());
@@ -102,7 +102,7 @@ public class ScenarioConfigurationTest {
 		for (int i = 0; i < 6; i++) {
 			ClientScenarioMapping clientScenarioMapping = mapping.get(i);
 
-			Assert.assertEquals("client", clientScenarioMapping.getName());
+			Assert.assertEquals("client", clientScenarioMapping.getScenarioClassName());
 			Assert.assertEquals("127.0.0." + (i + 1), clientScenarioMapping.getHost());
 			Assert.assertEquals(i, clientScenarioMapping.getPosition());
 		}

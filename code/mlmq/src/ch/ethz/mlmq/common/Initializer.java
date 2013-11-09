@@ -25,7 +25,7 @@ public class Initializer {
 
 			ScenarioMapping myMapping = config.getMyMapping();
 
-			Class<? extends Scenario> scenarioClass = findScenario(myMapping.getName());
+			Class<? extends Scenario> scenarioClass = findScenario(myMapping.getScenarioClassName());
 
 			return createScenario(scenarioClass, config);
 		} catch (Exception e) {

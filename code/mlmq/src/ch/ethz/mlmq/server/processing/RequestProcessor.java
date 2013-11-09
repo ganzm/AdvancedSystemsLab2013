@@ -302,7 +302,7 @@ public class RequestProcessor {
 				clientId = newClientId;
 
 				// insert new ClientQueue
-				clientQueue = queueDao.createClientQueue(newClientId, "ClientQueue" + newClientId);
+				clientQueue = queueDao.createClientQueue(newClientId, name);
 			} else {
 
 				QueueDto queue = queueDao.getQueueByClientId(clientId);

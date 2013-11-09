@@ -1,7 +1,7 @@
 package ch.ethz.mlmq.common;
 
 /**
- * represents whats written in the configuration at
+ * represents what's written in the configuration at
  * 
  * common.scenario.mapping.broker common.scenario.mapping.client
  * 
@@ -25,8 +25,12 @@ public class ScenarioMapping {
 		this.position = position;
 	}
 
-	public String getName() {
+	public String getScenarioClassName() {
 		return name;
+	}
+
+	public String getUniqueName() {
+		return name + "_" + position;
 	}
 
 	public String getHost() {
