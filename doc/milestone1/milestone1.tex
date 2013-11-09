@@ -31,7 +31,29 @@ This document, describes the message queuing system which was build. Architectur
 
 \end{abstract}
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ----------------------------------------------
+% Section What is where
+%% ----------------------------------------------
+\section{What to find where}
+
+TODO 
+
+this chapter describes what to find where code, documentation, etc
+
+where is the code
+\url{https://github.com/ganzm/AdvancedSystemsLab2013}
+where is the testmaster
+\url{https://github.com/lukaselmer/ethz-asl-testmaster}
+where are our data
+\url{https://github.com/lukaselmer/ethz-asl-testmaster-data}
+
+\url{https://testmaster-asl-eth.renuo.ch/test_runs}
+
+login information
+
+%% ----------------------------------------------
+% Section Messaging System
+%% ----------------------------------------------
 \section{Messaging System}
 In this section the system under test (also named as \textbf{middle ware}  or \textbf{broker}) is described.
 
@@ -98,8 +120,8 @@ This section describe all the important things laying around the core messaging 
 
 \subsection{Database setup}
 
-To setup the database required for the middle ware there are 2 option
-how to setup the database
+To setup the database required for the middle ware there are two options
+how to create one.
 
 \subsubsection{Automatic setup}
 You can run the java class \textit{ch.ethz.mlmq.main.Main} which is located in the main project folder \textit{mlmq}. Run the class without parameters to get usage informations.
@@ -119,7 +141,7 @@ resource/db/002_stored_procedures.sql
 \end{verbatim}
 
 \subsection{Configuration}
-
+Configurating software components is done with properties file. \footnote{See \url{http://docs.oracle.com/javase/tutorial/essential/environment/properties.html} for further information.}
 \subsubsection{Main Configuration}
 \label{subsub:MainConfig}
 
@@ -299,7 +321,7 @@ BrokerConfiguration Scenario[SimpleShutdownBroker] Port[8099] WorkerThreadCount[
 \subsection{Unit Tests}
 While developing the system we strictly relied on unittests which are located in the test folder of the mlmq eclipse project.
 
-In order to have the database related and system unittests working you may need to adjust database connection information located in the following file. This file is used by all Unit Tests which need client specific configuration.
+In order to have the database related and system unittests working you may need to adjust database connection information located in the following file. This configuration file is used by all Unit Tests which need client specific configuration.
 
 \begin{verbatim}
 resource/brokerconfig.properties
@@ -315,8 +337,18 @@ what it does
 describe the web GUI
 
 \subsection{Log Analyzer}
-describe the log analyzer
 
+In order to semi automatically analyze performance log files which have been created through the process of an experiment a Java programm was written to simplify evaluation of these files.
+
+The project folder contains an Eclipse project called \textit{log\_analyzer}. All you need to do is to provide a path to the folder containing all the log files of an experiment you want to analyze. By executing the class \textit{ch.ethz.mlmq.log\_analyzer.Main} you can choose to either generate a csv file or a gnuplot file \footnote{ \url{See http://www.gnuplot.info/} } .
+
+
+TODO da fehlt noch was
+
+
+\begin{verbatim}
+-d .../logs/test_run_56 -type CSndReq#OK# -fmt csv -x time -y '' -t test
+\end{verbatim}
 
 
 %% ----------------------------------------------
