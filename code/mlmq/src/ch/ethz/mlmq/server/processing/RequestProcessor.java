@@ -268,13 +268,15 @@ public class RequestProcessor {
 
 			ClientDao clientDao = connection.getClientDao();
 
-			int clientId = clientDao.getClientId(request.getClientName());
+			Integer clientId = clientDao.getClientId(request.getClientName());
 
-			ClientDto client = new ClientDto(clientId, request.getClientName());
+			ClientDto client = null;
+			if (clientId != null) {
+				client = new ClientDto(clientId, request.getClientName());
+			}
 
 			ClientResponse response = new ClientResponse(client);
 			return response;
-
 		} catch (SQLException ex) {
 			connection.close();
 			throw new MlmqException("Error looking up Client " + request.getClientName(), ex);

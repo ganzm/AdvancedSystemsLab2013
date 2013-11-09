@@ -80,6 +80,7 @@ public class PairedClient extends ClientScenario {
 					if (partnerClient == null) {
 						logger.warning("My Communication Partner is not yet online - wait");
 						Thread.sleep(2000);
+						continue;
 					}
 				}
 
