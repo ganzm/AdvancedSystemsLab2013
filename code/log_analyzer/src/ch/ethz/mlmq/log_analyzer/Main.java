@@ -12,14 +12,14 @@ public class Main {
 
 	//@formatter:off
 	private static String usageString = "usage: java -jar target.jar\n"
-			+ "-d <directory_to_log_files>\n"
-			+ "-type <message_type>\n"
-			+ "-w <window-size(ms) optional>\n"
+			+ "-directory_to_log_files <directory_to_log_files>\n"
+			+ "-message_type <message_type>\n"
+			+ "-window_size <window-size(ms) optional>\n"
 			+ "-out (out_file optional)\n"
-			+ "-fmt output format default csv(csv|gnu-png|gnu-eps)\n"
-			+ "-x xAxis label (optional)\n"
-			+ "-y yAxis label (optional)\n"
-			+ "-t diagram title (optional)";
+			+ "-output_format output format default csv(csv|gnu-png|gnu-eps)\n"
+			+ "-x_axis_label xAxis label (optional)\n"
+			+ "-y_axis_label yAxis label (optional)\n"
+			+ "-diagram_title diagram title (optional)";
 	//@formatter:on
 
 	public static void main(String[] args) throws FileNotFoundException {
@@ -28,15 +28,15 @@ public class Main {
 		argUtil.getArgMap();
 		LogAnalizer l = new LogAnalizer();
 
-		if (argUtil.hasKey("?") || !argUtil.hasKey("d") || !argUtil.hasKey("type")) {
+		if (argUtil.hasKey("?") || !argUtil.hasKey("directory_to_log_files")) {
 			System.out.println(usageString);
 			return;
 		}
 
-		String directoryToLogFiles = argUtil.getMandatory("d");
-		String messageType = argUtil.getMandatory("type");
-		String formatString = argUtil.getOptional("fmt", "csv").toLowerCase();
-		int windowSize = Integer.parseInt(argUtil.getOptional("w", "" + (1000 * 60 * 1)));
+		String directoryToLogFiles = argUtil.getMandatory("directory_to_log_files");
+		String messageType = argUtil.getOptional("message_type", "");
+		String formatString = argUtil.getOptional("output_format", "csv").toLowerCase();
+		int windowSize = Integer.parseInt(argUtil.getOptional("window_size", "" + (1000 * 60 * 1)));
 
 		PrintStream out;
 		if (argUtil.hasKey("out")) {
@@ -67,12 +67,12 @@ public class Main {
 	}
 
 	private static void addOptionalGnuPlotParams(GnuPlotPrinter gnuP, ArgUtil argUtil) {
-		if (argUtil.hasKey("t"))
-			gnuP.setDiagramTitle(argUtil.getMandatory("t"));
-		if (argUtil.hasKey("x"))
-			gnuP.setXLabel(argUtil.getMandatory("x"));
-		if (argUtil.hasKey("y"))
-			gnuP.setYLabel(argUtil.getMandatory("y"));
+		if (argUtil.hasKey("diagram_title"))
+			gnuP.setDiagramTitle(argUtil.getMandatory("diagram_title"));
+		if (argUtil.hasKey("x_axis_label"))
+			gnuP.setXLabel(argUtil.getMandatory("x_axis_label"));
+		if (argUtil.hasKey("y_axis_label"))
+			gnuP.setYLabel(argUtil.getMandatory("y_axis_label"));
 	}
 
 	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
