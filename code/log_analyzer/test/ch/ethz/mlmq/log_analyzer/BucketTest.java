@@ -3,8 +3,6 @@ package ch.ethz.mlmq.log_analyzer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.ethz.mlmq.log_analyzer.Bucket;
-
 public class BucketTest {
 
 	private static final int HEAVY_LOAD_TIMES = 10000; // set to 10000000 for really heavy load
@@ -12,6 +10,7 @@ public class BucketTest {
 	@Test
 	public void testBucketMean() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.mean(), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(10.0, b.mean(), 0.0000001);
 		b.addValue(10);
@@ -25,6 +24,7 @@ public class BucketTest {
 	@Test
 	public void testBucketPercentileMean() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.percentile(50.00), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(10.0, b.percentile(50.0), 0.0000001);
 		b.addValue(10);
@@ -40,6 +40,7 @@ public class BucketTest {
 	@Test
 	public void testBucketVariance() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.variance(), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(0.0, b.variance(), 0.0000001);
 		b.addValue(10);
@@ -53,6 +54,7 @@ public class BucketTest {
 	@Test
 	public void testBucketPercentileMin() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.percentile(0.01), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(b.min(), b.percentile(0.01), 0.0000001);
 		b.addValue(10);
@@ -66,6 +68,7 @@ public class BucketTest {
 	@Test
 	public void testBucketMin() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.min(), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(10.0, b.min(), 0.0000001);
 		b.addValue(10);
@@ -79,6 +82,7 @@ public class BucketTest {
 	@Test
 	public void testBucketPercentileMax() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.percentile(99.99), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(b.max(), b.percentile(99.99), 0.0000001);
 		b.addValue(10);
@@ -92,6 +96,7 @@ public class BucketTest {
 	@Test
 	public void testBucketMax() throws Exception {
 		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.max(), 0.0000001);
 		b.addValue(10);
 		Assert.assertEquals(10.0, b.max(), 0.0000001);
 		b.addValue(10);

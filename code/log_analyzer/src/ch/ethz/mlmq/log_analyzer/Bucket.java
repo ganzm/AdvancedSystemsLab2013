@@ -38,16 +38,22 @@ public class Bucket {
 	}
 
 	public double mean() {
+		if (count() == 0)
+			return 0;
 		Mean m = new Mean();
 		return m.evaluate(getPrimitiveValues());
 	}
 
 	public double variance() {
+		if (count() == 0)
+			return 0;
 		Variance v = new Variance();
 		return v.evaluate(getPrimitiveValues());
 	}
 
 	public double percentile(double percentile) {
+		if (count() == 0)
+			return 0;
 		Percentile p = new Percentile();
 		p.setData(getPrimitiveValues());
 		return p.evaluate(percentile);
@@ -57,18 +63,22 @@ public class Bucket {
 		if (primitiveValuesCache != null)
 			return primitiveValuesCache;
 
-		primitiveValuesCache = new double[values.size()];
-		for (int i = 0; i < values.size(); i++) {
+		primitiveValuesCache = new double[count()];
+		for (int i = 0; i < count(); i++) {
 			primitiveValuesCache[i] = values.get(i);
 		}
 		return primitiveValuesCache;
 	}
 
 	public double min() {
+		if (count() == 0)
+			return 0;
 		return Collections.min(values);
 	}
 
 	public double max() {
+		if (count() == 0)
+			return 0;
 		return Collections.max(values);
 	}
 
