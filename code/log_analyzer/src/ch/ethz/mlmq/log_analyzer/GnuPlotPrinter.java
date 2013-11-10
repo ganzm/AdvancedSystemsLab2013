@@ -69,12 +69,12 @@ public class GnuPlotPrinter {
 			writer.println("plot \"-\" t \"" + meanLabel + "\" with errorb, \"-\" t \"" + interpolatedLabel + "\" smooth csplines");
 
 			for (Bucket b : buckets) {
-				writer.println(formatTime(b.getTime(), t0) + " " + b.mean() + " " + b.variance());
+				writer.println(formatTime(b.getTime(), t0) + " " + b.mean() + " " + b.stddev());
 			}
 			writer.println("e");
 
 			for (Bucket b : buckets) {
-				writer.println(formatTime(b.getTime(), t0) + " " + b.mean() + " " + b.variance());
+				writer.println(formatTime(b.getTime(), t0) + " " + b.mean() + " " + b.stddev());
 			}
 			writer.println("e");
 
