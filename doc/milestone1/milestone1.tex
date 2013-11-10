@@ -1,5 +1,6 @@
 \documentclass[a4paper]{article}
 
+\usepackage{nameref}
 \usepackage{float}
 \usepackage{url}
 \usepackage{graphicx}	% For figure environment
@@ -31,25 +32,7 @@ This document, describes the message queuing system which was build. Architectur
 
 \end{abstract}
 
-%% ----------------------------------------------
-% Section What is where
-%% ----------------------------------------------
-\section{What to find where}
 
-TODO 
-
-this chapter describes what to find where code, documentation, etc
-
-where is the code
-\url{https://github.com/ganzm/AdvancedSystemsLab2013}
-where is the testmaster
-\url{https://github.com/lukaselmer/ethz-asl-testmaster}
-where are our data
-\url{https://github.com/lukaselmer/ethz-asl-testmaster-data}
-
-\url{https://testmaster-asl-eth.renuo.ch/test_runs}
-
-login information
 
 %% ----------------------------------------------
 % Section Messaging System
@@ -269,7 +252,7 @@ The \textbf{PerformanceLog} contains timing data which are used to reason about 
 Except for the first line of the file the structure of the \textbf{PerformanceLog} has a csv file format.
 
 
-\paragraph{Columns} represent the following values
+\subsubsection{Columns} represent the following values
 \begin{enumerate}
 \item Time taken for a specific action
 \item UTC timestamp when a specific action was finished
@@ -277,7 +260,9 @@ Except for the first line of the file the structure of the \textbf{PerformanceLo
 \item Different runtime dependant context information. (E.g. C[.] indicates the number of connected clients on a middle ware instance)
 \end{enumerate}
 
-\paragraph{Action Names} The following list shows the different types of actions which are logged and their meaning. Action names were chosen to be as short as possible to reduce log file size.
+\subsubsection{Action Names}
+\label{subsub:PerfLogger-ActionNames}
+The following list shows the different types of actions which are logged and their meaning. Action names were chosen to be as short as possible to reduce log file size.
 
 \begin{itemize}
 \item \textbf{CSndReq} - request/response rountrip measured from a client's perspective 
@@ -292,7 +277,7 @@ Except for the first line of the file the structure of the \textbf{PerformanceLo
 	\end{itemize}
 \end{itemize}
 
-\paragraph{Example Performance Log}
+\subsubsection{Example Performance Log}
 An example performance log is shown in figure \ref{fig:sample-perf-log}
 
 \begin{figure}[H]
@@ -328,7 +313,9 @@ resource/brokerconfig.properties
 \end{verbatim}
 
 \section{Test Infrastructure}
-describe the testmaster
+\label{sec:TestInfrastructure}
+
+TODO - describe the testmaster
 \subsection{Overview}
 what we've built
 what it does
@@ -340,16 +327,52 @@ describe the web GUI
 
 In order to semi automatically analyze performance log files which have been created through the process of an experiment a Java programm was written to simplify evaluation of these files.
 
-The project folder contains an Eclipse project called \textit{log\_analyzer}. All you need to do is to provide a path to the folder containing all the log files of an experiment you want to analyze. By executing the class \textit{ch.ethz.mlmq.log\_analyzer.Main} you can choose to either generate a csv file or a gnuplot file \footnote{ \url{See http://www.gnuplot.info/} } .
+The project folder (See Section \ref{sec:WhereToFind:MessagingSystemSrc}) contains an Eclipse project called \textit{log\_analyzer}. All you need to do is to provide a path to the folder containing all the log files of an experiment you want to analyze. By executing the class \textit{ch.ethz.mlmq.log\_analyzer.Main} you can choose to either generate a csv file or a gnuplot file\footnote{\url{See http://www.gnuplot.info/}}.
 
 
-TODO da fehlt noch was
-
+\subsubsection{Example}
+The following line of code shows an example of calling the log analyzer.
 
 \begin{verbatim}
--d .../logs/test_run_56 -type CSndReq#OK# -fmt csv -x time -y '' -t test
+java ch.ethz.mlmq.log_analyzer.Main -d logs/test_run_56 -type CSndReq#OK# -fmt csv
 \end{verbatim}
 
+The folder found at logs/test\_run\_56 which contains several log files is analyzed and a csv file is created. This file contains timing information for client request/reponse operations (See \ref{subsub:PerfLogger-ActionNames}).
+
+%% ----------------------------------------------
+% Section What is where
+%% ----------------------------------------------
+\section{What to find where}
+
+This section should help find code, experiment data, plots etc.
+
+\subsection{Messaging System Source Code}
+\label{sec:WhereToFind:MessagingSystemSrc}
+All source code for the messaging system, clients and log analyzer can be found here.
+
+\url{https://github.com/ganzm/AdvancedSystemsLab2013}
+
+
+\subsection{Experiment Raw data}
+Experiment data is located here.
+
+\url{https://github.com/lukaselmer/ethz-asl-testmaster-data}
+
+\subsection{Testmaster Source Code}
+Ruby on Rails Testmaster source code is located here.
+
+\url{https://github.com/lukaselmer/ethz-asl-testmaster}
+
+\subsection{Testmaster Installation}
+The Test Infrastructure as described in Section \ref{sec:TestInfrastructure}   \nameref{sec:TestInfrastructure}. This is where you find all experiment data (even the failed ones).
+
+\url{https://testmaster-asl-eth.renuo.ch}
+
+\textbf{Guest Credential}
+
+Username: TODO
+
+Password: TODO
 
 %% ----------------------------------------------
 % Section References
