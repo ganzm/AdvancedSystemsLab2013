@@ -13,6 +13,7 @@ public class CSVPrinter {
 	private final ArrayList<Bucket> buckets;
 
 	private SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	private DiagramType diagramType;
 
 	public CSVPrinter(ArrayList<Bucket> buckets, PrintStream out) {
 		this.buckets = buckets;

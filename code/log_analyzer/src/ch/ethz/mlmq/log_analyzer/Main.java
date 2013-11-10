@@ -19,6 +19,7 @@ public class Main {
 			+ "-output_format output format default csv(csv|gnu-png|gnu-eps)\n"
 			+ "-x_axis_label xAxis label (optional)\n"
 			+ "-y_axis_label yAxis label (optional)\n"
+			+ "-diagram_type the diagram type default response_time(response_time|throghput)\n"
 			+ "-diagram_title diagram title (optional)";
 	//@formatter:on
 
@@ -36,6 +37,7 @@ public class Main {
 		String directoryToLogFiles = argUtil.getMandatory("directory_to_log_files");
 		String messageType = argUtil.getOptional("message_type", "");
 		String formatString = argUtil.getOptional("output_format", "csv").toLowerCase();
+		DiagramType diagramType = getDiagramType(argUtil);
 		int windowSize = Integer.parseInt(argUtil.getOptional("window_size", "" + (1000 * 60 * 1)));
 
 		PrintStream out;
@@ -56,14 +58,20 @@ public class Main {
 			CSVPrinter p = new CSVPrinter(buckets, out);
 			p.print();
 		} else if ("gnu-png".equals(formatString)) {
-			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, out, true, null);
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, true, null);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("gnu-eps".equals(formatString)) {
-			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, out, false, null);
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, false, null);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		}
+	}
+
+	private static DiagramType getDiagramType(ArgUtil argUtil) {
+		String diagramTypeStr = argUtil.getOptional("diagram_type", "response_time");
+		DiagramType diagramType = diagramTypeStr.equals("throughput") ? DiagramType.Throughput : DiagramType.ResponseTime;
+		return diagramType;
 	}
 
 	private static void addOptionalGnuPlotParams(GnuPlotPrinter gnuP, ArgUtil argUtil) {
