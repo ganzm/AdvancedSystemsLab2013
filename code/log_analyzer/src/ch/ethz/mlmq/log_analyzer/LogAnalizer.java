@@ -19,11 +19,12 @@ public class LogAnalizer {
 	 * @param string
 	 * @param windowSize
 	 *            in milliseconds
+	 * @param startupCooldownTime
 	 * @return
 	 */
-	public ArrayList<Bucket> getBuckets(String messageType, long windowSize) {
+	public ArrayList<Bucket> getBuckets(String messageType, long windowSize, long startupCooldownTime) {
 		ArrayList<Bucket> b = new ArrayList<>();
-		long startBucketPosition = getStartBucketTime();
+		long startBucketPosition = getStartBucketTime() + startupCooldownTime;
 
 		for (File file : files) {
 			try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
@@ -34,7 +35,18 @@ public class LogAnalizer {
 			}
 		}
 
+		cutCooldownBuckets(b, windowSize, startupCooldownTime);
+
 		return b;
+	}
+
+	private void cutCooldownBuckets(ArrayList<Bucket> b, long windowSize, long startupCooldownTime) {
+		long numberOfBucketsToCut = startupCooldownTime / windowSize;
+		for (int i = 0; i < numberOfBucketsToCut; i++) {
+			if (b.size() == 0)
+				break;
+			b.remove(b.size() - 1);
+		}
 	}
 
 	private void processLines(String messageType, long windowSize, ArrayList<Bucket> b, long startBucketPosition, BufferedReader din) throws IOException {
@@ -52,6 +64,9 @@ public class LogAnalizer {
 			return;
 
 		int pos = l.getBucketPosition(startBucketPosition, windowSize);
+
+		if (pos < 0) // ignore the warmup time
+			return;
 
 		while (b.size() <= pos)
 			b.add(new Bucket());

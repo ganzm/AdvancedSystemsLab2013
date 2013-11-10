@@ -35,7 +35,7 @@ public class LogLine {
 		int i = (int) l;
 		if (i != l)
 			throw new RuntimeException("Overflow: " + l + " cannot be converted to int");
-		return (int) l;
+		return i;
 	}
 
 }

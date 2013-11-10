@@ -23,6 +23,7 @@ public class Main {
 			+ "-output_format output format default csv(csv|gnu-png|gnu-eps|txt)\n"
 			+ "-x_axis_label xAxis label (optional)\n"
 			+ "-y_axis_label yAxis label (optional)\n"
+			+ "-startup_cooldown_time startup / cooldown time (optional)\n"
 			+ "-diagram_type the diagram type default response_time(response_time|throghput)\n"
 			+ "-diagram_title diagram title (optional)";
 	//@formatter:on
@@ -40,6 +41,7 @@ public class Main {
 
 		String directoryToLogFiles = argUtil.getMandatory("directory_to_log_files");
 		String messageType = argUtil.getOptional("message_type", "");
+		int startupCooldownTime = Integer.parseInt(argUtil.getOptional("startup_cooldown_time", "" + (1000 * 60 * 1)));
 		String formatString = argUtil.getOptional("output_format", "csv").toLowerCase();
 		DiagramType diagramType = getDiagramType(argUtil);
 		int windowSize = Integer.parseInt(argUtil.getOptional("window_size", "" + (1000 * 60 * 1)));
@@ -58,7 +60,7 @@ public class Main {
 			l.addFile(file);
 		}
 
-		ArrayList<Bucket> buckets = l.getBuckets(messageType, windowSize);
+		ArrayList<Bucket> buckets = l.getBuckets(messageType, windowSize, startupCooldownTime);
 
 		if ("csv".equals(formatString)) {
 			CSVPrinter p = new CSVPrinter(buckets, out);

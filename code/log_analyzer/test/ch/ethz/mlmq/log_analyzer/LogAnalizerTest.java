@@ -7,9 +7,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.ethz.mlmq.log_analyzer.Bucket;
-import ch.ethz.mlmq.log_analyzer.LogAnalizer;
-
 public class LogAnalizerTest {
 
 	private static final String TEST_LOG1_PATH = "resource/test/test_log.log";
@@ -29,7 +26,7 @@ public class LogAnalizerTest {
 	@Test
 	public void testCorrectBucketSize() throws Exception {
 		LogAnalizer l = getLogAnalizer();
-		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2);
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 0);
 		Assert.assertEquals(2, b.size());
 	}
 
@@ -38,14 +35,14 @@ public class LogAnalizerTest {
 		LogAnalizer l = getLogAnalizer();
 		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
 		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
-		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2);
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 0);
 		Assert.assertEquals(4, b.size());
 	}
 
 	@Test
 	public void testCorrectBuckets() throws Exception {
 		LogAnalizer l = getLogAnalizer();
-		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2);
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 0);
 		Bucket b1 = b.get(0);
 		Bucket b2 = b.get(1);
 
@@ -58,7 +55,7 @@ public class LogAnalizerTest {
 		LogAnalizer l = getLogAnalizer();
 		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
 		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
-		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2);
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 0);
 		Bucket b1 = b.get(0);
 		Bucket b2 = b.get(1);
 		Bucket b3 = b.get(2);
@@ -68,6 +65,21 @@ public class LogAnalizerTest {
 		Assert.assertEquals(3, b2.count());
 		Assert.assertEquals(0, b3.count());
 		Assert.assertEquals(1, b4.count());
+	}
+
+	@Test
+	public void testCutBuckets() throws Exception {
+		LogAnalizer l = getLogAnalizer();
+		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
+		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 1000 * 60 * 1);
+
+		Assert.assertEquals(3, b.size());
+		Bucket b2 = b.get(0);
+		Bucket b3 = b.get(1);
+
+		Assert.assertEquals(15, b2.count());
+		Assert.assertEquals(0, b3.count());
 	}
 
 	@Test
