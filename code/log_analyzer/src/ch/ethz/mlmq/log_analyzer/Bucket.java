@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 
@@ -49,6 +50,13 @@ public class Bucket {
 			return 0;
 		Variance v = new Variance();
 		return v.evaluate(getPrimitiveValues());
+	}
+
+	public double stddev() {
+		if (count() == 0)
+			return 0;
+		StandardDeviation d = new StandardDeviation();
+		return d.evaluate(getPrimitiveValues());
 	}
 
 	public double percentile(double percentile) {

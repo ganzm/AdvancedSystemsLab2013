@@ -52,6 +52,20 @@ public class BucketTest {
 	}
 
 	@Test
+	public void testBucketStddev() throws Exception {
+		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.stddev(), 0.0000001);
+		b.addValue(10);
+		Assert.assertEquals(0.0, b.stddev(), 0.0000001);
+		b.addValue(10);
+		Assert.assertEquals(0.0, b.stddev(), 0.0000001);
+		b.addValue(25);
+		Assert.assertEquals(Math.sqrt(75), b.stddev(), 0.0000001);
+		b.addValue(35);
+		Assert.assertEquals(Math.sqrt(150), b.stddev(), 0.0000001);
+	}
+
+	@Test
 	public void testBucketPercentileMin() throws Exception {
 		Bucket b = new Bucket();
 		Assert.assertEquals(0.0, b.percentile(0.01), 0.0000001);
