@@ -12,20 +12,37 @@ public class HeaderInfo {
 	@SuppressWarnings("unused")
 	private String header;
 	private String firstLine;
+	private String lastLine;
 
 	public HeaderInfo(File file) {
 		this.file = file;
 	}
 
 	public long getStartBucketTime() {
-		try (BufferedReader din = new BufferedReader(new InputStreamReader(
-				new FileInputStream(file)))) {
+		try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 			this.header = din.readLine();
 			this.firstLine = din.readLine();
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 		LogLine l = LogLineParser.parseLogLine(firstLine);
+		return l.getTimestamp();
+	}
+
+	public long getEndBucketTime() {
+		try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
+			this.header = din.readLine();
+			this.firstLine = din.readLine();
+			this.lastLine = firstLine;
+			String nextLine = firstLine;
+			while (nextLine != null) {
+				lastLine = nextLine;
+				nextLine = din.readLine();
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		LogLine l = LogLineParser.parseLogLine(lastLine);
 		return l.getTimestamp();
 	}
 }

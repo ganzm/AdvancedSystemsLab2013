@@ -25,18 +25,16 @@ public class LogAnalizer {
 	public ArrayList<Bucket> getBuckets(String messageType, long windowSize, long startupCooldownTime) {
 		ArrayList<Bucket> b = new ArrayList<>();
 		long startBucketPosition = getStartBucketTime() + startupCooldownTime;
+		long endBucketPosition = getEndBucketTime() - startupCooldownTime;
 
 		for (File file : files) {
 			try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
 				din.readLine(); // skip header
-				processLines(messageType, windowSize, b, startBucketPosition, din);
+				processLines(messageType, windowSize, b, startBucketPosition, endBucketPosition, din);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 		}
-
-		cutCooldownBuckets(b, windowSize, startupCooldownTime);
-
 		return b;
 	}
 
@@ -49,24 +47,27 @@ public class LogAnalizer {
 		}
 	}
 
-	private void processLines(String messageType, long windowSize, ArrayList<Bucket> b, long startBucketPosition, BufferedReader din) throws IOException {
+	private void processLines(String messageType, long windowSize, ArrayList<Bucket> b, long startBucketPosition, long endBucketPosition, BufferedReader din)
+			throws IOException {
 		while (true) {
 			String line = din.readLine();
 			if (line == null)
 				break;
-			processLine(messageType, b, line, startBucketPosition, windowSize);
+			processLine(messageType, b, line, startBucketPosition, endBucketPosition, windowSize);
 		}
 	}
 
-	private void processLine(String messageType, ArrayList<Bucket> b, String line, long startBucketPosition, long windowSize) {
+	private void processLine(String messageType, ArrayList<Bucket> b, String line, long startBucketPosition, long endBucketPosition, long windowSize) {
 		LogLine l = LogLineParser.parseLogLine(line);
+
+		long t = l.getTimestamp();
+		if (t < startBucketPosition || t > endBucketPosition)
+			return;
+
 		if (!l.getName().startsWith(messageType))
 			return;
 
 		int pos = l.getBucketPosition(startBucketPosition, windowSize);
-
-		if (pos < 0) // ignore the warmup time
-			return;
 
 		while (b.size() <= pos)
 			b.add(new Bucket());
@@ -89,4 +90,16 @@ public class LogAnalizer {
 		return minStartBucketTime;
 	}
 
+	public long getEndBucketTime() {
+		// TODO: make this implementation faster: seek to eof, read line from the end
+		long maxEndBucketTime = Long.MIN_VALUE;
+		for (File file : files) {
+			HeaderInfo i = new HeaderInfo(file);
+			long x = i.getEndBucketTime();
+			if (maxEndBucketTime < x) {
+				maxEndBucketTime = x;
+			}
+		}
+		return maxEndBucketTime;
+	}
 }

@@ -56,6 +56,8 @@ public class LogAnalizerTest {
 		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
 		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
 		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 0);
+		Assert.assertEquals(4, b.size());
+
 		Bucket b1 = b.get(0);
 		Bucket b2 = b.get(1);
 		Bucket b3 = b.get(2);
@@ -68,18 +70,40 @@ public class LogAnalizerTest {
 	}
 
 	@Test
+	public void testCutBucketsMini() throws Exception {
+		LogAnalizer l = getLogAnalizer();
+		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
+		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 1);
+		Assert.assertEquals(2, b.size());
+
+		Bucket b1 = b.get(0);
+		Bucket b2 = b.get(1);
+
+		Assert.assertEquals(11, b1.count());
+		Assert.assertEquals(3, b2.count());
+	}
+
+	@Test
+	public void testCutBucketsHuge() throws Exception {
+		LogAnalizer l = getLogAnalizer();
+		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
+		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
+		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 1000000000);
+		Assert.assertEquals(0, b.size());
+	}
+
+	@Test
 	public void testCutBuckets() throws Exception {
 		LogAnalizer l = getLogAnalizer();
 		l.addFile(FileUtils.getFile(TEST_LOG2_PATH));
 		l.addFile(FileUtils.getFile(TEST_LOG3_PATH));
 		ArrayList<Bucket> b = l.getBuckets("BRcvReq", 1000 * 60 * 2, 1000 * 60 * 1);
 
-		Assert.assertEquals(3, b.size());
+		Assert.assertEquals(1, b.size());
 		Bucket b2 = b.get(0);
-		Bucket b3 = b.get(1);
 
-		Assert.assertEquals(15, b2.count());
-		Assert.assertEquals(0, b3.count());
+		Assert.assertEquals(3, b2.count());
 	}
 
 	@Test
