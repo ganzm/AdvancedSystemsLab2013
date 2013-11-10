@@ -107,7 +107,7 @@ public class OneWayClient extends ClientScenario {
 
 		if (msgDto != null) {
 			String contentString = new String(msgDto.getContent());
-			logger.info("Message received " + contentString);
+			logger.fine("Message received " + contentString);
 
 			int msgCount = Integer.parseInt(contentString);
 
@@ -135,7 +135,7 @@ public class OneWayClient extends ClientScenario {
 			queueId = clientNameToQueueMap.get(clientName);
 
 			if (queueId == null) {
-				logger.info("Lookup Client queue of " + clientName);
+				logger.fine("Lookup Client queue of " + clientName);
 				QueueDto queue = client.lookupClientQueue(clientName);
 				if (queue != null) {
 					queueId = queue.getId();

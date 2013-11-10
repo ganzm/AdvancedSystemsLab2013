@@ -70,7 +70,7 @@ public class PublicQueueConsumeClient extends ClientScenario {
 	private void receiveMessage(QueueDto queue) throws IOException, MlmqException {
 		MessageDto msgDto = client.dequeueMessage(messageQueryInfo);
 		if (msgDto != null) {
-			logger.info("Receiving Message " + new String(msgDto.getContent()));
+			logger.fine("Receiving Message " + new String(msgDto.getContent()));
 		}
 	}
 

@@ -66,6 +66,7 @@ public class PublicQueueProduceClient extends ClientScenario {
 
 	private void sendSimpleMessage(QueueDto queue, int i) throws IOException, MlmqException {
 		byte[] content = ("Some Random Text and message Nr " + i).getBytes();
+		logger.fine("Sending Message Nr " + i);
 		client.sendMessage(queue.getId(), content, i % 10);
 	}
 }

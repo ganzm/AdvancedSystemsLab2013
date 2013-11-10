@@ -109,7 +109,7 @@ public class PairedClient extends ClientScenario {
 
 	private void respondingAction() throws IOException, MlmqException {
 		if (sending) {
-			logger.info("Sending response " + messageCounter + " to Context " + context);
+			logger.fine("Sending response " + messageCounter + " to Context " + context);
 			client.sendResponseToClient(partnerClient.getId(), context, ("" + messageCounter).getBytes(), rnd.nextInt(10));
 			sending = !sending;
 		} else {
@@ -147,7 +147,7 @@ public class PairedClient extends ClientScenario {
 					logger.severe("Expected Message to contain " + (messageCounter + 1) + " but got " + responseCounter);
 				}
 
-				logger.info("Got response for my request" + responseContext);
+				logger.fine("Got response for my request" + responseContext);
 
 				messageCounter = responseCounter + 1;
 
