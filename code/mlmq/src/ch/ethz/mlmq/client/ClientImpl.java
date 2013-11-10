@@ -14,6 +14,7 @@ import ch.ethz.mlmq.net.ClientConnection;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.LookupClientRequest;
 import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
@@ -21,6 +22,7 @@ import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
+import ch.ethz.mlmq.net.response.ClientResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueueResponse;
@@ -161,6 +163,11 @@ public class ClientImpl implements Client {
 	public QueueDto lookupClientQueue(String queueName) throws IOException, MlmqException {
 		QueueResponse repsonse = (QueueResponse) sendRequest(new LookupQueueRequest(queueName));
 		return repsonse.getQueueDto();
+	}
+
+	public ClientDto lookupClient(String clientName) throws IOException, MlmqException {
+		ClientResponse repsonse = (ClientResponse) sendRequest(new LookupClientRequest(clientName));
+		return repsonse.getClientDto();
 	}
 
 	@Override

@@ -11,6 +11,7 @@ import ch.ethz.mlmq.exception.MlmqException;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.LookupClientRequest;
 import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
@@ -18,6 +19,7 @@ import ch.ethz.mlmq.net.request.RegistrationRequest;
 import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
+import ch.ethz.mlmq.net.response.ClientResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueueResponse;
@@ -49,6 +51,9 @@ public class RequestProcessor {
 
 		} else if (request instanceof LookupQueueRequest) {
 			return processLookupQueueRequest((LookupQueueRequest) request, clientApplicationContext, pool);
+
+		} else if (request instanceof LookupClientRequest) {
+			return processLookupClientRequest((LookupClientRequest) request, clientApplicationContext, pool);
 
 		} else if (request instanceof QueuesWithPendingMessagesRequest) {
 			return processQueuesWithPendingMessagesRequest((QueuesWithPendingMessagesRequest) request, clientApplicationContext, pool);
@@ -247,7 +252,34 @@ public class RequestProcessor {
 
 		} catch (SQLException ex) {
 			connection.close();
-			throw new MlmqException("Error creating Queue " + request.getQueueName(), ex);
+			throw new MlmqException("Error looking up Queue " + request.getQueueName(), ex);
+		} finally {
+			if (connection != null) {
+				pool.returnConnection(connection);
+			}
+		}
+	}
+
+	private ClientResponse processLookupClientRequest(LookupClientRequest request, ClientApplicationContext clientApplicationContext, DbConnectionPool pool)
+			throws MlmqException {
+		DbConnection connection = null;
+		try {
+			connection = pool.getConnection();
+
+			ClientDao clientDao = connection.getClientDao();
+
+			Integer clientId = clientDao.getClientId(request.getClientName());
+
+			ClientDto client = null;
+			if (clientId != null) {
+				client = new ClientDto(clientId, request.getClientName());
+			}
+
+			ClientResponse response = new ClientResponse(client);
+			return response;
+		} catch (SQLException ex) {
+			connection.close();
+			throw new MlmqException("Error looking up Client " + request.getClientName(), ex);
 		} finally {
 			if (connection != null) {
 				pool.returnConnection(connection);
@@ -302,7 +334,7 @@ public class RequestProcessor {
 				clientId = newClientId;
 
 				// insert new ClientQueue
-				clientQueue = queueDao.createClientQueue(newClientId, "ClientQueue" + newClientId);
+				clientQueue = queueDao.createClientQueue(newClientId, name);
 			} else {
 
 				QueueDto queue = queueDao.getQueueByClientId(clientId);

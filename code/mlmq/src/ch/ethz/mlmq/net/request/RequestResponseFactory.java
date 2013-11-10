@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.ethz.mlmq.net.response.ClientResponse;
 import ch.ethz.mlmq.net.response.DeleteQueueResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
@@ -38,7 +39,9 @@ public class RequestResponseFactory {
 		registerRequest(SendClientMessageRequest.class);
 		registerRequest(SendMessageRequest.class);
 		registerRequest(LookupQueueRequest.class);
+		registerRequest(LookupClientRequest.class);
 
+		registerResponse(ClientResponse.class);
 		registerResponse(QueueResponse.class);
 		registerResponse(DeleteQueueResponse.class);
 		registerResponse(ExceptionResponse.class);

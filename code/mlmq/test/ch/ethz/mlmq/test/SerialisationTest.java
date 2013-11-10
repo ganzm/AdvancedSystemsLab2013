@@ -16,6 +16,7 @@ import ch.ethz.mlmq.logging.LoggerUtil;
 import ch.ethz.mlmq.net.request.CreateQueueRequest;
 import ch.ethz.mlmq.net.request.DeleteQueueRequest;
 import ch.ethz.mlmq.net.request.DequeueMessageRequest;
+import ch.ethz.mlmq.net.request.LookupClientRequest;
 import ch.ethz.mlmq.net.request.LookupQueueRequest;
 import ch.ethz.mlmq.net.request.PeekMessageRequest;
 import ch.ethz.mlmq.net.request.QueuesWithPendingMessagesRequest;
@@ -24,6 +25,7 @@ import ch.ethz.mlmq.net.request.Request;
 import ch.ethz.mlmq.net.request.RequestResponseFactory;
 import ch.ethz.mlmq.net.request.SendClientMessageRequest;
 import ch.ethz.mlmq.net.request.SendMessageRequest;
+import ch.ethz.mlmq.net.response.ClientResponse;
 import ch.ethz.mlmq.net.response.ExceptionResponse;
 import ch.ethz.mlmq.net.response.MessageResponse;
 import ch.ethz.mlmq.net.response.QueueResponse;
@@ -69,6 +71,12 @@ public class SerialisationTest {
 	@Test
 	public void testLookupQueueRequest() {
 		LookupQueueRequest request = new LookupQueueRequest((long) Math.random());
+		testRequest(request);
+	}
+
+	@Test
+	public void testLookupClientRequest() {
+		LookupClientRequest request = new LookupClientRequest("asdf");
 		testRequest(request);
 	}
 
@@ -148,6 +156,20 @@ public class SerialisationTest {
 	public void testRegistrationResponse() {
 		ClientDto clientDto = new ClientDto(27);
 		RegistrationResponse response = new RegistrationResponse(clientDto);
+		testResponse(response);
+	}
+
+	@Test
+	public void testClientResponse() {
+		ClientDto clientDto = new ClientDto(27);
+		ClientResponse response = new ClientResponse(clientDto);
+		testResponse(response);
+	}
+
+	@Test
+	public void testQueueResponse() {
+		QueueDto queueDto = new QueueDto(27);
+		QueueResponse response = new QueueResponse(queueDto);
 		testResponse(response);
 	}
 

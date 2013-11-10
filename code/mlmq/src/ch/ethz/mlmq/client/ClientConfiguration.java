@@ -38,7 +38,7 @@ public class ClientConfiguration extends Configuration {
 
 		sb.append(getClass().getSimpleName());
 		sb.append(" ClientName[");
-		sb.append(me.getName());
+		sb.append(me.getScenarioClassName());
 		sb.append("] ClientHost[");
 		sb.append(me.getHost());
 		sb.append("] ClientPosition[");
@@ -48,7 +48,7 @@ public class ClientConfiguration extends Configuration {
 		sb.append(":");
 		sb.append(broker.getPort());
 		sb.append("] BrokerScenario[");
-		sb.append(broker.getName());
+		sb.append(broker.getScenarioClassName());
 		sb.append("]");
 
 		return sb.toString();
@@ -81,7 +81,7 @@ public class ClientConfiguration extends Configuration {
 
 	public String getName() {
 		ScenarioMapping mapping = getMyMapping();
-		return mapping.getName() + "_" + mapping.getPosition();
+		return mapping.getUniqueName();
 	}
 
 	public long getResponseTimeoutTime() {

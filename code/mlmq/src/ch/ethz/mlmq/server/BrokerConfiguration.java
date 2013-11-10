@@ -46,7 +46,7 @@ public class BrokerConfiguration extends Configuration {
 
 		sb.append(getClass().getSimpleName());
 		sb.append(" Scenario[");
-		sb.append(getMyBrokerMapping().getName());
+		sb.append(getMyBrokerMapping().getScenarioClassName());
 		sb.append("] Port[");
 		sb.append(getListenPort());
 		sb.append("] WorkerThreadCount[");
