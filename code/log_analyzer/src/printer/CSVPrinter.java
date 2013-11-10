@@ -1,10 +1,12 @@
-package ch.ethz.mlmq.log_analyzer;
+package printer;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import ch.ethz.mlmq.log_analyzer.Bucket;
 
 public class CSVPrinter {
 
@@ -13,7 +15,6 @@ public class CSVPrinter {
 	private final ArrayList<Bucket> buckets;
 
 	private SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-	private DiagramType diagramType;
 
 	public CSVPrinter(ArrayList<Bucket> buckets, PrintStream out) {
 		this.buckets = buckets;

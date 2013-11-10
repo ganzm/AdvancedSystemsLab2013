@@ -1,8 +1,11 @@
-package ch.ethz.mlmq.log_analyzer;
+package printer;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import ch.ethz.mlmq.log_analyzer.Bucket;
+import ch.ethz.mlmq.log_analyzer.DiagramType;
 
 public class GnuPlotPrinter {
 

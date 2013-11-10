@@ -8,6 +8,10 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 
+import printer.CSVPrinter;
+import printer.GnuPlotPrinter;
+import printer.TextPrinter;
+
 public class Main {
 
 	//@formatter:off
@@ -16,7 +20,7 @@ public class Main {
 			+ "-message_type <message_type>\n"
 			+ "-window_size <window-size(ms) optional>\n"
 			+ "-out (out_file optional)\n"
-			+ "-output_format output format default csv(csv|gnu-png|gnu-eps)\n"
+			+ "-output_format output format default csv(csv|gnu-png|gnu-eps|txt)\n"
 			+ "-x_axis_label xAxis label (optional)\n"
 			+ "-y_axis_label yAxis label (optional)\n"
 			+ "-diagram_type the diagram type default response_time(response_time|throghput)\n"
@@ -39,6 +43,8 @@ public class Main {
 		String formatString = argUtil.getOptional("output_format", "csv").toLowerCase();
 		DiagramType diagramType = getDiagramType(argUtil);
 		int windowSize = Integer.parseInt(argUtil.getOptional("window_size", "" + (1000 * 60 * 1)));
+		if (formatString.equals("txt"))
+			windowSize = Integer.MAX_VALUE;
 
 		PrintStream out;
 		if (argUtil.hasKey("out")) {
@@ -65,6 +71,9 @@ public class Main {
 			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, false, null);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
+		} else if ("txt".equals(formatString)) {
+			TextPrinter p = new TextPrinter(buckets, out);
+			p.print();
 		}
 	}
 
