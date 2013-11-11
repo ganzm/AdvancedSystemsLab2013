@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 
 import printer.CSVPrinter;
 import printer.GnuPlotPrinter;
-import printer.TextPrinter;
 
 public class Main {
 
@@ -81,7 +80,7 @@ public class Main {
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("txt".equals(formatString)) {
-			TextPrinter p = new TextPrinter(buckets, out);
+			CSVPrinter p = new CSVPrinter(buckets, out);
 			p.print();
 		}
 	}
