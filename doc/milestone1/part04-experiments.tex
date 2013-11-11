@@ -1,9 +1,22 @@
 \documentclass[milestone1.tex]{subfiles} 
 \begin{document}
 
-
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% ----------------------------------------------
+% Section Experiments
+%% ----------------------------------------------
 \section{Experiments}
+
+\subsection{Testload}
+TODO
+\subsubsection{OneWayClient}
+TODO
+\subsubsection{PairedClient}
+TODO
+\subsubsection{PublicQueueConsumer}
+TODO
+\subsubsection{PublicQueueProducer}
+TODO
+\subsection{2 hour test}
 
 
 % for each experiment
@@ -14,8 +27,6 @@
 %- describe the plot
 %- explain the plot/experiment
 
-
-\subsection{2 hour test}
 To verify that the system runs stable over a long period of time an experiment is performed which puts a constant load onto the system for 2 hours.
 
 \paragraph{Experiment setup}
@@ -50,30 +61,94 @@ See Testrun 11
 \paragraph{Interpretation}
 
 TODO
-
+%% -------------------------------------------
+%% 2^k Experiment
+%% -------------------------------------------
 \subsection{$2^k$ Experiment}
-In order to determine the influence of a number of primary factors on to the system it was decided to do a $2^k$ analysis on the features described in the following section.
+In order to determine the influence of a number of primary factors on to the system it was decided to do a $2^k$ analysis on several factors described in the following section.
 
-For each feature level an experiment of 20min is performed where clients send 10 messages per second
+For each feature level an experiment of 30 minutes is performed where clients perform 100 actions (send, receive message) per second.
 
 \subsubsection{Factors and Levels}
 
 \paragraph{Number of Clients}
-The number of simultaneously connected clients is varied between 8 and 20
+The number of simultaneously connected clients is varied between 8 and 30. There is a mix of different clients which produce slightly different types of load.
+
+\begin{tabular}{|l|c|c|}
+\hline 
+ & Lower Level & Upper Level \\ 
+\hline 
+OneWayClient & 16 & 8  \\ 
+\hline 
+PairedClient & 8 & 4 \\ 
+\hline 
+PublicQueueConsumer & 4 & 2 \\ 
+\hline 
+PublicQueueProducer & 2 & 1 \\ 
+\hline 
+\textbf{Total}  & \textbf{30} & \textbf{15} \\
+\hline 
+\end{tabular} 
 
 \paragraph{Number of brokers}
 
-The number of middleware components is varied between 1 and 4
+The number of middleware components is varied between 4 and 8. For both levels the number of Amazone instances used is 2.
+
 \paragraph{Number of workers}
 
-The number of worker threads running on a single middle ware component is varied between 3 and 10
+The number of worker threads running on a single middle ware component is varied between 4 and 8
 
 \paragraph{Number of Db Connections}
 
-The number of db connection a single middleware concurrently has is varied between 3 and 10
+The number of db connection a single middleware concurrently has is varied between 4 and 8
 
+\subsubsection{Measurement Results}
+
+
+
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline 
+Clients & Brokers &  Workers & Connections & TestRun-Id & Processing time (BTotReqResp) \\ 
+\hline 
+15 & 4 & 4 & 4 & 128 & • \\ 
+\hline 
+15 & 4 & 4 & 8 & 129 \\ 
+\hline 
+15 & 4 & 8 & 4 & 130 \\ 
+\hline 
+15 & 4 & 8 & 8 & 131 \\ 
+\hline 
+15 & 8 & 4 & 4 & 132 \\ 
+\hline 
+15 & 8 & 4 & 8 & 133 \\ 
+\hline 
+15 & 8 & 8 & 4 & 134 \\ 
+\hline 
+15 & 8 & 8 & 8 & 135 \\ 
+\hline 
+30 & 4 & 4 & 4 & 136 \\ 
+\hline 
+30 & 4 & 4 & 8 & 137 \\ 
+\hline 
+30 & 4 & 8 & 4 & 138 \\ 
+\hline 
+30 & 4 & 8 & 8 & 139 \\ 
+\hline 
+30 & 8 & 4 & 4 & 140 \\ 
+\hline 
+30 & 8 & 4 & 8 & 141 &  • \\ 
+\hline 
+30 & 8 & 8 & 4 & 142 \\ 
+\hline 
+30 & 8 & 8 & 8 & 143 \\ 
+
+\hline 
+
+\end{tabular} 
+
+
+%% -------------------------------------------
 \subsection{Db load test}
-
 
 testrun 87 shows what happens when we add more messages than we delete. 
 
@@ -83,6 +158,6 @@ db access gets slower
 
 \subsection{divers}
 
-testrun 105 out of disk space
+testrun 105 - out of disk space
 
 \end{document}
