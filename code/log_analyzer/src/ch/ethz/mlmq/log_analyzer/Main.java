@@ -99,7 +99,7 @@ public class Main {
 		if (argUtil.hasKey("y_axis_label"))
 			gnuP.setYLabel(argUtil.getMandatory("y_axis_label"));
 		if (argUtil.hasKey("y_axis_label"))
-			gnuP.setYLabel(argUtil.getMandatory("line_label"));
+			gnuP.setLineLabel(argUtil.getMandatory("line_label"));
 	}
 
 	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
