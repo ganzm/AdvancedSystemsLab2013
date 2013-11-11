@@ -29,8 +29,10 @@ public class Bucket {
 	}
 
 	public void addValue(int duration) {
-		if (primitiveValuesCache != null)
+		if (primitiveValuesCache != null || percentileCache != null) {
 			primitiveValuesCache = null;
+			percentileCache = null;
+		}
 
 		values.add((double) duration); // Could do this better...
 	}
