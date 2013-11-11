@@ -93,4 +93,8 @@ public class Bucket {
 	public long getTime() {
 		return startTimestamp;
 	}
+
+	public double median() {
+		return percentile(50.0);
+	}
 }

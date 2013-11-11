@@ -22,7 +22,7 @@ public class BucketTest {
 	}
 
 	@Test
-	public void testBucketPercentileMean() throws Exception {
+	public void testBucketPercentileMedian() throws Exception {
 		Bucket b = new Bucket();
 		Assert.assertEquals(0.0, b.percentile(50.00), 0.0000001);
 		b.addValue(10);
@@ -35,6 +35,22 @@ public class BucketTest {
 		Assert.assertEquals(17.5, b.percentile(50.0), 0.0000001);
 		b.addValue(35);
 		Assert.assertEquals(25.0, b.percentile(50.0), 0.0000001);
+	}
+
+	@Test
+	public void testBucketMedian() throws Exception {
+		Bucket b = new Bucket();
+		Assert.assertEquals(0.0, b.median(), 0.0000001);
+		b.addValue(10);
+		Assert.assertEquals(10.0, b.median(), 0.0000001);
+		b.addValue(10);
+		Assert.assertEquals(10.0, b.median(), 0.0000001);
+		b.addValue(25);
+		Assert.assertEquals(10.0, b.median(), 0.0000001);
+		b.addValue(35);
+		Assert.assertEquals(17.5, b.median(), 0.0000001);
+		b.addValue(35);
+		Assert.assertEquals(25.0, b.median(), 0.0000001);
 	}
 
 	@Test

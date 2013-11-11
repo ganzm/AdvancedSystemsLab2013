@@ -25,6 +25,7 @@ public class Main {
 			+ "-y_axis_label yAxis label (optional)\n"
 			+ "-line_label yAxis label (optional)\n"
 			+ "-startup_cooldown_time startup / cooldown time (optional)\n"
+			+ "-percentile percentile offset (e.g. offset of 1 => 1% and 99%, offset of 2 => 2% and 98% (optional)\n"
 			+ "-diagram_type the diagram type default response_time(response_time|throghput)\n"
 			+ "-diagram_title diagram title (optional)";
 	//@formatter:on
