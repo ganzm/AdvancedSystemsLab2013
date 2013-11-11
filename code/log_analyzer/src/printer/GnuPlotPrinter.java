@@ -24,7 +24,11 @@ public class GnuPlotPrinter {
 
 	private String yLabel = "yLabel";
 
-	private String meanLabel = "";
+	private String lineLabel = "";
+
+	public void setLineLabel(String lineLabel) {
+		this.lineLabel = lineLabel;
+	}
 
 	private String interpolatedLabel = "";
 
@@ -73,10 +77,8 @@ public class GnuPlotPrinter {
 			writer.println("set xlabel \"" + xLabel + "\"");
 			writer.println("set ylabel \"" + yLabel + "\"");
 			// TODO limit y scale of the plot - use set yrange [0:1000]
-			writer.println("plot \"-\" t \"" + meanLabel + "\" with errorb, \"-\" t \"" + interpolatedLabel + "\" smooth csplines");
+			writer.println("plot \"-\" with errorlines title \"" + lineLabel + "\"");
 
-			writeBuckets(t0, writer);
-			// Why 2 times?
 			writeBuckets(t0, writer);
 
 			if (outputFile != null) {

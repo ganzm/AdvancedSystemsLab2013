@@ -20,9 +20,10 @@ public class Main {
 			+ "-message_type <message_type>\n"
 			+ "-window_size <window-size(ms) optional>\n"
 			+ "-out (out_file optional)\n"
-			+ "-output_format output format default csv(csv|gnu-png|gnu-eps|txt)\n"
+			+ "-output_format output format default csv(csv|png.gnu|eps.gnu|txt)\n"
 			+ "-x_axis_label xAxis label (optional)\n"
 			+ "-y_axis_label yAxis label (optional)\n"
+			+ "-line_label yAxis label (optional)\n"
 			+ "-startup_cooldown_time startup / cooldown time (optional)\n"
 			+ "-diagram_type the diagram type default response_time(response_time|throghput)\n"
 			+ "-diagram_title diagram title (optional)";
@@ -92,6 +93,8 @@ public class Main {
 			gnuP.setXLabel(argUtil.getMandatory("x_axis_label"));
 		if (argUtil.hasKey("y_axis_label"))
 			gnuP.setYLabel(argUtil.getMandatory("y_axis_label"));
+		if (argUtil.hasKey("y_axis_label"))
+			gnuP.setYLabel(argUtil.getMandatory("line_label"));
 	}
 
 	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
