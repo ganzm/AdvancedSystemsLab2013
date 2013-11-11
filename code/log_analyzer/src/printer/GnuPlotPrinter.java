@@ -26,12 +26,6 @@ public class GnuPlotPrinter {
 
 	private String lineLabel = "";
 
-	public void setLineLabel(String lineLabel) {
-		this.lineLabel = lineLabel;
-	}
-
-	private String interpolatedLabel = "";
-
 	private DiagramType diagramType;
 
 	private boolean plotMedian;
@@ -134,6 +128,10 @@ public class GnuPlotPrinter {
 
 	public void setYLabel(String yLabel) {
 		this.yLabel = yLabel;
+	}
+
+	public void setLineLabel(String lineLabel) {
+		this.lineLabel = lineLabel;
 	}
 
 }
