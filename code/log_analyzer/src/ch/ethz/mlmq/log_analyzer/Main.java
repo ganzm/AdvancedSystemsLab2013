@@ -24,6 +24,8 @@ public class Main {
 			+ "-x_axis_label xAxis label (optional)\n"
 			+ "-y_axis_label yAxis label (optional)\n"
 			+ "-line_label yAxis label (optional)\n"
+			+ "-median_or_mean default median(median|mean)\n"
+			+ "-percentile_or_stddev default percentile(percentile|stddev)\n"
 			+ "-startup_cooldown_time startup / cooldown time (optional)\n"
 			+ "-percentile percentile offset (e.g. offset of 1 => 1% and 99%, offset of 2 => 2% and 98% (optional)\n"
 			+ "-diagram_type the diagram type default response_time(response_time|throghput)\n"
@@ -43,6 +45,9 @@ public class Main {
 
 		String directoryToLogFiles = argUtil.getMandatory("directory_to_log_files");
 		String messageType = argUtil.getOptional("message_type", "");
+		boolean plotMedian = argUtil.getOptional("median_or_mean", "median").equals("median");
+		boolean plotPercentile = argUtil.getOptional("percentile_or_stddev", "percentile").equals("percentile");
+		double percentile = Double.parseDouble(argUtil.getOptional("percentile", "0"));
 		int startupCooldownTime = Integer.parseInt(argUtil.getOptional("startup_cooldown_time", "" + (1000 * 60 * 1)));
 		String formatString = argUtil.getOptional("output_format", "csv").toLowerCase();
 		DiagramType diagramType = getDiagramType(argUtil);
@@ -68,11 +73,11 @@ public class Main {
 			CSVPrinter p = new CSVPrinter(buckets, out);
 			p.print();
 		} else if ("png.gnu".equals(formatString)) {
-			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, true, null);
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, true, null, plotMedian, plotPercentile, percentile);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("eps.gnu".equals(formatString)) {
-			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, false, null);
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, false, null, plotMedian, plotPercentile, percentile);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("txt".equals(formatString)) {

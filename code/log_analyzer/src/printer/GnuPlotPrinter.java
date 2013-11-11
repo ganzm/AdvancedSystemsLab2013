@@ -34,6 +34,12 @@ public class GnuPlotPrinter {
 
 	private DiagramType diagramType;
 
+	private boolean plotMedian;
+
+	private boolean plotPercentile;
+
+	private double percentile;
+
 	/**
 	 * 
 	 * @param buckets
@@ -43,13 +49,20 @@ public class GnuPlotPrinter {
 	 * @param formatAsPng
 	 * @param outputFile
 	 *            optional file where the plot is stored when the generated gnu file is run, if null the plot is shown on the screen
+	 * @param plotMedian
+	 * @param percentile
+	 * @param plotPercentile
 	 */
-	public GnuPlotPrinter(ArrayList<Bucket> buckets, DiagramType diagramType, PrintStream out, boolean formatAsPng, String outputFile) {
+	public GnuPlotPrinter(ArrayList<Bucket> buckets, DiagramType diagramType, PrintStream out, boolean formatAsPng, String outputFile, boolean plotMedian,
+			boolean plotPercentile, double percentile) {
 		this.buckets = buckets;
 		this.diagramType = diagramType;
 		this.out = out;
 		this.formatAsPng = formatAsPng;
 		this.outputFile = outputFile;
+		this.plotMedian = plotMedian;
+		this.plotPercentile = plotPercentile;
+		this.percentile = percentile;
 	}
 
 	public void print() {
@@ -92,11 +105,19 @@ public class GnuPlotPrinter {
 	private void writeBuckets(long t0, PrintWriter writer) {
 		for (Bucket b : buckets) {
 			if (diagramType == DiagramType.ResponseTime)
-				writer.println(formatTime(b.getTime(), t0) + " " + b.mean() + " " + b.stddev());
+				writer.println(formatTime(b.getTime(), t0) + " " + medianOrMean(b) + " " + percentileOrStddev(b));
 			else
 				writer.println(formatTime(b.getTime(), t0) + " " + b.count());
 		}
 		writer.println("e");
+	}
+
+	private double percentileOrStddev(Bucket b) {
+		return plotPercentile ? b.percentile(percentile) : b.stddev();
+	}
+
+	private double medianOrMean(Bucket b) {
+		return plotMedian ? b.median() : b.mean();
 	}
 
 	private String formatTime(long time, long t0) {
