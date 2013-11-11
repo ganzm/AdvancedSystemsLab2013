@@ -315,15 +315,40 @@ resource/brokerconfig.properties
 \section{Test Infrastructure}
 \label{sec:TestInfrastructure}
 
-TODO - describe the testmaster
-\subsection{Overview}
-what we've built
-what it does
+To partially automate testing a Ruby on Rails\footnote{\url{http://rubyonrails.org}} web application was developed to help simplify running experiments on the amazone cloud.
 
-\subsection{How to set up a test}
-describe the web GUI
+\subsection{Workflow}
+
+\subsubsection{Create an Experiment}
+To run an experiment at first one has to define a new testrun. This is done by hand via a web interface. One has to provide the following information:
+
+\begin{itemize}
+\item Define the number middle ware instances are set up on how many Amazon instances.
+\item Define the workload. This implies choosing how many instances of each client type are needed.
+\item Provide client and middle ware configuration.
+\end{itemize}
+
+\subsubsection{Run an Experiment}
+This step is automatically performed without user interaction. The test master performs the following steps:
+
+\begin{enumerate}
+\item Start the required Amazon instances
+\item Get the latest binaries of the middleware
+\item Copy the binaries and configuration to the Amazon instances
+\item Start all the binaries with the required parameters
+\item Periodically check whether the experiment is still running.
+\item If the experiment has finished, logging information is gathered, compressed and stored on the test master
+\end{enumerate}
+
+\subsubsection{Analyze an Experiment}
+As soon as an experiment has finished and all logging information is collected the web interface enables two buttons "Analyze" and "Downlodad". 
+
+"Download" allows to get zip file with all the log files created during the experiment.
+
+"Analyze opens a form which provides a web interface for the Log Analyzer (see \ref{subsec:LogAnalyzer}). Plots can be created with only a few clicks.
 
 \subsection{Log Analyzer}
+\label{subsec:LogAnalyzer}
 
 In order to semi automatically analyze performance log files which have been created through the process of an experiment a Java programm was written to simplify evaluation of these files.
 
