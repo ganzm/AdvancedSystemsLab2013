@@ -24,7 +24,7 @@ public class GnuPlotPrinter {
 
 	private String yLabel = "yLabel";
 
-	private String lineLabel = "";
+	private String lineLabel = "lineLabel";
 
 	private DiagramType diagramType;
 
@@ -99,15 +99,25 @@ public class GnuPlotPrinter {
 	private void writeBuckets(long t0, PrintWriter writer) {
 		for (Bucket b : buckets) {
 			if (diagramType == DiagramType.ResponseTime)
-				writer.println(formatTime(b.getTime(), t0) + " " + medianOrMean(b) + " " + percentileOrStddev(b));
+				writer.println(formatTime(b.getTime(), t0) + " " + medianOrMean(b) + " " + percentileOrStddev(b, false) + " " + percentileOrStddev(b, true));
 			else
 				writer.println(formatTime(b.getTime(), t0) + " " + b.count());
 		}
 		writer.println("e");
 	}
 
-	private double percentileOrStddev(Bucket b) {
-		return plotPercentile ? b.percentile(percentile) : b.stddev();
+	private double percentileOrStddev(Bucket b, boolean upperError) {
+		double x = medianOrMean(b);
+
+		if (plotPercentile)
+			if (upperError) {
+				return b.percentile(100.0 - percentile);
+			} else {
+				return b.percentile(percentile);
+			}
+		else {
+			return upperError ? x - b.stddev() : x + b.stddev();
+		}
 	}
 
 	private double medianOrMean(Bucket b) {
