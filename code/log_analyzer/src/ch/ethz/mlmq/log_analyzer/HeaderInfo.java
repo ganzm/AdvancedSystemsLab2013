@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.RandomAccessFile;
 
 public class HeaderInfo {
 
@@ -30,19 +31,25 @@ public class HeaderInfo {
 	}
 
 	public long getEndBucketTime() {
-		try (BufferedReader din = new BufferedReader(new InputStreamReader(new FileInputStream(file)))) {
-			this.header = din.readLine();
-			this.firstLine = din.readLine();
-			this.lastLine = firstLine;
-			String nextLine = firstLine;
-			while (nextLine != null) {
-				lastLine = nextLine;
-				nextLine = din.readLine();
-			}
+		try (RandomAccessFile ramFile = new RandomAccessFile(file, "r")) {
+
+			// memo - assume a performance log line not to be longer than 256 bytes
+			byte[] buffer = new byte[256];
+			ramFile.seek(ramFile.length() - buffer.length);
+
+			int numBytes = ramFile.read(buffer);
+
+			lastLine = new String(buffer, 0, numBytes);
+
+			int idx = lastLine.lastIndexOf("\n", lastLine.length() - 2);
+
+			lastLine = lastLine.substring(idx + 1, lastLine.length() - 1);
+
+			LogLine l = LogLineParser.parseLogLine(lastLine);
+			return l == null ? Long.MIN_VALUE : l.getTimestamp();
+
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		LogLine l = LogLineParser.parseLogLine(lastLine);
-		return l == null ? Long.MIN_VALUE : l.getTimestamp();
 	}
 }
