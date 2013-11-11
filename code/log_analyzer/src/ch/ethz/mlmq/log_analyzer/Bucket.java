@@ -18,6 +18,7 @@ public class Bucket {
 	 * Timestamp of the first measurement assigned to this bucket
 	 */
 	private long startTimestamp;
+	private Percentile percentileCache;
 
 	public Bucket() {
 		this.startTimestamp = Long.MAX_VALUE;
@@ -62,9 +63,11 @@ public class Bucket {
 	public double percentile(double percentile) {
 		if (count() == 0)
 			return 0;
-		Percentile p = new Percentile();
-		p.setData(getPrimitiveValues());
-		return p.evaluate(percentile);
+		if (percentileCache == null) {
+			percentileCache = new Percentile();
+			percentileCache.setData(getPrimitiveValues());
+		}
+		return percentileCache.evaluate(percentile);
 	}
 
 	private double[] getPrimitiveValues() {
