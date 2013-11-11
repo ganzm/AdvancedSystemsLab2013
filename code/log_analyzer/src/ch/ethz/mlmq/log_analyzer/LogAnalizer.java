@@ -38,15 +38,6 @@ public class LogAnalizer {
 		return b;
 	}
 
-	private void cutCooldownBuckets(ArrayList<Bucket> b, long windowSize, long startupCooldownTime) {
-		long numberOfBucketsToCut = startupCooldownTime / windowSize;
-		for (int i = 0; i < numberOfBucketsToCut; i++) {
-			if (b.size() == 0)
-				break;
-			b.remove(b.size() - 1);
-		}
-	}
-
 	private void processLines(String messageType, long windowSize, ArrayList<Bucket> b, long startBucketPosition, long endBucketPosition, BufferedReader din)
 			throws IOException {
 		while (true) {
@@ -59,6 +50,9 @@ public class LogAnalizer {
 
 	private void processLine(String messageType, ArrayList<Bucket> b, String line, long startBucketPosition, long endBucketPosition, long windowSize) {
 		LogLine l = LogLineParser.parseLogLine(line);
+
+		if (l == null)
+			return;
 
 		long t = l.getTimestamp();
 		if (t < startBucketPosition || t > endBucketPosition)

@@ -26,7 +26,7 @@ public class HeaderInfo {
 			throw new RuntimeException(ex);
 		}
 		LogLine l = LogLineParser.parseLogLine(firstLine);
-		return l.getTimestamp();
+		return l == null ? Long.MAX_VALUE : l.getTimestamp();
 	}
 
 	public long getEndBucketTime() {
@@ -43,6 +43,6 @@ public class HeaderInfo {
 			throw new RuntimeException(ex);
 		}
 		LogLine l = LogLineParser.parseLogLine(lastLine);
-		return l.getTimestamp();
+		return l == null ? Long.MIN_VALUE : l.getTimestamp();
 	}
 }
