@@ -66,11 +66,11 @@ public class Main {
 		if ("csv".equals(formatString)) {
 			CSVPrinter p = new CSVPrinter(buckets, out);
 			p.print();
-		} else if ("gnu-png".equals(formatString)) {
+		} else if ("png.gnu".equals(formatString)) {
 			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, true, null);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
-		} else if ("gnu-eps".equals(formatString)) {
+		} else if ("eps.gnu".equals(formatString)) {
 			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, false, null);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
