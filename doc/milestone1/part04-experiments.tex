@@ -7,15 +7,22 @@
 \section{Experiments}
 
 \subsection{Testload}
-TODO
+This section describes clients which generate different kind of loads.
+
 \subsubsection{OneWayClient}
-TODO
+As stated in the project description an OneWayClient sends an initial message to an arbitrary other OneWayClient. Having it's initial message sent it periodically checks it's queue for incoming messages. If there is one the client relays it to an other random client.
+
+Messages which are sent simply contain a counter which is increased each time a message is relayed.
+
 \subsubsection{PairedClient}
-TODO
-\subsubsection{PublicQueueConsumer}
-TODO
+PairedClient's always come in pairs. They keep on sending requests and responses to each other. At start it is determined which client is the requesting client and which is the responding client.
+
 \subsubsection{PublicQueueProducer}
-TODO
+This kind of client writes the same message again and again to a public queue.
+
+\subsubsection{PublicQueueConsumer}
+This kind of client tries to read messages at a constant rate from a public queue.
+
 \subsection{2 hour test}
 
 
@@ -61,6 +68,7 @@ See Testrun 11
 \paragraph{Interpretation}
 
 TODO
+
 %% -------------------------------------------
 %% 2^k Experiment
 %% -------------------------------------------
