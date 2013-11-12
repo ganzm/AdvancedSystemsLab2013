@@ -1,0 +1,177 @@
+\documentclass[milestone1.tex]{subfiles} 
+\begin{document}
+
+\begin{lstlisting}
+
+package ch.ethz.mlmq.client;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.List;
+
+import ch.ethz.mlmq.dto.ClientDto;
+import ch.ethz.mlmq.dto.MessageDto;
+import ch.ethz.mlmq.dto.MessageQueryInfoDto;
+import ch.ethz.mlmq.dto.QueueDto;
+import ch.ethz.mlmq.exception.MlmqException;
+
+/**
+ * The client interface
+ */
+public interface Client extends Closeable {
+
+	/**
+	 * Initializes the client and connects it to the Broker
+	 * 
+	 * @throws IOException
+	 */
+	void init() throws IOException;
+
+	/**
+	 * indicates whether the client is connected or not
+	 * 
+	 * @return
+	 */
+	boolean isConnected();
+
+	/**
+	 * Register as a new client.
+	 * 
+	 * @return client connection information
+	 */
+	ClientDto register() throws IOException, MlmqException;
+
+	/**
+	 * Creates a queue with a specific name.
+	 * 
+	 * @return the queue created
+	 */
+	QueueDto createQueue(String queueName) throws IOException, MlmqException;
+
+	/**
+	 * Tries to find the where we can send personal messages to a client
+	 * 
+	 * @param queueName
+	 * @return Queue may be null if not found
+	 */
+	QueueDto lookupClientQueue(String queueName) throws IOException, MlmqException;
+
+	/**
+	 * Tries to find a client for a specific name
+	 * 
+	 * @param clientName
+	 * @return
+	 */
+	ClientDto lookupClient(String clientName) throws IOException, MlmqException;
+
+	/**
+	 * Tries to find the queue where we can send personal messages to a client
+	 * 
+	 * @param clientId
+	 * @return Queue may be null if not found
+	 */
+	QueueDto lookupClientQueue(long clientId) throws IOException, MlmqException;
+
+	/**
+	 * Deletes a queue
+	 * 
+	 * @param id
+	 */
+	void deleteQueue(long id) throws IOException, MlmqException;
+
+	/**
+	 * Sends a message to a specific queue.
+	 * 
+	 * @param queueId
+	 * @param content
+	 *            raw message content
+	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
+	 */
+	void sendMessage(long queueId, byte[] content, int prio) throws IOException, MlmqException;
+
+	/**
+	 * Sends a message to multiple queues.
+	 * 
+	 * @param queueIds
+	 * @param content
+	 *            raw message content
+	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
+	 * @throws IOException
+	 */
+	void sendMessage(long[] queueIds, byte[] content, int prio) throws IOException, MlmqException;
+
+	/**
+	 * Sends a private message to a client
+	 * 
+	 * @param clientId
+	 * @param content
+	 *            raw message content
+	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
+	 */
+	void sendMessageToClient(long clientId, byte[] content, int prio) throws IOException, MlmqException;
+
+	/**
+	 * Request/Responses are posted to the private client queue it is sent to
+	 * 
+	 * As soon as a client performs a Request it receives a context identifier
+	 * 
+	 * Any response received from a client needs to be in the queue of the receiving client and needs to have the same context identifier
+	 * 
+	 * @param client
+	 * @param content
+	 *            raw message content
+	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
+	 * @return returns a context identifier which can be used as a filter criteria when reading messages
+	 */
+	long sendRequestToClient(long client, byte[] content, int prio) throws IOException, MlmqException;
+
+	/**
+	 * 
+	 * @param clientId
+	 * @param context
+	 *            context identifier
+	 * @param content
+	 *            raw message content
+	 * @param prio
+	 *            number from 1 to 10 (10 indicates maximum priority)
+	 * @throws IOException
+	 */
+	long sendResponseToClient(long clientId, long context, byte[] content, int prio) throws IOException, MlmqException;
+
+	/**
+	 * Query for queues with pending messages.
+	 * 
+	 * This method returns number of message in the client's queue and a list of queues which are not empty.
+	 * 
+	 * @param queues
+	 *            output parameter containing Queues which contain messages. This method simply appends the results to this list
+	 * @param maxNumQueues
+	 *            maximum number of returned QueueDto's
+	 * @return number of messages in the client's personal queue
+	 */
+	int queuesWithPendingMessages(List<QueueDto> queues, int maxNumQueues) throws IOException, MlmqException;
+
+	/**
+	 * Reads the first message without removing it.
+	 * 
+	 * @param messageQueryInfo
+	 * @return message, may be null
+	 */
+	MessageDto peekMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException;
+
+	/**
+	 * Reads the first message and removes it.
+	 * 
+	 * @param messageQueryInfo
+	 * @return message, may be null
+	 */
+	MessageDto dequeueMessage(MessageQueryInfoDto messageQueryInfo) throws IOException, MlmqException;
+}
+
+\end{lstlisting}
+
+\end{document}
