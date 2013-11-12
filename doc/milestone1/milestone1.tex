@@ -14,6 +14,29 @@
 \usepackage{pdflscape}
 \usepackage[a4paper]{geometry}
 \usepackage{subfiles}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
 
 
 \title{Advanced Systems Lab - Milestone I} 
@@ -25,6 +48,11 @@
 
 \maketitle
 
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
 
 \begin{abstract}
 
@@ -49,7 +77,7 @@ Figure \ref{fig:system-overview} shows a generic setup of the messaging system. 
 % ------------------------------------------------
 % Figure - system overview
 
-\begin{figure}
+\begin{figure}[H]
   \begin{center}
     \includegraphics[scale=0.4]{../drawings/system-overview.eps}
   \end{center}
@@ -69,7 +97,7 @@ A configurable number of workers are constantly reading from the request queue. 
 % ------------------------------------------------
 % Figure - threading
 
-\begin{figure}
+\begin{figure}[H]
 	\begin{center}
     \includegraphics[scale=0.4]{../drawings/broker-threading.eps}
   \end{center}
@@ -80,8 +108,7 @@ A configurable number of workers are constantly reading from the request queue. 
 %% ----------------------------------------------
 \subsection{Client to Middleware Interface}
 
-TODO
-
+\subfile{part01-10-clientinterface.tex}
 
 %% ----------------------------------------------
 \subsection{Database Design}
@@ -91,8 +118,8 @@ TODO
 %% ----------------------------------------------
 \subsection{Middleware to Database Interface}
 
-
 TODO
+
 
 %% ----------------------------------------------
 % Section Design Decisions
