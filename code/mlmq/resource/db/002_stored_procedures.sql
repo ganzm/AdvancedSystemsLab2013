@@ -64,3 +64,43 @@ BEGIN
 END
 $$
 LANGUAGE plpgsql;
+
+
+----
+
+CREATE OR REPLACE FUNCTION  peekMessageForUpdate (from_queue_id INTEGER, from_client_id INTEGER, shouldOrderByPriority boolean, ctx INTEGER)
+RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content BYTEA, prio smallint, sent_at time without time zone, context INTEGER  )
+AS $$
+
+DECLARE
+    query_string varchar;
+BEGIN
+
+	query_string = 'SELECT m.id, m.queue_id, m.client_sender_id, m.content, m.prio, m.sent_at, m.context FROM message m WHERE 1=1 ';
+
+	IF (NOT $1 IS NULL) THEN
+		-- queue id
+		query_string = query_string || ' AND m.queue_id = '  || $1;
+	END IF;
+
+	IF (NOT $2 IS NULL) THEN
+		-- client id
+		query_string = query_string || ' AND m.client_sender_id = '  || $2;
+	END IF;
+	
+	IF(NOT $4 IS NULL) THEN
+		-- context
+		query_string = query_string || ' AND m.context = '  || $4;
+	END IF;
+
+	if(shouldOrderByPriority) THEN
+		query_string = query_string || ' ORDER BY m.prio DESC LIMIT 1 FOR UPDATE';
+	ELSE
+		query_string = query_string || ' ORDER BY m.sent_at LIMIT 1 FOR UPDATE';
+	END IF;
+
+	return QUERY EXECUTE query_string;
+END
+$$
+LANGUAGE plpgsql;
+
