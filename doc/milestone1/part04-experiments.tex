@@ -108,12 +108,12 @@ There are two different versions of the test runs considering the dequeueMessage
 
 \textbf{Hypothesis}\\
 
-V1 has to lock single rows, while V2 doesn\'t have to lock them. Thus, V2 should be faster.\\
+V1 has to lock single rows, while V2 doesn\'t have to lock them. Thus, V2 should be faster. The process time is the (mean/percentile(0.25)/percentile(97.5)/stddev) of the messages of message type "BTotReqResp".\\
 
 \begin{tabular}{cccccccc}
-\rot{Clients} & \rot{Brokers} & \rot{Workers} & \rot{Connections} & \rot{V1 TestRun Id} & \rot{V1 Process time \footnote{Message Type BTotReqResp}} & \rot{V2 TestRun Id} & \rot{V2 Process time \footnote{Message Type BTotReqResp}} \\
+\rot{Clients} & \rot{Brokers} & \rot{Workers} & \rot{Connections} & \rot{V1 TestRun Id} & \rot{V1 Process time} & \rot{V2 TestRun Id} & \rot{V2 Process time} \\
 \hline 
-15 & 4 & 4 & 4 & 151 & • & 128 & • \\ 
+15 & 4 & 4 & 4 & 151 & w/x/y/z & 128 & w/x/y/z \\ 
 \hline 
 15 & 4 & 4 & 8 & 152 & • & 129 & • \\ 
 \hline 
