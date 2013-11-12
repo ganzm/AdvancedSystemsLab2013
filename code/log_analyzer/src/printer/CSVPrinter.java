@@ -25,7 +25,8 @@ public class CSVPrinter {
 
 	public void print() {
 		try (PrintWriter writer = new PrintWriter(out)) {
-			Double[] percentiles = new Double[] { 0.5, 1.0, 2.5, 5.0, 10.0, 90.0, 95.0, 97.5, 99.0, 99.5 };
+			// Double[] percentiles = new Double[] { 0.5, 1.0, 2.5, 5.0, 10.0, 90.0, 95.0, 97.5, 99.0, 99.5 };
+			Double[] percentiles = new Double[] { 2.5, 97.5 };
 			ArrayList<String> titles = getTitles(percentiles);
 			writer.println(StringUtils.join(titles, CSV_SEPERATOR));
 			for (Bucket b : buckets) {
