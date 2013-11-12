@@ -171,46 +171,44 @@ public class MessageDao implements Closeable {
 	}
 
 	public MessageDto dequeueMessage(MessageQueryInfoDto queryInfo) throws SQLException {
+		long startTime = System.currentTimeMillis();
+		int result = -1;
+
 		try {
 			beginTransStmt.execute();
 
-			MessageDto message = peekMessageForUpdate(queryInfo);
+			MessageDto message = peekMessage(peekMessageForUpdateStmt, queryInfo);
 			if (message == null) {
+				// queue is empty or filter does not match
 				return null;
 			}
 
-			long startTime = System.currentTimeMillis();
-			int result = -1;
-			try {
-				deleteMessageStmt.setLong(1, message.getId());
-				result = deleteMessageStmt.executeUpdate();
-			} finally {
-				perfLog.log(System.currentTimeMillis() - startTime, "BDb#dequeueMessage");
-			}
+			deleteMessageStmt.setLong(1, message.getId());
+			result = deleteMessageStmt.executeUpdate();
 
 			if (result != 1) {
-				logger.fine("Dequeue did not work - DeleteCount[" + result + "] MessageId[" + message.getId() + "]");
-
-				// some other client was faster than you deleting the same message
-				return null;
+				throw new SQLException("Dequeue did not work - DeleteCount[" + result + "] MessageId[" + message.getId() + "]");
 			}
 
 			return message;
 		} finally {
 			commitTransStmt.execute();
+			if (result == 1) {
+				perfLog.log(System.currentTimeMillis() - startTime, "BDb#dequeueMessage");
+			}
 		}
 	}
 
-	public MessageDto peekMessageForUpdate(MessageQueryInfoDto queryInfo) throws SQLException {
-		return peekMessage(peekMessageForUpdateStmt, queryInfo);
-	}
-
 	public MessageDto peekMessage(MessageQueryInfoDto queryInfo) throws SQLException {
-		return peekMessage(peekMessageStmt, queryInfo);
+		long startTime = System.currentTimeMillis();
+		try {
+			return peekMessage(peekMessageStmt, queryInfo);
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#peekMessage");
+		}
 	}
 
 	private MessageDto peekMessage(PreparedStatement prepStmt, MessageQueryInfoDto queryInfo) throws SQLException {
-		long startTime = System.currentTimeMillis();
 
 		if (queryInfo.getQueue() == null) {
 			prepStmt.setNull(1, Types.INTEGER);
@@ -250,8 +248,6 @@ public class MessageDao implements Closeable {
 
 				return message;
 			}
-		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "BDb#peekMessage");
 		}
 		return null;
 	}
