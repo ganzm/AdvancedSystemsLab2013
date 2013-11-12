@@ -26,8 +26,11 @@ public class MessageDao implements Closeable {
 
 	private final PerformanceLogger perfLog = PerformanceLoggerManager.getLogger();
 
+	private PreparedStatement beginTransStmt;
+	private PreparedStatement commitTransStmt;
 	private PreparedStatement insertMessageStmt;
 	private PreparedStatement peekMessageStmt;
+	private PreparedStatement peekMessageForUpdateStmt;
 	private PreparedStatement deleteMessageStmt;
 	private PreparedStatement generateNewConversationContextStmt;
 	private PreparedStatement getPublicQueuesContainingMessagesStmt;
@@ -35,6 +38,9 @@ public class MessageDao implements Closeable {
 
 	public void init(Connection connection) throws SQLException {
 		// prepare statements
+
+		beginTransStmt = connection.prepareStatement("BEGIN TRANSACTION");
+		commitTransStmt = connection.prepareStatement("COMMIT TRANSACTION");
 
 		//@formatter:off
 		String insertSqlStatement = "INSERT INTO message("
@@ -45,6 +51,9 @@ public class MessageDao implements Closeable {
 
 		String peekMessageSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessage(?, ?, ?, ?)";
 		peekMessageStmt = connection.prepareStatement(peekMessageSqlStmt);
+
+		String peekMessageForUpdateSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessageForUpdate(?, ?, ?, ?)";
+		peekMessageForUpdateStmt = connection.prepareStatement(peekMessageForUpdateSqlStmt);
 
 		String deleteMessageSqlStmt = "DELETE FROM message WHERE id = ?";
 		deleteMessageStmt = connection.prepareStatement(deleteMessageSqlStmt);
@@ -67,6 +76,18 @@ public class MessageDao implements Closeable {
 
 	public void close() {
 		try {
+			beginTransStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing insertMessageStmt" + LoggerUtil.getStackTraceString(e));
+		}
+
+		try {
+			commitTransStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing insertMessageStmt" + LoggerUtil.getStackTraceString(e));
+		}
+
+		try {
 			insertMessageStmt.close();
 		} catch (SQLException e) {
 			logger.severe("Error while closing insertMessageStmt" + LoggerUtil.getStackTraceString(e));
@@ -74,6 +95,12 @@ public class MessageDao implements Closeable {
 
 		try {
 			peekMessageStmt.close();
+		} catch (SQLException e) {
+			logger.severe("Error while closing peekMessageStmt" + LoggerUtil.getStackTraceString(e));
+		}
+
+		try {
+			peekMessageForUpdateStmt.close();
 		} catch (SQLException e) {
 			logger.severe("Error while closing peekMessageStmt" + LoggerUtil.getStackTraceString(e));
 		}
@@ -144,55 +171,67 @@ public class MessageDao implements Closeable {
 	}
 
 	public MessageDto dequeueMessage(MessageQueryInfoDto queryInfo) throws SQLException {
-		MessageDto message = peekMessage(queryInfo);
-		if (message == null) {
-			return null;
-		}
-
 		long startTime = System.currentTimeMillis();
 		int result = -1;
+
 		try {
+			beginTransStmt.execute();
+
+			MessageDto message = peekMessage(peekMessageForUpdateStmt, queryInfo);
+			if (message == null) {
+				// queue is empty or filter does not match
+				return null;
+			}
+
 			deleteMessageStmt.setLong(1, message.getId());
 			result = deleteMessageStmt.executeUpdate();
+
+			if (result != 1) {
+				throw new SQLException("Dequeue did not work - DeleteCount[" + result + "] MessageId[" + message.getId() + "]");
+			}
+
+			return message;
 		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "BDb#dequeueMessage");
+			commitTransStmt.execute();
+			if (result == 1) {
+				perfLog.log(System.currentTimeMillis() - startTime, "BDb#dequeueMessage");
+			}
 		}
-
-		if (result != 1) {
-			logger.fine("Dequeue did not work - DeleteCount[" + result + "] MessageId[" + message.getId() + "]");
-
-			// some other client was faster than you deleting the same message
-			return null;
-		}
-
-		return message;
 	}
 
 	public MessageDto peekMessage(MessageQueryInfoDto queryInfo) throws SQLException {
 		long startTime = System.currentTimeMillis();
+		try {
+			return peekMessage(peekMessageStmt, queryInfo);
+		} finally {
+			perfLog.log(System.currentTimeMillis() - startTime, "BDb#peekMessage");
+		}
+	}
+
+	private MessageDto peekMessage(PreparedStatement prepStmt, MessageQueryInfoDto queryInfo) throws SQLException {
 
 		if (queryInfo.getQueue() == null) {
-			peekMessageStmt.setNull(1, Types.INTEGER);
+			prepStmt.setNull(1, Types.INTEGER);
 		} else {
-			peekMessageStmt.setInt(1, (int) queryInfo.getQueue().getId());
+			prepStmt.setInt(1, (int) queryInfo.getQueue().getId());
 		}
 
 		if (queryInfo.getSender() == null) {
-			peekMessageStmt.setNull(2, Types.INTEGER);
+			prepStmt.setNull(2, Types.INTEGER);
 		} else {
-			peekMessageStmt.setInt(2, (int) queryInfo.getSender().getId());
+			prepStmt.setInt(2, (int) queryInfo.getSender().getId());
 		}
 
-		peekMessageStmt.setBoolean(3, queryInfo.shouldOrderByPriority());
+		prepStmt.setBoolean(3, queryInfo.shouldOrderByPriority());
 
 		Integer expectedContext = queryInfo.getConversationContext();
 		if (expectedContext == null) {
-			peekMessageStmt.setNull(4, Types.INTEGER);
+			prepStmt.setNull(4, Types.INTEGER);
 		} else {
-			peekMessageStmt.setInt(4, ((int) (long) queryInfo.getConversationContext()));
+			prepStmt.setInt(4, ((int) (long) queryInfo.getConversationContext()));
 		}
 
-		try (ResultSet rs = peekMessageStmt.executeQuery()) {
+		try (ResultSet rs = prepStmt.executeQuery()) {
 			if (rs.next()) {
 				MessageDto message = new MessageDto();
 
@@ -209,8 +248,6 @@ public class MessageDao implements Closeable {
 
 				return message;
 			}
-		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "BDb#peekMessage");
 		}
 		return null;
 	}
