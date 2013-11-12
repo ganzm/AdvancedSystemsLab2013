@@ -110,75 +110,51 @@ The number of worker threads running on a single middle ware component is varied
 
 The number of db connection a single middleware concurrently has is varied between 4 and 8
 
-\subsubsection{Hypothesis}
-
-The response time should not be majorly affected by these chosen parameters. Since the system is not under much load only small changes concerning the response time should be observable.
-
-However the number of requests processes should vary. The main feature which obviously affects number of requests is the number of connected clients sending messages. Other minor variations will reveal bottle necks in the system.
-
 \subsubsection{Measurement Results}
 
-\begin{tabular}{|c|c|c|c|c|c|}
+There are two different versions of the test runs considering the dequeueMessage interface. The V1 will always return a message if there is a message in the queue. V2 should return a message if there is a message in the queue, but if two clients dequeue a message at the same time, one will receive the message while the other client will not get a message.\\
+
+\textbf{Hypothesis}\\
+
+V1 has to lock single rows, while V2 doesn\'t have to lock them. Thus, V2 should be faster. The process time is the (mean/percentile(0.25)/percentile(97.5)/stddev) of the messages of message type "BTotReqResp".\\
+
+\begin{tabular}{cccccccc}
+\rot{Clients} & \rot{Brokers} & \rot{Workers} & \rot{Connections} & \rot{V1 TestRun Id} & \rot{V1 Process time} & \rot{V2 TestRun Id} & \rot{V2 Process time} \\
 \hline 
-Clients & Brokers &  Workers & Connections & TestRun-Id & Processing time (BTotReqResp) \\ 
+15 & 4 & 4 & 4 & 151 & w/x/y/z & 128 & w/x/y/z \\ 
 \hline 
-15 & 4 & 4 & 4 & 128 & • \\ 
+15 & 4 & 4 & 8 & 152 & • & 129 & • \\ 
 \hline 
-15 & 4 & 4 & 8 & 129 \\ 
+15 & 4 & 8 & 4 & 153 & • & 130 & • \\ 
 \hline 
-15 & 4 & 8 & 4 & 130 \\ 
+15 & 4 & 8 & 8 & 154 & • & 131 & • \\ 
 \hline 
-15 & 4 & 8 & 8 & 131 \\ 
+15 & 8 & 4 & 4 & 155 & • & 132 & • \\ 
 \hline 
-15 & 8 & 4 & 4 & 132 \\ 
+15 & 8 & 4 & 8 & 156 & • & 133 & • \\ 
 \hline 
-15 & 8 & 4 & 8 & 133 \\ 
+15 & 8 & 8 & 4 & 157 & • & 134 & • \\ 
 \hline 
-15 & 8 & 8 & 4 & 134, 145 \\ 
+15 & 8 & 8 & 8 & 158 & • & 135 & • \\ 
 \hline 
-15 & 8 & 8 & 8 & 135 \\ 
+30 & 4 & 4 & 4 & 159 & • & 136 & • \\ 
 \hline 
-30 & 4 & 4 & 4 & 136 \\ 
+30 & 4 & 4 & 8 & 160 & • & 137 & • \\ 
 \hline 
-30 & 4 & 4 & 8 & 137 \\ 
+30 & 4 & 8 & 4 & 161 & • & 138 & • \\ 
 \hline 
-30 & 4 & 8 & 4 & 138 \\ 
+30 & 4 & 8 & 8 & 162 & • & 139 & • \\ 
 \hline 
-30 & 4 & 8 & 8 & 139 \\ 
+30 & 8 & 4 & 4 & 163 & • & 140 & • \\ 
 \hline 
-30 & 8 & 4 & 4 & 140, 146 \\ 
+30 & 8 & 4 & 8 & 164 & • & 141 & • \\ 
 \hline 
-30 & 8 & 4 & 8 & 141 &  • \\ 
+30 & 8 & 8 & 4 & 165 & • & 142 & • \\ 
 \hline 
-30 & 8 & 8 & 4 & 142, 147 \\ 
+30 & 8 & 8 & 8 & 166 & • & 143 & • \\ 
 \hline 
-30 & 8 & 8 & 8 & 143, 148 \\ 
-\hline 
+
 \end{tabular} 
-
-
-TODO delete me
-\begin{verbatim}
-TestRunId	Time	StdDev	Mean	Count	Max
-128	2013-11-11 01:35:31	4.2708546387	4.7715828528	2856191	217
-129	2013-11-11 02:13:04	3.7299224526	3.7357446048	2365087	235
-130	2013-11-11 02:49:57	3.348570352	3.2429460121	2192306	298
-131	2013-11-11 03:26:55	3.3164595136	3.0023315118	2530118	286
-132	2013-11-11 04:04:18	2.6717385972	1.9960420139	2209457	349
-133	2013-11-11 04:41:15	3.5359901075	2.488219485	1301556	466
-134	2013-11-11 05:17:23	419.7318920355	3.0009586343	2042489	599849
-135	2013-11-11 05:55:14	3.7023252149	3.1344887533	2384876	287
-136	2013-11-11 06:32:58	5.6086227212	7.0354877101	4564228	318
-137	2013-11-11 07:12:02	6.5307008122	7.6119000076	4452703	287
-138	2013-11-11 07:59:58	5.5092376238	6.9533999921	4563540	299
-139	2013-11-11 08:38:54	5.0747687417	4.2100870928	4307128	193
-140	2013-11-11 09:18:56	299.2837574216	4.3965107952	4018738	599879
-141	2013-11-11 10:00:32	5.9532533418	4.7032956779	3965163	356
-142	2013-11-11 10:40:20	713.6205172263	4.2847465313	3532626	599981
-143	2013-11-11 11:19:22	416.8146669936	5.6578306503	4144892	599952
-
-\end{verbatim}
-
 
 
 %% -------------------------------------------
