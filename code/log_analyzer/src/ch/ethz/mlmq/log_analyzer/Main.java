@@ -43,7 +43,7 @@ public class Main {
 		}
 
 		String directoryToLogFiles = argUtil.getMandatory("directory_to_log_files");
-		String messageType = argUtil.getOptional("message_type", "");
+		String messageTypes = argUtil.getOptional("message_type", "");
 		boolean plotMedian = argUtil.getOptional("median_or_mean", "median").equals("median");
 		boolean plotPercentile = argUtil.getOptional("percentile_or_stddev", "percentile").equals("percentile");
 		double percentile = Double.parseDouble(argUtil.getOptional("percentile", "0"));
@@ -66,22 +66,30 @@ public class Main {
 			l.addFile(file);
 		}
 
-		ArrayList<Bucket> buckets = l.getBuckets(messageType, windowSize, startupCooldownTime);
+		ArrayList<ArrayList<Bucket>> multiBuckets = new ArrayList<ArrayList<Bucket>>();
+		for (String messageType : messageTypes.split(",")) {
+			ArrayList<Bucket> b = l.getBuckets(messageType.trim(), windowSize, startupCooldownTime);
+			multiBuckets.add(b);
+		}
 
 		if ("csv".equals(formatString)) {
-			CSVPrinter p = new CSVPrinter(buckets, out);
-			p.print();
+			for (ArrayList<Bucket> bucket : multiBuckets) {
+				CSVPrinter p = new CSVPrinter(bucket, out);
+				p.print();
+			}
 		} else if ("png.gnu".equals(formatString)) {
-			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, true, null, plotMedian, plotPercentile, percentile);
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(multiBuckets, diagramType, out, true, null, plotMedian, plotPercentile, percentile);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("eps.gnu".equals(formatString)) {
-			GnuPlotPrinter gnuP = new GnuPlotPrinter(buckets, diagramType, out, false, null, plotMedian, plotPercentile, percentile);
+			GnuPlotPrinter gnuP = new GnuPlotPrinter(multiBuckets, diagramType, out, false, null, plotMedian, plotPercentile, percentile);
 			addOptionalGnuPlotParams(gnuP, argUtil);
 			gnuP.print();
 		} else if ("txt".equals(formatString)) {
-			CSVPrinter p = new CSVPrinter(buckets, out);
-			p.print();
+			for (ArrayList<Bucket> bucket : multiBuckets) {
+				CSVPrinter p = new CSVPrinter(bucket, out);
+				p.print();
+			}
 		}
 	}
 
@@ -99,7 +107,7 @@ public class Main {
 		if (argUtil.hasKey("y_axis_label"))
 			gnuP.setYLabel(argUtil.getMandatory("y_axis_label"));
 		if (argUtil.hasKey("y_axis_label"))
-			gnuP.setLineLabel(argUtil.getMandatory("line_label"));
+			gnuP.setLineLabels(argUtil.getMandatory("line_label"));
 	}
 
 	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
