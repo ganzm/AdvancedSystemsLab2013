@@ -142,7 +142,7 @@ public class GnuPlotPrinter {
 	}
 
 	private String formatTime(long time, long t0) {
-		return ((time - t0) / 1000) + "";
+		return ((time - t0) / 60000) + "";
 	}
 
 	public void setDiagramTitle(String diagramTitle) {
