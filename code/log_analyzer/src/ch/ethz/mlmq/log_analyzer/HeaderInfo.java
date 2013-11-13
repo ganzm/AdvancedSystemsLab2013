@@ -52,6 +52,9 @@ public class HeaderInfo {
 
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
+		} catch (Exception ex) {
+			// fix java.lang.StringIndexOutOfBoundsException, maybe there are even more errors here...
+			return Long.MIN_VALUE;
 		}
 	}
 }
