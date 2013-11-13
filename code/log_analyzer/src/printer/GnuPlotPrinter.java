@@ -118,7 +118,7 @@ public class GnuPlotPrinter {
 			if (diagramType == DiagramType.ResponseTime)
 				writer.println(formatTime(b.getTime(), t0) + " " + medianOrMean(b) + " " + percentileOrStddev(b, false) + " " + percentileOrStddev(b, true));
 			else
-				writer.println(formatTime(b.getTime(), t0) + " " + b.count());
+				writer.println(formatTime(b.getTime(), t0) + " " + ((double) (b.count()) / 1000.0));
 		}
 		writer.println("e");
 	}
