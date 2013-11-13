@@ -9,7 +9,7 @@ import ch.ethz.mlmq.log_analyzer.DiagramType;
 
 public class GnuPlotPrinter {
 
-	private ArrayList<Bucket> buckets;
+	private ArrayList<ArrayList<Bucket>> multiBuckets;
 
 	/**
 	 * where we write the .gnu file
@@ -24,7 +24,7 @@ public class GnuPlotPrinter {
 
 	private String yLabel = "yLabel";
 
-	private String lineLabel = "lineLabel";
+	private String[] lineLabels = new String[] { "A", "B", "C", "D", "D" };
 
 	private DiagramType diagramType;
 
@@ -35,7 +35,6 @@ public class GnuPlotPrinter {
 	private double percentile;
 
 	/**
-	 * 
 	 * @param buckets
 	 * @param diagramType
 	 * @param out
@@ -47,9 +46,9 @@ public class GnuPlotPrinter {
 	 * @param percentile
 	 * @param plotPercentile
 	 */
-	public GnuPlotPrinter(ArrayList<Bucket> buckets, DiagramType diagramType, PrintStream out, boolean formatAsPng, String outputFile, boolean plotMedian,
-			boolean plotPercentile, double percentile) {
-		this.buckets = buckets;
+	public GnuPlotPrinter(ArrayList<ArrayList<Bucket>> buckets, DiagramType diagramType, PrintStream out, boolean formatAsPng, String outputFile,
+			boolean plotMedian, boolean plotPercentile, double percentile) {
+		this.multiBuckets = buckets;
 		this.diagramType = diagramType;
 		this.out = out;
 		this.formatAsPng = formatAsPng;
@@ -61,8 +60,8 @@ public class GnuPlotPrinter {
 
 	public void print() {
 		long t0 = 0;
-		if (buckets.size() > 0) {
-			t0 = buckets.get(0).getTime();
+		if (multiBuckets.size() > 0) {
+			t0 = multiBuckets.get(0).get(0).getTime();
 		}
 
 		try (PrintWriter writer = new PrintWriter(out)) {
@@ -75,7 +74,6 @@ public class GnuPlotPrinter {
 			}
 
 			if (outputFile != null) {
-
 				writer.println("set output \'" + outputFile + "'");
 			}
 
@@ -84,9 +82,28 @@ public class GnuPlotPrinter {
 			writer.println("set xlabel \"" + xLabel + "\"");
 			writer.println("set ylabel \"" + yLabel + "\"");
 			// TODO limit y scale of the plot - use set yrange [0:1000]
-			writer.println("plot \"-\" with errorlines title \"" + lineLabel + "\"");
 
-			writeBuckets(t0, writer);
+			writer.println("set size 2,2");
+
+			writer.println("set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5");
+			writer.println("set style line 2 lc rgb '#dd181f' lt 2 lw 2 pt 5 ps 1.5");
+			writer.println("set style line 3 lc rgb 'green' lt 3 lw 2 pt 3 ps 1.5");
+			writer.println("set style line 4 lc rgb '#cccccc' lt 4 lw 2 pt 5 ps 1.5");
+			writer.println("set style line 5 lc rgb 'black' lt 5 lw 2 pt 5 ps 1.5");
+			writer.print("plot ");
+			for (int i = 0; i < multiBuckets.size(); i++) {
+				String lineLabel = getLineLabel(i);
+				if (i != 0)
+					writer.print(", ");
+				// String istr = "0" + i;
+				// index " + istr + ":" + istr + "
+				writer.print("\"-\" with errorlines title \"" + lineLabel + "\" ls " + (i + 1) + "");
+			}
+			writer.println();
+
+			for (ArrayList<Bucket> b : multiBuckets) {
+				writeBuckets(t0, writer, b);
+			}
 
 			if (outputFile != null) {
 				writer.println("set output");
@@ -96,12 +113,12 @@ public class GnuPlotPrinter {
 		}
 	}
 
-	private void writeBuckets(long t0, PrintWriter writer) {
+	private void writeBuckets(long t0, PrintWriter writer, ArrayList<Bucket> buckets) {
 		for (Bucket b : buckets) {
 			if (diagramType == DiagramType.ResponseTime)
 				writer.println(formatTime(b.getTime(), t0) + " " + medianOrMean(b) + " " + percentileOrStddev(b, false) + " " + percentileOrStddev(b, true));
 			else
-				writer.println(formatTime(b.getTime(), t0) + " " + b.count());
+				writer.println(formatTime(b.getTime(), t0) + " " + ((double) (b.count()) / 1000.0));
 		}
 		writer.println("e");
 	}
@@ -125,7 +142,7 @@ public class GnuPlotPrinter {
 	}
 
 	private String formatTime(long time, long t0) {
-		return ((time - t0) / 1000) + "";
+		return ((time - t0) / 60000) + "";
 	}
 
 	public void setDiagramTitle(String diagramTitle) {
@@ -140,8 +157,15 @@ public class GnuPlotPrinter {
 		this.yLabel = yLabel;
 	}
 
-	public void setLineLabel(String lineLabel) {
-		this.lineLabel = lineLabel;
+	public void setLineLabels(String lineLabelsString) {
+		this.lineLabels = lineLabelsString.split(",");
+	}
+
+	private String getLineLabel(int index) {
+		String[] tmp = lineLabels;
+		if (tmp.length <= index)
+			return "UNDEFINED";
+		return tmp[index].trim();
 	}
 
 }

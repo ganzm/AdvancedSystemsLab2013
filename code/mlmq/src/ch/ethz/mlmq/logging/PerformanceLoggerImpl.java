@@ -97,7 +97,10 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 	@Override
 	public void setContext(String key, String value) {
 		contextMap.put(key, value);
-		contextString = contextMapToString();
+		if (false)
+			contextString = contextMapToString();
+		else
+			contextString = "";
 	}
 
 	private String contextMapToString() {

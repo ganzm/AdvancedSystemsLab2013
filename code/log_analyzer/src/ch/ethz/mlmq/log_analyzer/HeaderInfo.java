@@ -35,7 +35,9 @@ public class HeaderInfo {
 
 			// memo - assume a performance log line not to be longer than 256 bytes
 			byte[] buffer = new byte[256];
-			ramFile.seek(ramFile.length() - buffer.length);
+			long pos = ramFile.length() - buffer.length;
+			if (pos > 0)
+				ramFile.seek(pos);
 
 			int numBytes = ramFile.read(buffer);
 
@@ -50,6 +52,9 @@ public class HeaderInfo {
 
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
+		} catch (Exception ex) {
+			// fix java.lang.StringIndexOutOfBoundsException, maybe there are even more errors here...
+			return Long.MIN_VALUE;
 		}
 	}
 }
