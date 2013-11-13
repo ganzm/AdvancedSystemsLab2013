@@ -119,43 +119,48 @@ There are two different versions of the test runs considering the dequeueMessage
 V1 has to lock single rows, while V2 doesn\'t have to lock them. Thus, V2 should be faster. The process time is the (mean/percentile(0.25)/percentile(97.5)/stddev) of the messages of message type "BTotReqResp".\\
 
 \begin{tabular}{cccccccc}
-\rot{Clients} & \rot{Brokers} & \rot{Workers} & \rot{Connections} & \rot{V1 TestRun Id} & \rot{V1 Process time} & \rot{V2 TestRun Id} & \rot{V2 Process time} \\
+\rot{Clients} & 
+\rot{Brokers} & 
+\rot{Workers} & 
+\rot{Connections} & 
+\rot{TestRun Id} & 
+\rot{Median Processing time [ms]} & 
+\rot{Nr of Processed Requests} \\
 \hline 
-15 & 4 & 4 & 4 & 151 & w/x/y/z & 128 & w/x/y/z \\ 
+15 & 4 & 4 & 4 & 2003 & 6.80 & 1996478 \\ 
 \hline 
-15 & 4 & 4 & 8 & 152 & • & 129 & • \\ 
+15 & 4 & 4 & 8 & 173 & 7.46 & 1806665 \\ 
 \hline 
-15 & 4 & 8 & 4 & 153 & • & 130 & • \\ 
+15 & 4 & 8 & 4 & 2007 & 6.87 & 2062704 \\ 
 \hline 
-15 & 4 & 8 & 8 & 154 & • & 131 & • \\ 
+15 & 4 & 8 & 8 & 2008 & 7.21  & 2060655 \\ 
 \hline 
-15 & 8 & 4 & 4 & 155 & • & 132 & • \\ 
+15 & 8 & 4 & 4 & 2009 & 5.11 & 1385552 \\ 
 \hline 
-15 & 8 & 4 & 8 & 156 & • & 133 & • \\ 
+15 & 8 & 4 & 8 & 2004 & 7.55 & 1910840 \\ 
 \hline 
-15 & 8 & 8 & 4 & 157 & • & 134 & • \\ 
+15 & 8 & 8 & 4 & 2005 & 5.90 & 1975889 \\ 
 \hline 
-15 & 8 & 8 & 8 & 158 & • & 135 & • \\ 
+15 & 8 & 8 & 8 & 2006 & 7.60 & 1920835 \\ 
 \hline 
-30 & 4 & 4 & 4 & 159 & • & 136 & • \\ 
+30 & 4 & 4 & 4 & 159 & 14.08 & 2488948 \\ 
 \hline 
-30 & 4 & 4 & 8 & 160 & • & 137 & • \\ 
+30 & 4 & 4 & 8 & 160 & 12.80 & 2451248 \\ 
 \hline 
-30 & 4 & 8 & 4 & 161 & • & 138 & • \\ 
+30 & 4 & 8 & 4 & 161 & 13.42 & 2428769 \\ 
 \hline 
-30 & 4 & 8 & 8 & 162 & • & 139 & • \\ 
+30 & 4 & 8 & 8 & 162 & 13.97 & 2511260  \\ 
 \hline 
-30 & 8 & 4 & 4 & 163 & • & 140 & • \\ 
+30 & 8 & 4 & 4 & 163 & 12.43 & 2329883 \\ 
 \hline 
-30 & 8 & 4 & 8 & 164 & • & 141 & • \\ 
+30 & 8 & 4 & 8 & 164 & 14.85 & 2110459 \\ 
 \hline 
-30 & 8 & 8 & 4 & 165 & • & 142 & • \\ 
+30 & 8 & 8 & 4 & 165 & 12.88 & 2266237 \\ 
 \hline 
-30 & 8 & 8 & 8 & 166 & • & 143 & • \\ 
+30 & 8 & 8 & 8 & 166 & 15.05 & 2166303  \\ 
 \hline 
 
 \end{tabular} 
-
 
 %% -------------------------------------------
 \subsection{Db load test}
