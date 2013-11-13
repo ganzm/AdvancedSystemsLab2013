@@ -110,13 +110,15 @@ The number of worker threads running on a single middle ware component is varied
 
 The number of db connection a single middleware concurrently has is varied between 4 and 8
 
+\subsubsection{Hypothesis}
+
+The response time should not be majorly affected by these chosen parameters. Since the system is not under much load only small changes concerning the response time should be observable.
+
+However the number of requests processes should vary. The main feature which obviously affects number of requests is the number of connected clients sending messages. Other minor variations will reveal bottle necks in the system.
+
 \subsubsection{Measurement Results}
-
+The following table shows median time taken and number of requests processed on all the 
 There are two different versions of the test runs considering the dequeueMessage interface. The V1 will always return a message if there is a message in the queue. V2 should return a message if there is a message in the queue, but if two clients dequeue a message at the same time, one will receive the message while the other client will not get a message.\\
-
-\textbf{Hypothesis}\\
-
-V1 has to lock single rows, while V2 doesn\'t have to lock them. Thus, V2 should be faster. The process time is the (mean/percentile(0.25)/percentile(97.5)/stddev) of the messages of message type "BTotReqResp".\\
 
 \begin{tabular}{cccccccc}
 \rot{Clients} & 
@@ -162,8 +164,69 @@ V1 has to lock single rows, while V2 doesn\'t have to lock them. Thus, V2 should
 
 \end{tabular} 
 
+
+\paragraph{Signs} We now assign $+$ and $-$ to the following levels:
+\begin{itemize}
+\item Number of Client $c$ is $+$ if 30, $-$ if 15
+\item Number of Brokers $b$ is $+$ if 8, $-$ if 4
+\item Number of Workers $w$ is $+$ if 8, $-$ if 4
+\item Number of Db Connections $d$ is $+$ if 8, $-$ if 4
+\end{itemize}
+
+We then obtain the following sign table plus weights for the factors.
+
+\begin{tabular}{ccccccccccccccccc}
+\hline 
+ & I &	c&	b&	w&	d&	cb&	cw&	cd&	bw&	bd&	wd&	bwd&	cwd&	cbd&	cbw&	cbwd \\
+\hline 
+&1&	-1&	-1&	-1&	-1&	1&	1&	1&	1&	1&	1&	-1&	-1&	-1&	-1&	1 \\
+&1&	-1&	-1&	-1&	1&	1&	1&	-1&	1&	-1&	-1&	1&	1&	1&	-1&	-1 \\
+&1&	-1&	-1&	1&	-1&	1&	-1&	1&	-1&	1&	-1&	1&	1&	-1&	1&	-1 \\
+&1&	-1&	-1&	1&	1&	1&	-1&	-1&	-1&	-1&	1&	-1&	-1&	1&	1&	1 \\
+&1&	-1&	1&	-1&	-1&	-1&	1&	1&	-1&	-1&	1&	1&	-1&	1&	1&	-1 \\
+&1&	-1&	1&	-1&	1&	-1&	1&	-1&	-1&	1&	-1&	-1&	1&	-1&	1&	1 \\
+&1&	-1&	1&	1&	-1&	-1&	-1&	1&	1&	-1&	-1&	-1&	1&	1&	-1&	1 \\
+&1&	-1&	1&	1&	1&	-1&	-1&	-1&	1&	1&	1&	1&	-1&	-1&	-1&	-1 \\
+&1&	1&	-1&	-1&	-1&	-1&	-1&	-1&	1&	1&	1&	-1&	1&	1&	1&	-1 \\
+&1&	1&	-1&	-1&	1&	-1&	-1&	1&	1&	-1&	-1&	1&	-1&	-1&	1&	1 \\
+&1&	1&	-1&	1&	-1&	-1&	1&	-1&	-1&	1&	-1&	1&	-1&	1&	-1&	1 \\
+&1&	1&	-1&	1&	1&	-1&	1&	1&	-1&	-1&	1&	-1&	1&	-1&	-1&	-1 \\
+&1&	1&	1&	-1&	-1&	1&	-1&	-1&	-1&	-1&	1&	1&	1&	-1&	-1&	1 \\
+&1&	1&	1&	-1&	1&	1&	-1&	1&	-1&	1&	-1&	-1&	-1&	1&	-1&	-1 \\
+&1&	1&	1&	1&	-1&	1&	1&	-1&	1&	-1&	-1&	-1&	-1&	-1&	1&	-1 \\
+&1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1 \\
+\hline 
+
+\rot[90]{\textbf{Weights}} & 
+\rot[90]{\textbf{10.24}} &	
+\rot[90]{\textbf{3.43}} &	
+\rot[90]{-0.07} &	
+\rot[90]{0.11} &	
+\rot[90]{\textbf{0.56}} &	
+\rot[90]{0.19} &	
+\rot[90]{0.03} &	
+\rot[90]{-0.08} &	
+\rot[90]{0.07} &	
+\rot[90]{\textbf{0.52}} &	
+\rot[90]{0.03} &	
+\rot[90]{-0.15} &	
+\rot[90]{0.16} &	
+\rot[90]{0.13} &	
+\rot[90]{-0.05} &	
+\rot[90]{-0.10} \\
+\hline 
+\end{tabular}
+
+\subsubsection{Interpretation}
+Mean performance concerning response time is around the value of 10. The effect of varying number of clients from 15 to 30 is $3.43$. This means when increasing the number of clients (and number of requests) the response time also increases. The values are relatively low. Number of database connections $d$ and number of brokers $b$ in combination with number of database connections  are the next values worth to have a look at. This means that the number of database connections has the most significant impact on response time. By varying number of brokers the total number of database connections also change. 
+
+TODO
+
+
+
+
 %% -------------------------------------------
-\subsection{Db load test}
+\subsection{Db Load Test}
 
 testrun 87 shows what happens when we add more messages than we delete. 
 

@@ -68,7 +68,7 @@ LANGUAGE plpgsql;
 
 ----
 
-CREATE OR REPLACE FUNCTION  peekMessageForUpdate (from_queue_id INTEGER, from_client_id INTEGER, shouldOrderByPriority boolean, ctx INTEGER)
+CREATE OR REPLACE FUNCTION  dequeueMessage (from_queue_id INTEGER, from_client_id INTEGER, shouldOrderByPriority boolean, ctx INTEGER)
 RETURNS TABLE (id integer, queue_id integer, client_sender_id integer, content BYTEA, prio smallint, sent_at time without time zone, context INTEGER  )
 AS $$
 

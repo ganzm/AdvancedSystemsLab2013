@@ -295,6 +295,8 @@ public class RequestProcessor {
 			QueueDao queueDao = connection.getQueueDao();
 
 			// try to lookup queue
+
+			// TODO Concurrency issue here
 			QueueDto queue = queueDao.getQueueByName(request.getQueueName());
 			if (queue == null) {
 				// Queue not found - actually create queue

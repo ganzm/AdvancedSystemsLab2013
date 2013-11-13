@@ -52,7 +52,7 @@ public class MessageDao implements Closeable {
 		String peekMessageSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessage(?, ?, ?, ?)";
 		peekMessageStmt = connection.prepareStatement(peekMessageSqlStmt);
 
-		String peekMessageForUpdateSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM peekMessageForUpdate(?, ?, ?, ?)";
+		String peekMessageForUpdateSqlStmt = "SELECT id, queue_id, client_sender_id, content, prio, sent_at, context FROM dequeueMessage(?, ?, ?, ?)";
 		peekMessageForUpdateStmt = connection.prepareStatement(peekMessageForUpdateSqlStmt);
 
 		String deleteMessageSqlStmt = "DELETE FROM message WHERE id = ?";
