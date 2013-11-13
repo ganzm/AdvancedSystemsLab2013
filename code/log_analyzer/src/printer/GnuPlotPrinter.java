@@ -83,6 +83,8 @@ public class GnuPlotPrinter {
 			writer.println("set ylabel \"" + yLabel + "\"");
 			// TODO limit y scale of the plot - use set yrange [0:1000]
 
+			writer.println("set size 2,2");
+
 			writer.println("set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5");
 			writer.println("set style line 2 lc rgb '#dd181f' lt 2 lw 2 pt 5 ps 1.5");
 			writer.println("set style line 3 lc rgb 'green' lt 3 lw 2 pt 3 ps 1.5");
