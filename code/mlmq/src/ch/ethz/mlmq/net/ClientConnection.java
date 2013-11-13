@@ -149,6 +149,8 @@ public class ClientConnection implements Closeable {
 		logger.info("Try connect to " + host + ":" + port + "...");
 
 		try {
+			// reset the io buffer
+			ioBuffer.clear();
 
 			// Create client SocketChannel
 			clientSocket = SocketChannel.open();
