@@ -1,5 +1,6 @@
 \documentclass[a4paper]{article}
 
+\usepackage{numprint}
 \usepackage{nameref}
 \usepackage{float}
 \usepackage{url}
@@ -84,7 +85,7 @@ Figure \ref{fig:system-overview} shows a generic setup of the messaging system. 
 
 \begin{figure}[H]
   \begin{center}
-    \includegraphics[scale=0.4]{../drawings/system-overview.eps}
+    \includegraphics[scale=0.5]{../drawings/system-overview.eps}
   \end{center}
   \caption{System Overview}
   \label{fig:system-overview}
@@ -104,7 +105,7 @@ A configurable number of workers are constantly reading from the request queue. 
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.4]{../drawings/broker-threading.eps}
+    \includegraphics[scale=0.5]{../drawings/broker-threading.eps}
   \end{center}
   \caption{Middleware's main Components}
   \label{fig:middleware-threading}
@@ -364,7 +365,20 @@ resource/brokerconfig.properties
 \section{Test Infrastructure}
 \label{sec:TestInfrastructure}
 
-To partially automate testing a Ruby on Rails\footnote{\url{http://rubyonrails.org}} web application was developed to help simplify running experiments on the amazone cloud.
+To partially automate testing a Ruby on Rails\footnote{\url{http://rubyonrails.org}} web application was developed to help simplify running experiments on the Amazone cloud. It is refered as Testmaster.
+
+% ------------------------------------------------
+% Figure - threading
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.4]{../drawings/testsystem-overview.eps}
+  \end{center}
+  \caption{Test Master Overview}
+  \label{fig:testmaster}
+\end{figure}
+
+%% ----------------------------------------------
 
 \subsection{Workflow}
 
