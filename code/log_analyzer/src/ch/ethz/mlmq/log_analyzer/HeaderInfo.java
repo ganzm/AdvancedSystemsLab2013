@@ -35,7 +35,9 @@ public class HeaderInfo {
 
 			// memo - assume a performance log line not to be longer than 256 bytes
 			byte[] buffer = new byte[256];
-			ramFile.seek(ramFile.length() - buffer.length);
+			long pos = ramFile.length() - buffer.length;
+			if (pos > 0)
+				ramFile.seek(pos);
 
 			int numBytes = ramFile.read(buffer);
 
