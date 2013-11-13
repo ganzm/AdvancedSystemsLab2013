@@ -118,6 +118,9 @@ However the number of requests processes should vary. The main feature which obv
 \subsubsection{Measurement Results}
 The following table shows median time taken and number of requests processed for all different feature levels.\\
 
+\begin{figure}[H]
+	\begin{center}
+	
 \begin{tabular}{cccccccc}
 \rot{Clients} & 
 \rot{Brokers} & 
@@ -161,7 +164,10 @@ The following table shows median time taken and number of requests processed for
 \hline 
 
 \end{tabular} 
-
+\end{center}
+\caption{$2^4$ factorial test measurements}
+\label{fig:2kfactorialmeasurement}
+\end{figure}
 
 \paragraph{Signs} As $2^k$ factorial test states we now assign $+$ and $-$ to our levels:
 \begin{itemize}
@@ -173,6 +179,8 @@ The following table shows median time taken and number of requests processed for
 
 We then obtain the following sign table. With which we then calculate the weights for the $4$ factors.
 
+\begin{figure}[H]
+	\begin{center}
 \begin{tabular}{ccccccccccccccccc}
 \hline 
  & I &	c&	b&	w&	d&	cb&	cw&	cd&	bw&	bd&	wd&	bwd&	cwd&	cbd&	cbw&	cbwd \\
@@ -194,8 +202,9 @@ We then obtain the following sign table. With which we then calculate the weight
 &1&	1&	1&	1&	-1&	1&	1&	-1&	1&	-1&	-1&	-1&	-1&	-1&	1&	-1 \\
 &1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1 \\
 
+\hline 
 
-\rot[90]{\textbf{Weights}} & 
+\rot[90]{\textbf{Weights~}} & 
 \rot[90]{\textbf{10.24}} &	
 \rot[90]{\textbf{3.43}} &	
 \rot[90]{-0.07} &	
@@ -214,6 +223,11 @@ We then obtain the following sign table. With which we then calculate the weight
 \rot[90]{-0.10} \\
 \hline 
 \end{tabular}
+
+\end{center}
+\caption{$2^4$ factorial test result}
+\label{fig:2kfactorialresults}
+\end{figure}
 
 \subsubsection{Interpretation}
 Mean performance concerning response time has a value of $10.24$. The effect of varying number of clients from 15 to 30 has a weight of $3.43$. This means when increasing the number of clients (and number of requests) the response time also increases. The other values are relatively low. Number of database connections $d$ and number of brokers $b$ in combination with number of database connections  are the next values worth to have a look at. This means that the number of database connections has the most significant impact on response time. By varying number of brokers the total number of database connections also change.
