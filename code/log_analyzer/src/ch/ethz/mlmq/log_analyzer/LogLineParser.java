@@ -3,6 +3,9 @@ package ch.ethz.mlmq.log_analyzer;
 public class LogLineParser {
 
 	public static LogLine parseLogLine(String firstLine) {
+		if (firstLine == null)
+			return null;
+
 		String[] s = firstLine.split(";");
 
 		if (s.length >= 3) {
