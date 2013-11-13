@@ -243,7 +243,9 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 			long time = System.currentTimeMillis() - clientInstance.getStartSendResponseTime();
 			long totalTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
 
-			perfLog.log(time, "BSndResp");
+			if (false) {
+				perfLog.log(time, "BSndResp");
+			}
 			perfLog.log(totalTime, "BTotReqResp");
 		}
 	}
@@ -297,7 +299,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		CloseableByteBuffer txBuffer = byteBufferPool.aquire();
 		clientInstance.initBuffers(rxBuffer, txBuffer);
 
-		// ögli häck - zörkälär dipändenzi
+		// ï¿½gli hï¿½ck - zï¿½rkï¿½lï¿½r dipï¿½ndenzi
 		clientInstance.setSelectionKey(selectionKey);
 	}
 
@@ -308,7 +310,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 
 		// do performance logging
 		long receiveTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
-		perfLog.log(receiveTime, "BRcvReq");
+		if (false)
+			perfLog.log(receiveTime, "BRcvReq");
 
 		if (!requestQueue.enqueue(new WorkerTask(clientInstance.getClientContext(), messageBuffer))) {
 			logger.severe("WorkerTaskQueue full dropping Message from Client " + clientInstance);
