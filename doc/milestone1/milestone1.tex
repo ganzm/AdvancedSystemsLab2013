@@ -119,13 +119,35 @@ A configurable number of workers are constantly reading from the request queue. 
 %% ----------------------------------------------
 \subsection{Database Design}
 
-TODO
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.3]{../drawings/database-schema.png}
+  \end{center}
+  \caption{Database Schema}
+  \label{fig:dbschema}
+\end{figure}
+
+%% ----------------------------------------------
+
 
 %% ----------------------------------------------
 \subsection{Middleware to Database Interface}
 
-TODO
+The interface to the database is abstracted through the the classes located in package \textit{ch.ethz.mlmq.server.db.dao}.
 
+\begin{itemize}
+\item MessageDao - handles access to the message table
+\item ClientDao - creates and deletes clients
+\item QueueDao - creates and deletes queues
+\end{itemize}
+
+These classes encapsulate all database access performed bye the middle ware bye using PreparedStatements\footnote{\url{http://docs.oracle.com/javase/tutorial/jdbc/basics/prepared.html}}. PreparedStatements tend to be faster than normal Statements because they can be precompiled on the database system.
+
+\subsubsection{Stored Procedures}
+Database operations which would have required more than one (Prepared)Statements per request are implemented as StoredProcedures. This reduces unnecessary database roundtrips.
 
 %% ----------------------------------------------
 % Section Design Decisions
@@ -475,35 +497,5 @@ http://dl.acm.org/citation.cfm?id=SERIES12798.1557393
 }
 
 %\bibliography{mybib}
-
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Notes - to delete}
-
-% unit test
-
-\subsection{What should be included in this report }
-
-\subsubsection{System Code}
-\begin{itemize}
-\item Code
-\item Scripts for experiment
-\end{itemize}
-
-\subsubsection{Experimental data}
-\begin{itemize}
-\item Basic tests ans simple traces
-\item Long running traces, Raw data and graphs for all experiments
-\end{itemize}
-
-\subsubsection{Written report}
-\begin{itemize}
-\item Architectural  diagrams
-\item Interface description
-\item explanation of the system design
-\item Description of all experiments
-\item statistical treatment of data
-\item commentary analysis
-\end{itemize}
-
 
 \end{document}
