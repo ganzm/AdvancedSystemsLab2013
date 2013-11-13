@@ -23,7 +23,7 @@ This kind of client writes the same message again and again to a public queue.
 \subsubsection{PublicQueueConsumer}
 This kind of client tries to read messages at a constant rate from a public queue.
 
-\subsection{2 hour test}
+\subsection{2 Hour Test}
 
 
 % for each experiment
@@ -43,7 +43,6 @@ The experiment is performed on the Amazone cloud with a certain number of client
 \hline 
 Parameter & Value \\
 \hline 
-Where to run & Amazone Cloud \\ 
 Amazone instance type for the database & TODO \\ 
 Amazone instance type for the middle(s) ware& TODO \\ 
 Amazone instance type for the clients & TODO \\ 
@@ -75,7 +74,7 @@ TODO
 \subsection{$2^k$ Experiment}
 In order to determine the influence of a number of primary factors on to the system it was decided to do a $2^k$ analysis on several factors described in the following section.
 
-For each feature level an experiment of 30 minutes is performed where clients perform 100 actions (send, receive message) per second.
+For each feature level an experiment of 30 minutes is performed where clients perform 100 actions (send and receive message) per second.
 
 \subsubsection{Factors and Levels}
 
@@ -104,11 +103,11 @@ The number of middleware components is varied between 4 and 8. For both levels t
 
 \paragraph{Number of workers}
 
-The number of worker threads running on a single middle ware component is varied between 4 and 8
+The number of worker threads a single middle ware instance has is varied between 4 and 8
 
-\paragraph{Number of Db Connections}
+\paragraph{Number of Database Connections}
 
-The number of db connection a single middleware concurrently has is varied between 4 and 8
+The number of concurrent database connection a single middle ware instance has is varied between 4 and 8
 
 \subsubsection{Hypothesis}
 
@@ -117,8 +116,7 @@ The response time should not be majorly affected by these chosen parameters. Sin
 However the number of requests processes should vary. The main feature which obviously affects number of requests is the number of connected clients sending messages. Other minor variations will reveal bottle necks in the system.
 
 \subsubsection{Measurement Results}
-The following table shows median time taken and number of requests processed on all the 
-There are two different versions of the test runs considering the dequeueMessage interface. The V1 will always return a message if there is a message in the queue. V2 should return a message if there is a message in the queue, but if two clients dequeue a message at the same time, one will receive the message while the other client will not get a message.\\
+The following table shows median time taken and number of requests processed for all different feature levels.\\
 
 \begin{tabular}{cccccccc}
 \rot{Clients} & 
@@ -127,7 +125,7 @@ There are two different versions of the test runs considering the dequeueMessage
 \rot{Connections} & 
 \rot{TestRun Id} & 
 \rot{Median Processing time [ms]} & 
-\rot{Nr of Processed Requests} \\
+\rot{\# of Processed Requests} \\
 \hline 
 15 & 4 & 4 & 4 & 2003 & 6.80 & 1996478 \\ 
 \hline 
@@ -165,15 +163,15 @@ There are two different versions of the test runs considering the dequeueMessage
 \end{tabular} 
 
 
-\paragraph{Signs} We now assign $+$ and $-$ to the following levels:
+\paragraph{Signs} As $2^k$ factorial test states we now assign $+$ and $-$ to our levels:
 \begin{itemize}
-\item Number of Client $c$ is $+$ if 30, $-$ if 15
-\item Number of Brokers $b$ is $+$ if 8, $-$ if 4
-\item Number of Workers $w$ is $+$ if 8, $-$ if 4
-\item Number of Db Connections $d$ is $+$ if 8, $-$ if 4
+\item Number of Client \textbf{c} is $+$ if 30, $-$ if 15
+\item Number of Brokers \textbf{b} is $+$ if 8, $-$ if 4
+\item Number of Workers \textbf{w} is $+$ if 8, $-$ if 4
+\item Number of Db Connections \textbf{d} is $+$ if 8, $-$ if 4
 \end{itemize}
 
-We then obtain the following sign table plus weights for the factors.
+We then obtain the following sign table. With which we then calculate the weights for the $4$ factors.
 
 \begin{tabular}{ccccccccccccccccc}
 \hline 
@@ -195,7 +193,7 @@ We then obtain the following sign table plus weights for the factors.
 &1&	1&	1&	-1&	1&	1&	-1&	1&	-1&	1&	-1&	-1&	-1&	1&	-1&	-1 \\
 &1&	1&	1&	1&	-1&	1&	1&	-1&	1&	-1&	-1&	-1&	-1&	-1&	1&	-1 \\
 &1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1&	1 \\
-\hline 
+
 
 \rot[90]{\textbf{Weights}} & 
 \rot[90]{\textbf{10.24}} &	
@@ -218,12 +216,9 @@ We then obtain the following sign table plus weights for the factors.
 \end{tabular}
 
 \subsubsection{Interpretation}
-Mean performance concerning response time is around the value of 10. The effect of varying number of clients from 15 to 30 is $3.43$. This means when increasing the number of clients (and number of requests) the response time also increases. The values are relatively low. Number of database connections $d$ and number of brokers $b$ in combination with number of database connections  are the next values worth to have a look at. This means that the number of database connections has the most significant impact on response time. By varying number of brokers the total number of database connections also change. 
+Mean performance concerning response time has a value of $10.24$. The effect of varying number of clients from 15 to 30 has a weight of $3.43$. This means when increasing the number of clients (and number of requests) the response time also increases. The other values are relatively low. Number of database connections $d$ and number of brokers $b$ in combination with number of database connections  are the next values worth to have a look at. This means that the number of database connections has the most significant impact on response time. By varying number of brokers the total number of database connections also change.
 
-TODO
-
-
-
+Overall the most significant factor which affects performance the most (beside the load applied by clients) is the number of database connections. This indicates that the database is a bottle neck.
 
 %% -------------------------------------------
 \subsection{Db Load Test}
