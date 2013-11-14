@@ -193,8 +193,13 @@ public class MessageDao implements Closeable {
 			return message;
 		} finally {
 			commitTransStmt.execute();
+			long executionTime = System.currentTimeMillis() - startTime;
 			if (result == 1) {
-				perfLog.log(System.currentTimeMillis() - startTime, "BDb#dequeueMessage");
+				perfLog.log(executionTime, "BDb#dequeueMessage#1");
+			} else if (result == -1) {
+				perfLog.log(executionTime, "BDb#dequeueMessage#0");
+			} else {
+				perfLog.log(executionTime, "BDb#dequeueMessage#Error");
 			}
 		}
 	}
