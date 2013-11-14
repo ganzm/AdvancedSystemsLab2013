@@ -195,9 +195,9 @@ public class MessageDao implements Closeable {
 			commitTransStmt.execute();
 			long executionTime = System.currentTimeMillis() - startTime;
 			if (result == 1) {
-				perfLog.log(executionTime, "BDb#dequeueMessage#1");
+				perfLog.log(executionTime, "BDb#dequeueMessage#Ok#1");
 			} else if (result == -1) {
-				perfLog.log(executionTime, "BDb#dequeueMessage#0");
+				perfLog.log(executionTime, "BDb#dequeueMessage#Ok#0");
 			} else {
 				perfLog.log(executionTime, "BDb#dequeueMessage#Error");
 			}
