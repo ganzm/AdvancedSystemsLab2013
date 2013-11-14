@@ -1,17 +1,19 @@
 package ch.ethz.mlmq.log_analyzer;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.math.stat.descriptive.moment.Mean;
-import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
-import org.apache.commons.math.stat.descriptive.moment.Variance;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
+import org.apache.commons.math.util.FastMath;
 
 public class Bucket {
 
-	private List<Double> values = new ArrayList<>();
+	private Map<Integer, Integer> values = new HashMap<>();
 	private double[] primitiveValuesCache;
 
 	/**
@@ -19,22 +21,43 @@ public class Bucket {
 	 */
 	private long startTimestamp;
 	private Percentile percentileCache;
+	private List<Integer> cachedDurations;
 
 	public Bucket() {
 		this.startTimestamp = Long.MAX_VALUE;
 	}
 
 	public int count() {
-		return values.size();
+		int totalCount = 0;
+		for (Integer i : values.keySet()) {
+			totalCount += values.get(i);
+		}
+		return totalCount;
+	}
+
+	private List<Integer> getDurations() {
+		if (cachedDurations != null)
+			return cachedDurations;
+
+		cachedDurations = new ArrayList<>();
+		cachedDurations.addAll(values.keySet());
+		Collections.sort(cachedDurations);
+		return cachedDurations;
 	}
 
 	public void addValue(int duration) {
-		if (primitiveValuesCache != null || percentileCache != null) {
-			primitiveValuesCache = null;
-			percentileCache = null;
-		}
+		clearCache();
 
-		values.add((double) duration); // Could do this better...
+		if (!values.containsKey(duration))
+			values.put(duration, 0);
+
+		values.put(duration, values.get(duration) + 1);
+	}
+
+	private void clearCache() {
+		primitiveValuesCache = null;
+		percentileCache = null;
+		cachedDurations = null;
 	}
 
 	public void addTimestamp(long timestamp) {
@@ -42,57 +65,84 @@ public class Bucket {
 	}
 
 	public double mean() {
-		if (count() == 0)
+		if (noValues())
 			return 0;
-		Mean m = new Mean();
-		return m.evaluate(getPrimitiveValues());
+
+		BigInteger b = new BigInteger("0");
+		for (Integer i : values.keySet()) {
+			b = b.add(BigInteger.valueOf(values.get(i)).multiply(BigInteger.valueOf(i)));
+		}
+		BigDecimal d = new BigDecimal(b);
+
+		return d.divide(BigDecimal.valueOf(count())).doubleValue();
+	}
+
+	private boolean noValues() {
+		return values.isEmpty();
 	}
 
 	public double variance() {
-		if (count() == 0)
+		if (noValues() || count() == 1)
 			return 0;
-		Variance v = new Variance();
-		return v.evaluate(getPrimitiveValues());
+
+		// variance = sum((x_i - mean)^2) / (n - 1)
+		double mean = mean();
+
+		double accum = 0.0;
+		double xiMinusMean = 0.0;
+		double accum2 = 0.0;
+		int count = 0;
+		int times;
+
+		for (Integer i : values.keySet()) {
+			// currentMean += values.get(i) / (double) i; => leads to precision loss
+
+			times = values.get(i);
+			count += values.get(i);
+			xiMinusMean = i - mean;
+			accum += (xiMinusMean * xiMinusMean) * times;
+			accum2 += xiMinusMean * times;
+		}
+		double len = count;
+		return (accum - (accum2 * accum2 / len)) / (len - 1.0);
 	}
 
 	public double stddev() {
-		if (count() == 0)
-			return 0;
-		StandardDeviation d = new StandardDeviation();
-		return d.evaluate(getPrimitiveValues());
+		return Math.sqrt(variance());
 	}
 
 	public double percentile(double percentile) {
-		if (count() == 0)
+		if (noValues())
 			return 0;
-		if (percentileCache == null) {
-			percentileCache = new Percentile();
-			percentileCache.setData(getPrimitiveValues());
-		}
-		return percentileCache.evaluate(percentile);
-	}
 
-	private double[] getPrimitiveValues() {
-		if (primitiveValuesCache != null)
-			return primitiveValuesCache;
+		List<Integer> durations = getDurations();
+		int count = count();
+		double pos = percentile * (count + 1) / 100;
+		double fpos = FastMath.floor(pos);
+		int intPos = (int) fpos;
 
-		primitiveValuesCache = new double[count()];
-		for (int i = 0; i < count(); i++) {
-			primitiveValuesCache[i] = values.get(i);
+		int currentPos = 0;
+		for (Integer i : durations) {
+			currentPos += values.get(i);
+			if (currentPos >= intPos) {
+				return i;
+			}
 		}
-		return primitiveValuesCache;
+		return max();
 	}
 
 	public double min() {
-		if (count() == 0)
+		if (noValues())
 			return 0;
-		return Collections.min(values);
+		int i = getDurations().get(0);
+		return i;
 	}
 
 	public double max() {
-		if (count() == 0)
+		if (noValues())
 			return 0;
-		return Collections.max(values);
+		int i = getDurations().get(getDurations().size() - 1);
+		return i;
 	}
 
 	public long getTime() {
