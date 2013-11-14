@@ -2,6 +2,7 @@ package ch.ethz.mlmq.log_analyzer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.math.stat.descriptive.moment.Mean;
@@ -22,6 +23,10 @@ public class Bucket {
 
 	public Bucket() {
 		this.startTimestamp = Long.MAX_VALUE;
+	}
+
+	public Bucket(long startTimestamp) {
+		this.startTimestamp = startTimestamp;
 	}
 
 	public int count() {

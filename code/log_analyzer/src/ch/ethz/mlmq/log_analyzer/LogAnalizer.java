@@ -64,7 +64,7 @@ public class LogAnalizer {
 		int pos = l.getBucketPosition(startBucketPosition, windowSize);
 
 		while (b.size() <= pos)
-			b.add(new Bucket());
+			b.add(new Bucket(startBucketPosition + (pos * windowSize)));
 
 		Bucket bucket = b.get(pos);
 
