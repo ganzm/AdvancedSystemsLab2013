@@ -8,7 +8,7 @@ set style line 2 lc rgb '#dd181f' lt 2 lw 2 pt 5 ps 1.5
 set style line 3 lc rgb 'green' lt 3 lw 2 pt 3 ps 1.5
 set style line 4 lc rgb '#cccccc' lt 4 lw 2 pt 5 ps 1.5
 set style line 5 lc rgb 'black' lt 5 lw 2 pt 5 ps 1.5
-plot "-" with errorlines title "Client Send Message" ls 1, "-" with errorlines title "Client Dequeue Message" ls 2, "-" with errorlines title "Database Insert Message" ls 3, "-" with errorlines title "Database Dequeue Message" ls 4
+plot "-" with errorlines title "Client Send Message" ls 1, "-" with errorlines title "Client Dequeue Message (all)" ls 2, "-" with errorlines title "Database Insert Message" ls 3, "-" with errorlines title "Database Dequeue Message (only when message was found)" ls 4
 0 21.0 8.0 57.0
 0 21.0 8.0 55.0
 1 21.0 9.0 48.0
