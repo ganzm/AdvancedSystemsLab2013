@@ -1,6 +1,6 @@
 set term postscript eps color blacktext "Helvetica" 24
 set title "Performance Breakup for 2h Test (Client vs. Database), with 10 Minutes Warmup/Cooldown Time, ID: 174"
-set xlabel "Time after measurement start [m]"
+set xlabel "Time after measurement start [min]"
 set ylabel "Response time [ms]"
 set size 2,2
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5

@@ -1,7 +1,7 @@
 set term postscript eps color blacktext "Helvetica" 24
 set title "Throughput for 2h Test (Client vs. Middleware vs. Database), Without Warmup/Cooldown Time, ID: 174"
-set xlabel "Time in after Measurement Start [m]"
-set ylabel "# of Requests in 1000 (Throughput)"
+set xlabel "Time in after Measurement Start [min]"
+set ylabel "# of Requests in 1000 (Throughput) [1000req/min]"
 set size 2,2
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5
 set style line 2 lc rgb '#dd181f' lt 2 lw 2 pt 5 ps 1.5

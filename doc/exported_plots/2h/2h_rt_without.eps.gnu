@@ -1,6 +1,6 @@
 set term postscript eps color blacktext "Helvetica" 24
 set title "Response Time for 2h Test (Client vs. Middleware vs. Database), Without Warmup/Cooldown time, ID: 174"
-set xlabel "Time after Measurement Start [m]"
+set xlabel "Time after Measurement Start [min]"
 set ylabel "Response Time [ms]"
 set size 2,2
 set style line 1 lc rgb '#0060ad' lt 1 lw 2 pt 7 ps 1.5
