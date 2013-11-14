@@ -27,6 +27,10 @@ public class Bucket {
 		this.startTimestamp = Long.MAX_VALUE;
 	}
 
+	public Bucket(long startTimestamp) {
+		this.startTimestamp = startTimestamp;
+	}
+
 	public int count() {
 		int totalCount = 0;
 		for (Integer i : values.keySet()) {
