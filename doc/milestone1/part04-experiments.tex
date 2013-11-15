@@ -7,6 +7,30 @@
 \section{Experiments}
 
 
+
+
+\subsection{Test Protocol}
+
+The whole test protocol can be found on the Testmasters\footnote{https://testmaster-asl-eth.renuo.ch and https://testmaster2-asl-eth.renuo.ch}. One will find a complete list of experiments which were conducted on the Amazon cloud. Additionally, a short summary of the test protocol can be found in the directory \textit{ethz-asl-mlmq/doc/test\_protocol}.
+
+\subsection{Testload}
+To generate test load for the messaging system a mixture of different types of clients have been chosen. This section describes these clients and their behaviour.
+
+\subsubsection{OneWayClient}
+As stated in the project description each OneWayClient sends an initial message to an arbitrary other one. Having it's initial message sent they periodically check their personal queue for incoming messages. If there is one the message is dequeued and forwarded to a random receipient.
+
+Sent messages contain a simple counter which is increased each time a message is relayed.
+
+\subsubsection{PairedClient}
+PairedClient's always come in pairs. They keep on sending requests and responses to each other. At start it is determined which client is the requesting client and which is the responding client.
+
+\subsubsection{PublicQueueProducer}
+This kind of client writes the same message again and again to a public queue.
+
+\subsubsection{PublicQueueConsumer}
+This kind of client tries to read messages at a constant rate from a public queue.
+
+
 \subsection{Microbenchmarks}
 
 The goal of the microbenchmarks is to understand single components and units.
@@ -134,26 +158,7 @@ Duration [s] & Requests sent \\ \hline
 To run the tests, the Testmaster is used to compile the Java code, generate the config files, deploy it to the Amazon AWS machines and start the tests. When the test finishes, it then copies all log files after all Java JVM's have stopped. This whole process takes 8-9 minutes when the Java instances stop immediately.
 
 
-\subsection{Test Protocol}
 
-The whole test protocol can be found on the Testmasters\footnote{https://testmaster-asl-eth.renuo.ch and https://testmaster2-asl-eth.renuo.ch}. One will find a complete list of experiments which were conducted on the Amazon cloud. Additionally, a short summary of the test protocol can be found in the directory \textit{ethz-asl-mlmq/doc/test\_protocol}.
-
-\subsection{Testload}
-To generate test load for the messaging system a mixture of different types of clients have been chosen. This section describes these clients and their behaviour.
-
-\subsubsection{OneWayClient}
-As stated in the project description each OneWayClient sends an initial message to an arbitrary other one. Having it's initial message sent they periodically check their personal queue for incoming messages. If there is one the message is dequeued and forwarded to a random receipient.
-
-Sent messages contain a simple counter which is increased each time a message is relayed.
-
-\subsubsection{PairedClient}
-PairedClient's always come in pairs. They keep on sending requests and responses to each other. At start it is determined which client is the requesting client and which is the responding client.
-
-\subsubsection{PublicQueueProducer}
-This kind of client writes the same message again and again to a public queue.
-
-\subsubsection{PublicQueueConsumer}
-This kind of client tries to read messages at a constant rate from a public queue.
 
 \subsection{2 Hour Test}
 
