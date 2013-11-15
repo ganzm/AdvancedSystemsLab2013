@@ -619,11 +619,23 @@ To check the limits of a single middleware instance a load test is performed wit
 
 
 
+\subsection{Performance Breakup for Different Tiers in the 2h Test}
 
-\subsection{Performance Breakup for Different Tiers}
+To find out which components spend how much time, a performance breakup has been conducted for sending and receiving messages.
 
-TODO: db vs client (vs broker?) for load test
+\subsubsection{Hypothesis}
+The 2h test only generates load on the middleware, and load on the database. While the middleware should already be a little stressed out, the database shouldn't have to do too much work. We expect that the system is stable and the database queries are fast.
 
+\begin{figure}[H]
+        \begin{center}
+    \includegraphics[scale=0.55]{../exported_plots/2h/performance_breakup.eps}
+  \end{center}
+  \caption{Performance breakup for the 2h test.}
+  \label{fig:performancebreakup2h}
+\end{figure}
+
+\subsubsection{Interpretation}
+As expected, the system runs stable with a median response time between 20ms and 30ms. 95\% of the deque message response time is in between 10ms and 90ms, while the send message response time stays under 60ms-70ms for 97.5\% of the send message requests. Thus while sending messages is a little bit faster (about 2ms-3ms) then dequeing messages, inserting messages is more predictable.
 
 
 \end{document}
