@@ -13,17 +13,44 @@ The goal of the microbenchmarks is to understand single components and units.
 
 \subsubsection{Send Message and Receive Message}
 
-The time to send a message has been measured.
+The time to send a message has been measured:\\
 
-\begin{tabular}{|l|l|}
+\begin{tabular}{|l|l|r|r|r|}
 \hline 
-Test Run ID & Component & StdDev & Mean & # Samples & Min & Max & Median & Percentile 2.5 & Percentile 97.5 \\ \hline
-todo & Client & \\ \hline
-todo & Middleware & \\ \hline
-todo & Database & \\ \hline
+Test Run ID & Component & \textbf{Median [ms]} & StdDev [ms] & Mean [ms] \\ \hline
+183 & Client & \textbf{6.832} & 4.187470317 & 7.365251888 \\ \hline
+183 & Middleware & \textbf{6.808}  & 3.342755838 & 7.104011402 \\ \hline
+183 & Database & \textbf{6.653} & 3.308294871 & 6.943917078 \\ \hline
 \end{tabular}
+\\\\
 
-The time to receive a message has been measured.
+\noindent The time to receive a message has been measured:\\
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline 
+Test Run ID & Component & \textbf{Median [ms]} & StdDev [ms] & Mean [ms] \\ \hline
+183 & Client & \textbf{5.361} & 4.936344467 & 7.009122264 \\ \hline
+183 & Middleware & \textbf{4.343} & 3.780972343 & 5.550548883 \\ \hline
+183 & Database & \textbf{4.020} & 3.795258675 & 5.272459425 \\ \hline
+\end{tabular}
+\\
+
+\paragraph{Interpretation} The think time of the client should be very near to 0ms. Thus, we suspect that the difference between client and middleware is the network. We assume that the network time between the client and the middleware is the same as the middleware and the database. We consider the median for the measurements. Thus we conclude the following results:
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline 
+Component & Type & Expected Time [ms] \\ \hline
+Client and Network Client-Middleware & Send & 0.024 \\ \hline
+Middleware and Network Middleware-Database  & Send & 0.155\\ \hline
+Database & Send & 6.653 \\ \hline
+
+Client & Receive & 0\\ \hline
+Middleware & Receive \\ \hline
+Database & Receive \\ \hline
+Network & Receive \\ \hline
+\end{tabular}
+\\
+
 
 \subsubsection{Testmaster}
 
