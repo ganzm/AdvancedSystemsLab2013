@@ -41,7 +41,7 @@ Having this pool should significantly increase the period between garbage collec
 See implementation of \textit{ch.ethz.mlmq.nio.ByteBufferPool}
 
 \subsection{Message Transmission}
-Messages are passed on the initiative of a client (There is no way for the messaging system to push information to a specific client). A clients issues a requests and expects a response within a certain time. Each requests generates a response. In case of an error an error response is replied by the middle ware.
+Messages are passed on the initiative of a client (There is no way for the messaging system to push information to a specific client). A clients issues a requests and expects a response within a certain time. Each requests generates a response. In case of an error an error response is replied by the middleware.
 
 A message consists of a 4 byte length field and a variable length field containing the payload.
 
