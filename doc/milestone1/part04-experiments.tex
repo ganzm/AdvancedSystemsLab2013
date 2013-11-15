@@ -11,11 +11,23 @@
 
 The goal of the microbenchmarks is to understand single components and units.
 
-\subsubsection{Send Message}
+\subsubsection{Send Message and Receive Message}
 
-The time to send a message has been measured:
+The time to send a message has been measured.
 
+\begin{tabular}{|l|l|}
+\hline 
+Test Run ID & Component & StdDev & Mean & # Samples & Min & Max & Median & Percentile 2.5 & Percentile 97.5 \\ \hline
+todo & Client & \\ \hline
+todo & Middleware & \\ \hline
+todo & Database & \\ \hline
+\end{tabular}
 
+The time to receive a message has been measured.
+
+\subsubsection{Testmaster}
+
+To run the tests, the Testmaster is used to compile the Java code, generate the config files, deploy it to the Amazon AWS machines and start the tests. When the test finishes, it then copies all log files after all Java JVM's have stopped. This whole process takes 8-9 minutes when the Java instances stop immediately.
 
 
 \subsection{Test Protocol}
