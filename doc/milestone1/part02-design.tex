@@ -48,7 +48,7 @@ A message consists of a 4 byte length field and a variable length field containi
 To send a messages (requests and responses) the first 4 bytes indicate the binary length of the message. After that the request (or response) is serialized.
 
 \subsection{Message Serialisation}
-
+\label{sub:des-msg-ser}
 The first approach to serialize messages was using the java's built in stream based serialisation infrastructure. This however did not work well together with \ref{sub:buffer-pooling}. Default java serialisation won't let us plug in our buffer pool. Further the decision to implement the networking interface with java nonblocking io however forced us to use java's \textit{ByteBuffer} class to handle binary data.
 
 Theses issues brought us to the decision to implement custom serialisation and deserialisation supporting pooled ByteBuffers.
