@@ -622,7 +622,7 @@ Because the middleware has only one database connection it should not happen tha
 
 
 \subsubsection{Interpretation}
-Both graphs show a significant drop in performance after 25 minutes. The queues of the middleware run full and requests are dropped. As a result of this clients time out and later try to reconnect. We expect that a number of clients disconnect at about 25 minutes. This explains the sudden drop. A few moments later the clients connect and overload the system again.
+Both graphs show a significant drop in performance after 25 minutes. The queues of the middleware run full and requests are dropped. As a result of this clients time out and later try to reconnect. We expect that a number of clients disconnect at about 25 minutes (50 clients). This explains the sudden drop. A few moments later the clients connect and overload the system again.
 
 
 \subsection{Performance Breakup for Different Tiers in the 2h Test}
