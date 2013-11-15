@@ -22,7 +22,9 @@ A nice effect of having a permanent database connection is that it allows the us
 
 \subsection{Mutual Exclusion on the Database}
 
-TODO
+A problem which arose later in the project was a bug where there were two messages in a queue and two clients tried to dequeue messages from it simultaneous. Dequeuing a message is performed in two separate sql statements. The first statement peeks a message and the second one tries to delete the peeked one. The bug occured where two client peeked the same message but only one of them could delete it. A simple way of resolving that issue would have been to put both statements described into a single prepared statement and additionally set the database isolation level to \textit{serialized}. 
+
+We decided to fix this bug by locking critical records. If a client tries to dequeue a message it selects and locks it with a "Select ... For Update' sql statement. The selected record is now exclusively locked for the current transaction. Other clients which try to get a lock on the very same record end up being blocked by the database system until the first client commits its transaction.
 
 \paragraph{Another option}
 Having a connection pool could have been avoided if every client was assigned a dedicated database connection. There would have been no need to synchronize worker threads to retrieve a connection. This however decreases the number of tuning parameter. Database connection would not have been optimally used. Connections would have been idling for each time consuming operation a worker performs.
@@ -39,7 +41,7 @@ Having this pool should significantly increase the period between garbage collec
 See implementation of \textit{ch.ethz.mlmq.nio.ByteBufferPool}
 
 \subsection{Message Transmission}
-Messages are passed on the initiative of a client (There is no way for the messaging system to push information to a specific client). A clients issues a requests and expects a response within a certain time. Each requests generates a response. In case of an error an error response is replied by the middle ware.
+Messages are passed on the initiative of a client (There is no way for the messaging system to push information to a specific client). A clients issues a requests and expects a response within a certain time. Each requests generates a response. In case of an error an error response is replied by the middleware.
 
 A message consists of a 4 byte length field and a variable length field containing the payload.
 

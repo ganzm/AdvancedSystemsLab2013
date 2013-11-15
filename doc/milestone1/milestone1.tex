@@ -72,13 +72,13 @@ This document describes the message queuing system which was build. Architecture
 % Section Messaging System
 %% ----------------------------------------------
 \section{Messaging System}
-In this section the system under test (also named as \textbf{middle ware}  or \textbf{broker}) is described.
+In this section the system under test (also named as \textbf{middleware}  or \textbf{broker}) is described.
 
 
 %% ----------------------------------------------
 \subsection{Overview}
 
-Figure \ref{fig:system-overview} shows a generic setup of the messaging system. Multiple middle ware components are connected to a single database and severs a couple of clients. Application state is persisted on the database, therefore a middle ware component can be considered as stateless.
+Figure \ref{fig:system-overview} shows a generic setup of the messaging system. Multiple middleware components are connected to a single database and severs a couple of clients. Application state is persisted on the database, therefore a middleware component can be considered as stateless.
 
 % ------------------------------------------------
 % Figure - system overview
@@ -119,6 +119,9 @@ In this section a code snippet from the client class is shown. It describes the 
 \subfile{part01-10-clientinterface.tex}
 
 %% ----------------------------------------------
+
+\pagebreak
+
 \subsection{Database Design}
 Figure \ref{fig:dbschema} gives an overview of the database design.
 
@@ -135,9 +138,9 @@ Figure \ref{fig:dbschema} gives an overview of the database design.
 
 %% ----------------------------------------------
 
-
 \subsubsection{Client}
-\begin{tabular}{|c|c|c|l|}
+\begin{tabular}
+{|>{\centering\arraybackslash}p{2.1cm}|c|>{\centering\arraybackslash}p{3cm}|p{7cm}|}
 \hline 
 \textbf{Attribute} & \textbf{Indexed} & \textbf{Datatype} & \textbf{Description} \\ 
 \hline 
@@ -149,7 +152,8 @@ name & Yes & Varchar(50) & Unique name of a client \\
 
 
 \subsubsection{Queue}
-\begin{tabular}{|c|c|c|l|}
+\begin{tabular}
+{|>{\centering\arraybackslash}p{2.1cm}|c|>{\centering\arraybackslash}p{3cm}|p{7cm}|}
 \hline 
 \textbf{Attribute} & \textbf{Indexed} & \textbf{Datatype} & \textbf{Description} \\ 
 \hline 
@@ -162,15 +166,15 @@ client\_id & X & Nullable Integer & References a client. This queue is a ClientQ
 \end{tabular} 
 
 
-
 \subsubsection{Message}
-\begin{tabular}{|c|c|c|l|}
+\begin{tabular}
+{|>{\centering\arraybackslash}p{2.1cm}|c|>{\centering\arraybackslash}p{3cm}|p{7cm}|}
 \hline 
 \textbf{Attribute} & \textbf{Indexed} & \textbf{Datatype} & \textbf{Description} \\ 
 \hline 
 id & PK & Integer & AutoIncrement Primary Key \\ 
 \hline 
-queue\_id & X & Integer NonNull & Fk to the queue where this message is sent to\\ 
+queue\_id & X & Integer NonNull & Foreign key to the queue where this message is sent to\\ 
 \hline 
 client\_sender\_id & X & Integer NonNull & Issuer of this message \\ 
 \hline 
@@ -197,7 +201,7 @@ The interface to the database is abstracted through the the classes located in p
 \item QueueDao - creates and deletes queues
 \end{itemize}
 
-These classes encapsulate all database access performed bye the middle ware bye using PreparedStatements\footnote{\url{http://docs.oracle.com/javase/tutorial/jdbc/basics/prepared.html}}. PreparedStatements tend to be faster than normal Statements because they can be precompiled on the database system.
+These classes encapsulate all database access performed bye the middleware bye using PreparedStatements\footnote{\url{http://docs.oracle.com/javase/tutorial/jdbc/basics/prepared.html}}. PreparedStatements tend to be faster than normal Statements because they can be precompiled on the database system.
 
 \subsubsection{Stored Procedures}
 Database operations which would have required more than one (Prepared)Statements per request are implemented as StoredProcedures. This reduces unnecessary database roundtrips.
@@ -228,7 +232,7 @@ This section describe all the important things laying around the core messaging 
 
 \subsection{Database setup}
 
-To setup the database required for the middle ware there are two options
+To setup the database required for the middleware there are two options
 how to create one.
 
 \subsubsection{Automatic setup}
@@ -264,7 +268,7 @@ Most of the configuration should be self explanatory. An exception may be the th
 \begin{verbatim} 
 common.scenario.mytype
 \end{verbatim}
-Describes whether this configuration file belongs to a client or a middle ware instance.
+Describes whether this configuration file belongs to a client or a middleware instance.
 
 \begin{verbatim} 
 common.scenario.myposition = n
@@ -333,23 +337,23 @@ common.performancelogger.logfilepath = performance_log
 \end{verbatim}
 
 \subsection{Start a Middleware instance/Client}
-As soon as both main and logging configuration files are prepared starting the middle ware instance is easy. Just specify both files via command line arguments like the following:
+As soon as both main and logging configuration files are prepared starting the middleware instance is easy. Just specify both files via command line arguments like the following:
 
 \begin{verbatim} 
 java ch.ethz.mlmq.main.Main scenario -config resource/brokerconfig.properties -l resource/logging.properties
 \end{verbatim}
 
-Since configuration whether to start as a client or as a server is located inside the main configuration file a client is started in the same way as a middle ware.
+Since configuration whether to start as a client or as a server is located inside the main configuration file a client is started in the same way as a middleware.
 
 \subsection{Command Line Interface}
 
-Both client and middle ware instance can be controlled using basic commands. These commands are written into the so called command file which is configured in the main configuration like this.
+Both client and middleware instance can be controlled using basic commands. These commands are written into the so called command file which is configured in the main configuration like this.
 
 \begin{verbatim}
 common.commandofile.path = commando.txt
 \end{verbatim}
 
-While the client or the middle ware instance is running one can write a single command into this file to be executed. The middle ware periodically checks whether the file has changed. If so it tries to execute the command contained in the file.
+While the client or the middleware instance is running one can write a single command into this file to be executed. The middleware periodically checks whether the file has changed. If so it tries to execute the command contained in the file.
 
 \begin{figure}[H]
   \begin{center}
@@ -382,7 +386,7 @@ Except for the first line of the file the structure of the \textbf{PerformanceLo
 \item Time taken for a specific action
 \item UTC timestamp when a specific action was finished
 \item Name of the action
-\item Different runtime dependant context information. (E.g. C[.] indicates the number of connected clients on a middle ware instance)
+\item Different runtime dependant context information. (E.g. C[.] indicates the number of connected clients on a middleware instance)
 \end{enumerate}
 
 \subsubsection{Action Names}
@@ -461,9 +465,9 @@ To partially automate testing a Ruby on Rails\footnote{\url{http://rubyonrails.o
 To run an experiment at first one has to define a new testrun. This is done by hand via a web interface. One has to provide the following information:
 
 \begin{itemize}
-\item Define the number middle ware instances are set up on how many Amazon instances.
+\item Define the number middleware instances are set up on how many Amazon instances.
 \item Define the workload. This implies choosing how many instances of each client type are needed.
-\item Provide client and middle ware configuration.
+\item Provide client and middleware configuration.
 \end{itemize}
 
 \subsubsection{Run an Experiment}
