@@ -17,10 +17,10 @@ The time to send a message has been measured:\\
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Test Run ID & Component & \textbf{Median [ms]} & StdDev [ms] & Mean [ms] \\ \hline
-183 & Client & \textbf{6.832} & 4.187470317 & 7.365251888 \\ \hline
-183 & Middleware & \textbf{6.808}  & 3.342755838 & 7.104011402 \\ \hline
-183 & Database & \textbf{6.653} & 3.308294871 & 6.943917078 \\ \hline
+Test Run ID & Component & Median [$\mu$s] & Mean [$\mu$s] & StdDev [$\mu$s] \\ \hline
+183 & Client & 6832 & 7365.251888 & 4187.470317 \\ \hline
+183 & Middleware & 5467 & 5694.925436 & 2628.921725 \\ \hline
+183 & Database & 5424 & 5652.727388 & 2576.826615 \\ \hline
 \end{tabular}
 \\\\
 
@@ -28,26 +28,58 @@ Test Run ID & Component & \textbf{Median [ms]} & StdDev [ms] & Mean [ms] \\ \hli
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Test Run ID & Component & \textbf{Median [ms]} & StdDev [ms] & Mean [ms] \\ \hline
-183 & Client & \textbf{5.361} & 4.936344467 & 7.009122264 \\ \hline
-183 & Middleware & \textbf{4.343} & 3.780972343 & 5.550548883 \\ \hline
-183 & Database & \textbf{4.020} & 3.795258675 & 5.272459425 \\ \hline
+Test Run ID & Component & \textbf{Median [$\mu$s]} & Mean [$\mu$s] & StdDev [$\mu$s] \\ \hline
+183 & Client & 8954 & 9796.484939 & 4927.697663 \\ \hline
+183 & Middleware & 7617 & 8073.361544 & 3467.291457 \\ \hline
+183 & Database & 7575 & 8029.920168 & 3461.8049 \\ \hline
 \end{tabular}
 \\
 
-\paragraph{Interpretation} The think time of the client should be very near to 0ms. Thus, we suspect that the difference between client and middleware is the network. We assume that the network time between the client and the middleware is the same as the middleware and the database. We consider the median for the measurements. Thus we conclude the following results:
+Calculation of the expected time for send message:
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Component & Type & Expected Time [ms] \\ \hline
-Client and Network Client-Middleware & Send & 0.024 \\ \hline
-Middleware and Network Middleware-Database  & Send & 0.155\\ \hline
-Database & Send & 6.653 \\ \hline
+Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+\begin{tabular}[x]{@{}c@{}}Client and Network \\Client-Middleware\end{tabular} & Send & 1365 & 19.9795081967213 \\ \hline
+\begin{tabular}[x]{@{}c@{}}Middleware after \\deserialization\end{tabular}  & Send & 43 & 0.629391100702576 \\ \hline
+\begin{tabular}[x]{@{}c@{}}Database and Network \\Middleware-Database\end{tabular} & Send & 5424 & 79.3911007025761 \\ \hline
+\end{tabular}
+\\
 
-Client & Receive & 0\\ \hline
-Middleware & Receive \\ \hline
-Database & Receive \\ \hline
-Network & Receive \\ \hline
+\noindent And the following results for the receive message:\\
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline 
+Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+\begin{tabular}[x]{@{}c@{}}Client and Network \\Client-Middleware\end{tabular} & Receive & 1337 & 14.9318740227831 \\ \hline
+\begin{tabular}[x]{@{}c@{}}Middleware after \\deserialization\end{tabular}  & Receive & 42 & 0.469064105427742 \\ \hline
+\begin{tabular}[x]{@{}c@{}}Database and Network \\Middleware-Database\end{tabular} & Receive & 7575 & 84.5990618717892\\ \hline
+\end{tabular}
+\\
+
+\paragraph{Interpretation} The think time of the client should be very near to 0ms - so we use the same value here as for the broker. Thus, we suspect that the difference between client and middleware is the network. We assume that the network time between the client and the middleware is the same as the middleware and the database.  We consider the median for the measurements.\\
+This way, we can estimate the network as $2*(client-middleware)$, and the client as $middleware$. Also, the database should be $database-network/2$.
+Thus we conclude the following final results for the send message:\\
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+Client & Send & 43 & 0.629391100702576 \\ \hline
+Middleware & Send & 43 & 0.629391100702576 \\ \hline
+Database & Send & 4016 & 58.7822014051522 \\ \hline
+Network & Send & 2644 & 38.7002341920375 \\ \hline
+\end{tabular}
+\\
+
+\noindent And the following final results for the receive message:\\
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+Client & Send & 42 & 0.469064105427742 \\ \hline
+Middleware & Send & 42 & 0.469064105427742 \\ \hline
+Database & Send & 6196 & 69.1981237435783 \\ \hline
+Network & Send & 2590 & 28.9256198347107 \\ \hline
 \end{tabular}
 \\
 
