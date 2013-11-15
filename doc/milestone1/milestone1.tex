@@ -66,6 +66,7 @@ This document describes the message queuing system which was build. Architecture
 
 \end{abstract}
 
+\pagebreak
 
 %% ----------------------------------------------
 % Section Messaging System
@@ -92,9 +93,7 @@ Figure \ref{fig:system-overview} shows a generic setup of the messaging system. 
   \label{fig:system-overview}
 \end{figure}
 
-Figure \ref{fig:middleware-threading} shows important software components of a single middle ware. A nonblocking network interface (NIO) handles communication to the clients. Received data is put to a single thread safe request queue.
-
-A configurable number of workers are constantly reading from the request queue. As soon as a worker gets a piece of work (request raw data) it then performs the following tasks:
+Figure \ref{fig:middleware-threading} shows important software components of a single middle ware. A nonblocking network interface (NIO) handles communication to the clients. Received data is put to a single thread safe request queue. A configurable number of workers are constantly reading from the request queue. If there is nothing to do these threads are blocked (no busy wait). As soon as a worker gets a piece of work (request raw data) it then performs the following tasks:
 \begin{itemize}
 \item decoding: The raw request is parsed and converted into a request java object
 \item process: The request is processes. The database is accesses and a response object is created
@@ -115,11 +114,13 @@ A configurable number of workers are constantly reading from the request queue. 
 
 %% ----------------------------------------------
 \subsection{Client to Middleware Interface}
+In this section a code snippet from the client class is shown. It describes the interface the middleware provides.
 
 \subfile{part01-10-clientinterface.tex}
 
 %% ----------------------------------------------
 \subsection{Database Design}
+Figure \ref{fig:dbschema} gives an overview of the database design.
 
 % ------------------------------------------------
 % Figure 
@@ -133,6 +134,56 @@ A configurable number of workers are constantly reading from the request queue. 
 \end{figure}
 
 %% ----------------------------------------------
+
+
+\subsubsection{Client}
+\begin{tabular}{|c|c|c|l|}
+\hline 
+\textbf{Attribute} & \textbf{Indexed} & \textbf{Datatype} & \textbf{Description} \\ 
+\hline 
+id & PK & Integer & AutoIncrement Primary Key \\ 
+\hline 
+name & Yes & Varchar(50) & Unique name of a client \\ 
+\hline 
+\end{tabular} 
+
+
+\subsubsection{Queue}
+\begin{tabular}{|c|c|c|l|}
+\hline 
+\textbf{Attribute} & \textbf{Indexed} & \textbf{Datatype} & \textbf{Description} \\ 
+\hline 
+id & PK & Integer & AutoIncrement Primary Key \\ 
+\hline 
+name & X & Varchar(50) Unique & Client Name \\ 
+\hline 
+client\_id & X & Nullable Integer & References a client. This queue is a ClientQueue if not null. \\ 
+\hline 
+\end{tabular} 
+
+
+
+\subsubsection{Message}
+\begin{tabular}{|c|c|c|l|}
+\hline 
+\textbf{Attribute} & \textbf{Indexed} & \textbf{Datatype} & \textbf{Description} \\ 
+\hline 
+id & PK & Integer & AutoIncrement Primary Key \\ 
+\hline 
+queue\_id & X & Integer NonNull & Fk to the queue where this message is sent to\\ 
+\hline 
+client\_sender\_id & X & Integer NonNull & Issuer of this message \\ 
+\hline 
+content &  & Bytea & Message raw data \\ 
+\hline 
+prio & X & SmallInt & Priority of the message \\ 
+\hline 
+sent\_at & X & time & Time when this message was sent \\ 
+\hline 
+context & X & Integer NonNull & Nullable context integer. Ties a request response message pair together \\ 
+\hline 
+\end{tabular} 
+
 
 
 %% ----------------------------------------------
