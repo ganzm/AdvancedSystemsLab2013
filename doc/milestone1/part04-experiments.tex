@@ -258,9 +258,8 @@ To verify that the system runs stable over a long period of time an experiment i
 
 During the project, the system evolved and thus some test runs were invalidated in this process. Here, the final two 2h test runs are presented. The other 2h test runs can be found and analysed on the Testmaster\footnote{https://testmaster-asl-eth.renuo.ch/}.\\
 
-\paragraph{Experiment setup}
+\subsubsection{Experiment setup}
 The experiment is performed on the Amazon cloud with constant load. For the setup configuration, the project specifications were used specifications (80 clients).\\
-
 
 \begin{tabular}{|l|l|}
 \hline 
@@ -305,8 +304,20 @@ There were multiple 2h tests performed. The final two 2h tests are the ones with
     \includegraphics[scale=0.6]{../exported_plots/2h/174_rt-final.eps}
   \end{center}
   \caption{Response time of 2h Test. The error bars are the 2.5\% and 97\% percentiles}
-  \label{fig:system-overview}
+  \label{fig:2htest-plot-rt}
 \end{figure}
+
+
+% ------------------------------------------------
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[scale=0.6]{../exported_plots/2h/174_tp-final.eps}
+  \end{center}
+  \caption{Throughput of 2h test in 1000 requests.}
+  \label{fig:2htest-plot-tp}
+\end{figure}
+
+
 
 
 \subsubsection{Interpretation}
@@ -517,7 +528,7 @@ It was chosen to ignore the calculated weights for processed request counts RC b
 %TODO - graphik ersetzen (Luke excel)
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.3]{../drawings/2k-factorial-plot.eps}
+    \includegraphics[scale=0.55]{../drawings/2k-factorial-plot.png}
   \end{center}
   \caption{$2^4$ factorial measured results}
   \label{fig:2kmeasuredresults}
@@ -532,7 +543,7 @@ Overall the most significant factor which affects performance the most (beside t
 %% -------------------------------------------
 
 
-\subsection{Load Test}
+\subsection{Database Load Test}
 To check the limits of the system a load test was performed where we start with a fixed number of middle ware instances and gradually increase the number of connected clients.
 
 \paragraph{Middle Ware}
@@ -569,7 +580,6 @@ By increasing the load on the system both response time and throughput should in
 \end{figure}
 % ---------------------------------------
 
-
 \subsubsection{Interpretation}
 
 As expected the response time increases as the load on the system gets higher. Also worth mentioning is that the lines in Figure \ref{fig:LoadTestResponseTime} remain parallel. This means that the all component except the database remain stable concerning response time. The database needs more and more time to process queries while load is increased.
@@ -577,6 +587,35 @@ As expected the response time increases as the load on the system gets higher. A
 The number of successfully processed requests reaches its peak between 5 and 10 minutes (approximate with 80 clients). The system is then saturated.
 
 This result is quite disappointing since it does not support our hypothesis. That type of experiment was repeated several times while increasing the number of total clients and still the system seems not to be saturated. It was decided to not repeat the experiment with even more clients (because our Amazon voucher was used up).
+
+
+\subsection{Middleware Load Test}
+To check the limits of a single middleware instance a load test is performed with a single instance.
+
+
+\subsubsection{Hypothesis}
+
+
+
+\subsubsection{Results}
+
+% ------------------------------
+\begin{figure}[H]
+        \begin{center}
+    \includegraphics[scale=0.5]{../exported_plots/microbenchmarks/broker_stress_rt.eps}
+  \end{center}
+  \caption{Response time of Middleware Load Test. The error bars are the 2.5\% and 97.5\% percentiles.}
+  \label{fig:BrokerLoadTestResponseTime}
+\end{figure}
+
+% ------------------------------
+\begin{figure}[H]
+        \begin{center}
+    \includegraphics[scale=0.5]{../exported_plots/microbenchmarks/broker_stress_tp.eps}
+  \end{center}
+  \caption{Througput of Middleware Load Test.}
+  \label{fig:BrokerLoadTestThroughput}
+\end{figure}
 
 
 
