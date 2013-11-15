@@ -134,9 +134,6 @@ Network & Receive & 2590 & 28.9256198347107 \\ \hline
 
 As described in the previous section, the time used for the code is 0.042 ms and 0.043 ms for sending and receiving respectively. In percent this is less then 1\% for sending and receiving, and thus this factor is relatively unimportant compared to the database and the network.
 
-TODO...
-
-
 \subsubsection{Network performance}
 
 Even though the network connection throughput is specified by Amazon, only a measurement tells the truth. To confirm this, a network performance test was executed with iperf. We simulated a bi-directional data transfer between a middleware/client and the database. We get about 841Mbits/s upload to the database and 93.1Mbits/s download to the middleware/client if iperf is run in bidirectional mode (send and receive in parallel. If only one direction is used, then the throughput from middleware/client to database is 959Mbits/s and from database to middleware/client it is about 312Mbits/s. We also notice that the variance for the single values are rather big.\\
@@ -217,7 +214,7 @@ TCP window size: 22.9 KByte (default)
 \label{fig:iperfserver2}
 \end{figure}
 
-Sending one message uses about 20 Bytes without payload, because we use custom serialization \ref{sub:des-msg-ser} \nameref{sub:des-msg-ser}. Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without / only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
+Sending one message uses about 20 Bytes without payload, because we use custom serialization (See \ref{sub:des-msg-ser} \nameref{sub:des-msg-ser}). Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without or only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
 
 
 \subsubsection{Component Limits}
@@ -263,7 +260,7 @@ The experiment is performed on the Amazon cloud with constant load. For the setu
 
 \begin{tabular}{|l|l|}
 \hline 
-Amazon instance type and availability zone & Value \\
+Component & Amazon instance type and availability zone \\
 \hline 
 database & m1.medium, eu-west-1a \\ 
 middlewares & m1.small, eu-west-1a \\ 
@@ -278,7 +275,7 @@ clients & m1.small, eu-west-1a \\
 
 \begin{tabular}{|l|c|c|}
 \hline 
-\textbf{Client type mix } & \# \\ 
+Client type mix & \# \\ 
 \hline 
 OneWayClient & 1x30 (machines x jvms)  \\ 
 \hline 
