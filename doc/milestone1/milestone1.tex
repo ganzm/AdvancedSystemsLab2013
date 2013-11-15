@@ -46,7 +46,7 @@
 
 
 \title{Advanced Systems Lab - Milestone I} 
-\author{Lukas Elmer, Matthias Ganz} 
+\author{Lukas Elmer (elmerl@ethz.ch), Matthias Ganz (ganzm@ethz.ch)} 
 \date{\today} 
 
 
@@ -65,7 +65,6 @@
 This document, describes the message queuing system which was build. Architecture and design choices are shown and explained. Further test scenarios and test loads are defined. Resulting test output is described and analysed.
 
 \end{abstract}
-
 
 
 %% ----------------------------------------------
@@ -435,7 +434,7 @@ As soon as an experiment has finished and all logging information is collected t
 \subsection{Log Analyzer}
 \label{subsec:LogAnalyzer}
 
-In order to semi automatically analyze performance log files which have been created through the process of an experiment a Java programm was written to simplify evaluation of these files.
+In order to semi automatically analyze performance log files which have been created through the process of an experiment, a Java program was written to simplify evaluation of these files.
 
 The project folder (See Section \ref{sec:WhereToFind:MessagingSystemSrc}) contains an Eclipse project called \textit{log\_analyzer}. All you need to do is to provide a path to the folder containing all the log files of an experiment you want to analyze. By executing the class \textit{ch.ethz.mlmq.log\_analyzer.Main} you can choose to either generate a csv file or a gnuplot file\footnote{\url{See http://www.gnuplot.info/}}.
 
@@ -454,27 +453,37 @@ The folder found at logs/test\_run\_56 which contains several log files is analy
 %% ----------------------------------------------
 \section{What to find where}
 
-This section should help find code, experiment data, plots etc.
+This section should help finding code, experiment data, plots etc.
 
 \subsection{Messaging System Source Code}
 \label{sec:WhereToFind:MessagingSystemSrc}
-All source code for the messaging system, clients and log analyzer can be found here.
+All source code for the messaging system, clients and log analyzer can be found here:
 
 \url{https://github.com/ganzm/AdvancedSystemsLab2013}
+and in the svn repository in the folder \textit{ethz-asl-mlmq}.
 
 
-\subsection{Experiment Raw data}
-Experiment data is located here.
+\subsection{Experiment configurations for each test run, raw data, big files}
+The configurations for all test runs, the raw data and the big files can all be found in this repository. Because there is some sensitive information in the configuration files (like database passwords for the middleware), please request access to this repository by writing us your github username. Please handle this data carefully, don't publish it and don't share it.
 
-\url{https://github.com/lukaselmer/ethz-asl-testmaster-data}
+\url{https://github.com/lukaselmer/ethz-asl-bigfiles}
+and in the svn repository in the folder \textit{ethz-asl-bigfiles}.
+
+%\subsection{Experiment Raw data}
+%Experiment data is located here:
+%
+%\url{https://github.com/lukaselmer/ethz-asl-testmaster-data}
 
 \subsection{Testmaster Source Code}
-Ruby on Rails Testmaster source code is located here.
+Ruby on Rails\footnote{http://rubyonrails.org/} Testmaster source code is located here:
 
 \url{https://github.com/lukaselmer/ethz-asl-testmaster}
+and in the svn repository in the folder \textit{ethz-asl-testmaster}.
 
-\subsection{Testmaster Installation}
-The Test Infrastructure as described in Section \ref{sec:TestInfrastructure}   \nameref{sec:TestInfrastructure}. This is where you find all experiment data (even the failed ones).
+It is a standard Ruby on Rails project, so the installation is easy for a Ruby on Rails developer. However, this can be very tricky if this environment is unknown. Therefore it is suggested to use the Testmaster Access described in the next subsection.
+
+\subsection{Testmaster Access}
+The Test Infrastructure as described in Section \ref{sec:TestInfrastructure}   \nameref{sec:TestInfrastructure}. This is where you find all experiment data (even the failed ones). Access to this service is communicated by mail, because the service contains sensitive data (like database passwords for the middleware).
 
 \url{https://testmaster-asl-eth.renuo.ch}
 
@@ -482,13 +491,19 @@ The Test Infrastructure as described in Section \ref{sec:TestInfrastructure}   \
 %% ----------------------------------------------
 % Section Lessons learnt
 %% ----------------------------------------------
-\section{Conclusion}
+\section{Conclusion and lessons learnt}
 
-Actually measure a system felt much more difficult than actually building one. Having the plots right seems more difficult than having UnitTests on a green bar. 
+Actually measure a system felt much more difficult than actually building one. Having the plots right seems more difficult than having UnitTests on a green bar.\\
 
-UnitTests can't show the absence of bug. Despite of having a decent test coverage we struggled at this point.  As the project moved on, more and more bugs where discovered and fixed. Each time a software bugfix was applied which potentially affect the performance of the system all our experimental results were invalidated.
+UnitTests can't show the absence of bug. Despite of having a decent test coverage we struggled at this point.  As the project moved on, more and more bugs where discovered and fixed. Each time a software bugfix was applied which potentially affect the performance of the system some of our experimental results were invalidated, or at least not entirely correct any more.\\
 
-An other point which should be improved for the next project is the decision making process. We delayed what exactly to measure and to analye for too long.
+An other point which should be improved for the next project is the decision making process. We delayed what exactly to measure and to analyse for too long.\\
+
+Despite the fact that much time went into building the Testmaster, in the end it was a big help. Not heaving the Testmaster in the end phase would probably have meant, that either the bugs couldn't have been fixed or that not so many experiments could have been conducted.\\
+
+Another lesson learnt was that applying statistics can be tricky. Even tough the theory is not that complex and difficult, there are many ways to apply statistics. Not heaving clear specifications for what to measure and what to build in the first place made this task really difficult.\\
+
+In the end, we think that we built a good messaging system. More importantly however we know how to measure systems and we think that we have a good understanding how our system performs. And of course, we are looking forward to the next part.
 
 %% ----------------------------------------------
 % Section References

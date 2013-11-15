@@ -4,9 +4,7 @@
 \section{Performance Relevant Features}
 \subsection{Overview}
 
-During a brainstorming session, a broad spectrum of performance relevant features were extracted, see figure~\ref{fig:features_mindmap}. Then, the primary features (PF, orange) and the secondary features (SF, green) were chosen according to the group membmers domain specific knowledge and presumptions.
-% Later: They were then validated during discussions with other groups and the teachin assistant.
-
+During a brainstorming session, a broad spectrum of performance relevant features were extracted, see figure~\ref{fig:features_mindmap}. Then, the primary features (PF, orange) and the secondary features (SF, green) were chosen according to the group membmers domain specific knowledge and presumptions. They were also validated during discussions with other group members and the teaching assistant.
 
 %\begin{landscape}
 
@@ -29,7 +27,7 @@ During a brainstorming session, a broad spectrum of performance relevant feature
       	node[concept] {\# Clients} 
       }
       child[concept color=green!50!black] {
-      	node[concept] {Use Shed Load [hanmer2007patterns]} 
+      	node[concept] {Use Shed Load [2007patterns]} 
       }
       child {
       	node[concept] {\# Brokers} 
@@ -51,16 +49,16 @@ During a brainstorming session, a broad spectrum of performance relevant feature
       }
       child[concept color=green!50!black] { node[concept] {Indices}}
     }
-    child[concept color=white!35!black] {
+    child[concept color=orange] {
       node[concept] {Load types}
       child[concept color=orange] { 
-      	node[concept] {Insertions} 
+      	node[concept] {Send Message} 
+      }
+      child[concept color=green!50!black] {
+      	node[concept] {Peek Message} 
       }
       child[concept color=orange] {
-      	node[concept] {Selects} 
-      }
-      child[concept color=orange] {
-      	node[concept] {Deletions} 
+      	node[concept] {Dequeue Message} 
       }
     }
     child[concept color=white!35!black] { 
@@ -116,9 +114,8 @@ According to figure~\ref{fig:features_mindmap}, the primary features are as foll
   \item \textbf{\# Brokers} The amount of brokers interacting with the system.
   \item \textbf{Database connection pool size} The amount of database connections per broker to the database.
   \item \textbf{Worker pool size} The amount of workers per broker.
-  \item \textbf{Insertions} When many insertions occur (send a message).
-  \item \textbf{Deletions} When many deletions occur (read a message and remove it from the queue).
-  \item \textbf{Deletions} When many deletions occur (read a message, but don't remove it from the queue).
+  \item \textbf{Send Message} When many insertions occur (send a message).
+  \item \textbf{Dequeue Message} When many deletions occur (read a message and remove it from the queue).
 \end{enumerate}
 
 
@@ -127,6 +124,7 @@ According to figure~\ref{fig:features_mindmap}, the primary features are as foll
 According to figure~\ref{fig:features_mindmap}, the secondary features are as follows:
 
 \begin{enumerate}
+  \item \textbf{Peek Message} When many selects occur (read a message, but don't remove it from the queue). This is mostly covered by the dequeue message feature and therefore only seen as a secondary feature.
   \item \textbf{Message Size} The average size of the messages payloads.
   \item \textbf{Use Shed Load} Whether the fault tolerance pattern Shed Load [hanmer2007pattern] is used or not.
   \item \textbf{Garbage Collection} The time it takes for the garbage collection.
