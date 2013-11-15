@@ -590,12 +590,18 @@ This result is quite disappointing since it does not support our hypothesis. Tha
 
 
 \subsection{Middleware Load Test}
-To check the limits of a single middleware instance a load test is performed with a single instance.
+This test tries to find the limits of a single middleware component. 
+
+\paragraph{Middleware}
+The middleware is kept at a minimal configuration where the number of workers and the number database connections is set to $1$. This way it should be able to show the limitations of a single middlware instance.
+
+\paragraph{Clients}
+The number of connected clients is increased by 2 every minute. For simplicity reasons only \textbf{OneWayClients} are chosen to generate load.
+To check the limits of a single middleware instance a load test is performed where twith a single instance.
 
 
 \subsubsection{Hypothesis}
-
-
+Because the middleware has only one database connection it should not happen that the database becomes the bottleneck (See Database Load Test). It is expected that the middleware starts trashing as the number of clients becomes too big.
 
 \subsubsection{Results}
 
@@ -618,7 +624,8 @@ To check the limits of a single middleware instance a load test is performed wit
 \end{figure}
 
 
-
+\subsubsection{Interpretation}
+Both graphs show a significant drop in performance after 25 minutes. The queues of the middleware run full and requests are dropped. As a result of this clients time out and later try to reconnect. We expect that a number of clients disconnect at about 25 minutes. This explains the sudden drop. A few moments later the clients connect and overload the system again.
 
 \subsection{Performance Breakup for Different Tiers}
 
