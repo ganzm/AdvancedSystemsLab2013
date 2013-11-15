@@ -2,6 +2,7 @@ package ch.ethz.mlmq.log_analyzer;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class Bucket {
 		}
 		BigDecimal d = new BigDecimal(b);
 
-		return d.divide(BigDecimal.valueOf(count())).doubleValue();
+		return d.divide(BigDecimal.valueOf(count()), MathContext.DECIMAL128).doubleValue();
 	}
 
 	private boolean noValues() {
