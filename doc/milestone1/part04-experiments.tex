@@ -175,34 +175,48 @@ To verify that the system runs stable over a long period of time an experiment i
 
 During the project, the system evolved and thus some test runs were invalidated in this process. Here, the final two 2h test runs are presented. The other 2h test runs can be found and analysed on the Testmaster\footnote{https://testmaster-asl-eth.renuo.ch/}.\\
 
-\paragraph{Experiment setup}
+\subsubsection{Experiment setup}
 The experiment is performed on the Amazon cloud with constant load. For the setup configuration, the project specifications were used specifications (80 clients).\\
 
 \begin{tabular}{|l|l|}
 \hline 
-Parameter & Value \\
+Amazon instance type and availability zone & Value \\
 \hline 
-Amazon instance type and availiblity zone for the database & m1.medium, eu-west-1a \\ 
-Amazon instance type and availiblity zone for the middlewares & m1.small, eu-west-1a \\ 
-Amazon instance type and availiblity zone for the clients & m1.small, eu-west-1a \\ 
-Number of middlewares & 2 \\ 
-OneWayClient & 1x30 (machines x jvms) \\ 
-PairedClient & 1x16 (machines x jvms) \\ 
-PublicQueueConsumeClient / PublicQueueProduceClient & 2x15 (machines x jvms) \\
-Middlware & 2x3 (machines x jvms) \\ 
-Client message send interval (TODO: think time?) & 10ms \\
+database & m1.medium, eu-west-1a \\ 
+middlewares & m1.small, eu-west-1a \\ 
+clients & m1.small, eu-west-1a \\ 
 \hline 
 \end{tabular}
 
-\paragraph{Hypothesis}
+
+\paragraph{Middleware} In total 6 middleware components are running On 2 Amazon instances.
+
+\paragraph{Clients} The following mix of clients are used for the 2 hour test.
+
+\begin{tabular}{|l|c|c|}
+\hline 
+\textbf{Client type mix } & \# \\ 
+\hline 
+OneWayClient & 1x30 (machines x jvms)  \\ 
+\hline 
+PairedClient & 1x16 (machines x jvms) \\ 
+\hline 
+PublicQueueConsumer & 1x10 (machines x jvms) \\ 
+\hline 
+PublicQueueProducer & 1x5 (machines x jvms) \\ 
+\hline 
+\end{tabular} 
+
+
+\subsubsection{Hypothesis}
 Since the system will not be saturated we expect no changes over time concerning response time and throughput. The mixture of clients generating load is chosen such that there is a constant number of messages in the system. Increased SQL query execution time should not be observable.
 
-\paragraph{Results}
+\subsubsection{Results}
 There were multiple 2h tests performed. The final two 2h tests are the ones with id 174 \footnote{https://testmaster-asl-eth.renuo.ch/test\_runs/174} and 176 \footnote{https://testmaster-asl-eth.renuo.ch/test\_runs/176}. Both run stable and generated the following plots:
 
 TODO: insert plots
 
-\paragraph{Interpretation}
+\subsubsection{Interpretation}
 The final test runs (174 and 176) run as expected in the hypothesis.
 
 %% -------------------------------------------
