@@ -113,6 +113,7 @@ The number of worker threads a single middle ware instance has is varied between
 
 The number of concurrent database connection a single middle ware instance has is varied between 4 and 8
 
+
 \subsubsection{Hypothesis}
 
 The response time should not be majorly affected by these chosen parameters. Since the system is not under much load only small changes concerning the response time should be observable.
@@ -126,13 +127,13 @@ The following table shows median time taken and number of requests processed for
 	\begin{center}
 	
 \begin{tabular}{cccccccc}
-\rot{Clients} & 
-\rot{Brokers} & 
-\rot{Workers} & 
-\rot{Connections} & 
+\rot{Clients C} & 
+\rot{Brokers B} & 
+\rot{Workers W} & 
+\rot{Connections D} & 
 \rot{TestRun Id} & 
-\rot{Median Processing time [ms]} & 
-\rot{\# of Processed Requests} \\
+\rot{Median Processing time [ms] PT} & 
+\rot{\# of Processed Requests RC} \\
 \hline 
 15 & 4 & 4 & 4 & 2003 & \numprint{6.80} & \numprint{1996478} \\ 
 \hline 
@@ -173,15 +174,32 @@ The following table shows median time taken and number of requests processed for
 \label{fig:2kfactorialmeasurement}
 \end{figure}
 
-\paragraph{Signs} As $2^k$ factorial test states we now assign $+$ and $-$ to our levels:
-\begin{itemize}
-\item Number of Client \textbf{c} is $+$ if 30, $-$ if 15
-\item Number of Brokers \textbf{b} is $+$ if 8, $-$ if 4
-\item Number of Workers \textbf{w} is $+$ if 8, $-$ if 4
-\item Number of Db Connections \textbf{d} is $+$ if 8, $-$ if 4
-\end{itemize}
+\paragraph{Signs}
 
-We then obtain the following sign table. With which we then calculate the weights for the $4$ factors.
+For the $2^k$ test the following signs are assigned to feature leavels:\\
+
+
+\begin{figure}[H]
+	\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline 
+Feature & +1 Level & -1 Level \\ 
+\hline 
+Number of Clients \textbf{C} & 30 & 15 \\ 
+\hline 
+Number of Brokers \textbf{B} & 8 & 4 \\ 
+\hline 
+Number of Workers \textbf{W} & 8 & 4 \\ 
+\hline 
+Number of Database Connections \textbf{D} & 8 & 4 \\ 
+\hline 
+\end{tabular} 
+\end{center}
+\caption{Feature Level Signs}
+\end{figure}
+
+This leads to the following sign table.
+
 
 \begin{figure}[H]
 	\begin{center}
@@ -208,7 +226,7 @@ We then obtain the following sign table. With which we then calculate the weight
 
 \hline 
 
-\rot[90]{\textbf{Weights~}} & 
+\rot[90]{\textbf{Weights PT~}} & 
 \rot[90]{\textbf{10.24}} &	
 \rot[90]{\textbf{3.43}} &	
 \rot[90]{-0.07} &	
@@ -226,14 +244,45 @@ We then obtain the following sign table. With which we then calculate the weight
 \rot[90]{-0.05} &	
 \rot[90]{-0.10} \\
 \hline 
-\end{tabular}
 
+\rot[90]{\textbf{Weights RC~}} & 
+\rot[90]{\numprint{2117045}} &      
+\rot[90]{\numprint{227093}} & 
+\rot[90]{\numprint{-108795}} & 
+\rot[90]{\numprint{57036}} & 
+\rot[90]{\numprint{237}} & 
+\rot[90]{\numprint{-17122}} & 
+\rot[90]{\numprint{-58032}} & 
+\rot[90]{\numprint{-34558}} & 
+\rot[90]{\numprint{17030}} & 
+\rot[90]{\numprint{18621}} & 
+\rot[90]{\numprint{-9556}} & 
+\rot[90]{\numprint{-48050}} & 
+\rot[90]{\numprint{39516}} & 
+\rot[90]{\numprint{-64140}} & 
+\rot[90]{\numprint{-17984}} & 
+\rot[90]{\numprint{47962}} \\
+
+
+\end{tabular}
 \end{center}
 \caption{$2^4$ factorial test result}
 \label{fig:2kfactorialresults}
 \end{figure}
 
 \subsubsection{Interpretation}
+It was chosen to ignore the calculated weights for processed request counts RC because big values are more difficult to read and because both observed values correlate quite well (what is shown in \ref{fig:2kmeasuredresults}.
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.3]{../drawings/2k-factorial-plot.eps}
+  \end{center}
+  \caption{$2^4$ factorial measured results}
+  \label{fig:2kmeasuredresults}
+\end{figure}
+
+
+
 Mean performance concerning response time has a value of $10.24$. The effect of varying number of clients from 15 to 30 has a weight of $3.43$. This means when increasing the number of clients (and number of requests) the response time also increases. The other values are relatively low. Number of database connections $d$ and number of brokers $b$ in combination with number of database connections  are the next values worth to have a look at. This means that the number of database connections has the most significant impact on response time. By varying number of brokers the total number of database connections also change.
 
 Overall the most significant factor which affects performance the most (beside the load applied by clients) is the number of database connections. This indicates that the database is a bottle neck.
