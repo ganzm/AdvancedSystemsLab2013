@@ -217,7 +217,7 @@ TCP window size: 22.9 KByte (default)
 \label{fig:iperfserver2}
 \end{figure}
 
-Sending one message uses about 20 Bytes without payload, because we use custom serialization \ref{sub:des-msg-ser}. Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without / only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
+Sending one message uses about 20 Bytes without payload, because we use custom serialization \ref{sub:des-msg-ser} \nameref{sub:des-msg-ser}. Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without / only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
 
 
 \subsubsection{Component Limits}
