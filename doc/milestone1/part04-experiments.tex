@@ -11,6 +11,27 @@
 
 The goal of the microbenchmarks is to understand single components and units.
 
+\subsubsection{Plots}
+
+This section starts with some plots from the microbenchmarks.
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.55]{../exported_plots/microbenchmarks/response_time.eps}
+  \end{center}
+  \caption{Resonse time of microbenchmark. The error bars are the 2.5\% and 97.5\% percentiles.}
+  \label{fig:mictobenchmarksrt}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.55]{../exported_plots/microbenchmarks/througput.eps}
+  \end{center}
+  \caption{Throughput of microbenchmark. The error bars are the 2.5 and 97.5 percentiles.}
+  \label{fig:mictobenchmarkstp}
+\end{figure}
+
+
 \subsubsection{Send Message and Receive Message}
 
 The time to send a message has been measured:\\
@@ -76,12 +97,36 @@ Network & Send & 2644 & 38.7002341920375 \\ \hline
 \begin{tabular}{|l|l|r|r|r|}
 \hline
 Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
-Client & Send & 42 & 0.469064105427742 \\ \hline
-Middleware & Send & 42 & 0.469064105427742 \\ \hline
-Database & Send & 6196 & 69.1981237435783 \\ \hline
-Network & Send & 2590 & 28.9256198347107 \\ \hline
+Client & Receive & 42 & 0.469064105427742 \\ \hline
+Middleware & Receive & 42 & 0.469064105427742 \\ \hline
+Database & Receive & 6196 & 69.1981237435783 \\ \hline
+Network & Receive & 2590 & 28.9256198347107 \\ \hline
 \end{tabular}
 \\
+
+
+
+\subsubsection{Time Caused By Code}
+
+As described in the previous section, the time used for the code is 0.042 ms and 0.043 ms for sending and receiving respectively. In percent this is less then 1\% for sending and receiving, and thus this factor is relatively unimportant compared to the database and the network.
+
+TODO...
+
+
+\subsubsection{Component Limits}
+
+In the microbenchmarks, the limit for the amount of messages a single client was determined:\\
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+Duration [s] & Requests sent \\ \hline
+100 & 23465 \\ \hline
+\textbf{1} & \textbf{234.65} \\ \hline
+\end{tabular}
+\\
+
+
+
 
 
 \subsubsection{Testmaster}
@@ -373,6 +418,55 @@ Mean performance concerning response time has a value of $10.24$. The effect of 
 Overall the most significant factor which affects performance the most (beside the load applied by clients) is the number of database connections. This indicates that the database is a bottle neck.
 
 %% -------------------------------------------
+
+
+\subsection{Load Test}
+To check the limits of the system a load test was performed where we start with a fixed number of middle ware instances and gradually increase the number of connected clients.
+
+\paragraph{Middle Ware}
+In total 16 middle ware instances are evenly spread across 4 Amazon instances. Each middle ware has 20 WorkerThreads and 15 concurrent database connections.
+
+\paragraph{Clients}
+Every 2 minute 20 OneWayClients try to connect. Each client tries to send and receive messages as fast as possible. In total 450 clients are spread across 15 Amazon instances (30 clients per instance).
+
+RequestTimeout is set to 1 second. A request is considered to be successful if processed within that bound. 
+
+\subsubsection{Hypothesis}
+
+By increasing the load on the system both response time and throughput should increase to a certain degree. By increasing the load more the system should become unstable and start trashing.
+
+\subsubsection{Results}
+
+% ---------------------------------------
+\begin{figure}[H]
+        \begin{center}
+    \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_NrOfGoodRequests.eps}
+  \end{center}
+  \caption{Load Test - Througput}
+  \label{fig:LoadTestThrougput}
+\end{figure}
+% ---------------------------------------
+
+% ---------------------------------------
+\begin{figure}[H]
+        \begin{center}
+    \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_ResponseTime.eps}
+  \end{center}
+  \caption{Load Test - Response Time}
+  \label{fig:LoadTestResponseTime}
+\end{figure}
+% ---------------------------------------
+
+
+\subsubsection{Interpretation}
+
+As expected the response time increases as the load on the system gets higher. Also worth mentioning is that the lines in Figure \ref{fig:LoadTestResponseTime} remain parallel. This means that the all component except the database remain stable concerning response time. The database needs more and more time to process queries while load is increased.
+
+The number of successfully processed requests reaches its peak between 5 and 10 minutes (approximate with 80 clients). The system is then saturated.
+
+This result is quite disappointing since it does not support our hypothesis. That type of experiment was repeated several times while increasing the number of total clients and still the system seems not to be saturated. It was decided to not repeat the experiment with even more clients (because our Amazon voucher was used up).
+
+
 
 
 \subsection{Performance Breakup for Different Tiers}
