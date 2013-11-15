@@ -137,6 +137,89 @@ As described in the previous section, the time used for the code is 0.042 ms and
 TODO...
 
 
+\subsubsection{Network performance}
+
+Amazon specifies that we have a 1 Gbit/s network connection. To confirm this, a network performance test was executed with iperf. We simulated a bi-directional data transfer between a middleware/client and the database. We get about 841Mbits/s upload to the database and 93.1Mbits/s download to the middleware/client if iperf is run in bidirectional mode (send and receive in parallel. If only one direction is used, then the throughput from middleware/client to database is 959Mbits/s and from database to middleware/client it is about 312Mbits/s. We also notice that the variance for the single values are rather big.\\
+
+\begin{figure}[H]
+\begin{center}
+\begin{verbatim}
+------------------------------------------------------------
+Client connecting to 54.194.38.184, TCP port 5001
+TCP window size:  133 KByte (default)
+------------------------------------------------------------
+[  3] local 172.31.6.201 port 60902 connected with 54.194.38.184 port 5001
+[  5] local 172.31.6.201 port 5001 connected with 54.194.38.184 port 52555
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   122 MBytes   102 Mbits/sec
+[  5]  0.0-10.0 sec   970 MBytes   814 Mbits/sec
+[  5] 10.0-20.0 sec  1007 MBytes   844 Mbits/sec
+[  3] 10.0-20.0 sec   135 MBytes   113 Mbits/sec
+[  5] 20.0-30.0 sec  1.00 GBytes   861 Mbits/sec
+[  3] 20.0-30.0 sec   121 MBytes   102 Mbits/sec
+[  5] 30.0-40.0 sec   978 MBytes   820 Mbits/sec
+[  3] 30.0-40.0 sec   111 MBytes  93.0 Mbits/sec
+[  5] 40.0-50.0 sec  1009 MBytes   846 Mbits/sec
+[  3] 40.0-50.0 sec  88.0 MBytes  73.8 Mbits/sec
+[  5] 50.0-60.0 sec  1.00 GBytes   862 Mbits/sec
+[  3] 50.0-60.0 sec  89.1 MBytes  74.8 Mbits/sec
+[  3]  0.0-60.1 sec   666 MBytes  93.1 Mbits/sec
+[  5]  0.0-60.0 sec  5.88 GBytes   841 Mbits/sec
+\end{verbatim}
+\end{center}
+\caption{Bidirectional Test}
+\label{fig:iperfclient}
+\end{figure}
+
+\begin{figure}[H]
+\begin{center}
+\begin{verbatim}
+------------------------------------------------------------
+Client connecting to 54.194.38.184, TCP port 5001
+TCP window size: 22.9 KByte (default)
+------------------------------------------------------------
+[  3] local 172.31.6.201 port 60905 connected with 54.194.38.184 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec   430 MBytes   361 Mbits/sec
+[  3] 10.0-20.0 sec   342 MBytes   287 Mbits/sec
+[  3] 20.0-30.0 sec   347 MBytes   291 Mbits/sec
+[  3] 30.0-40.0 sec   426 MBytes   357 Mbits/sec
+[  3] 40.0-50.0 sec   342 MBytes   287 Mbits/sec
+[  3] 50.0-60.0 sec   342 MBytes   287 Mbits/sec
+[  3]  0.0-60.0 sec  2.18 GBytes   312 Mbits/sec
+\end{verbatim}
+\end{center}
+\caption{Unidirectional test, database to middleware / client}
+\label{fig:iperfserver}
+\end{figure}
+
+
+\begin{figure}[H]
+\begin{center}
+\begin{verbatim}
+------------------------------------------------------------
+Client connecting to 54.194.42.48, TCP port 5001
+TCP window size: 22.9 KByte (default)
+------------------------------------------------------------
+[  3] local 172.31.8.61 port 52558 connected with 54.194.42.48 port 5001
+[ ID] Interval       Transfer     Bandwidth
+[  3]  0.0-10.0 sec  1.13 GBytes   974 Mbits/sec
+[  3] 10.0-20.0 sec  1.11 GBytes   956 Mbits/sec
+[  3] 20.0-30.0 sec  1.11 GBytes   957 Mbits/sec
+[  3] 30.0-40.0 sec  1.11 GBytes   957 Mbits/sec
+[  3] 40.0-50.0 sec  1.11 GBytes   956 Mbits/sec
+[  3] 50.0-60.0 sec  1.11 GBytes   956 Mbits/sec
+[  3]  0.0-60.0 sec  6.70 GBytes   959 Mbits/sec
+
+\end{verbatim}
+\end{center}
+\caption{Unidirectional test, middleware/client to database}
+\label{fig:iperfserver2}
+\end{figure}
+
+Sending one message uses about 20 Bytes without payload, because we use custom serialization \ref{designDecisions} TODO fix this. Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without / only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
+
+
 \subsubsection{Component Limits}
 
 In the microbenchmarks, the limit for the amount of messages a single client was determined:\\
