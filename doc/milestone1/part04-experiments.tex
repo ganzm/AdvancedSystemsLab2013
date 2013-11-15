@@ -43,7 +43,7 @@ This section starts with some plots from the microbenchmarks.
 	\begin{center}
     \includegraphics[scale=0.55]{../exported_plots/microbenchmarks/response_time.eps}
   \end{center}
-  \caption{Resonse time of microbenchmark. The error bars are the 2.5\% and 97.5\% percentiles.}
+  \caption{Response time of microbenchmark. The error bars are the 2.5\% and 97.5\% percentiles.}
   \label{fig:mictobenchmarksrt}
 \end{figure}
 
@@ -51,7 +51,7 @@ This section starts with some plots from the microbenchmarks.
 	\begin{center}
     \includegraphics[scale=0.55]{../exported_plots/microbenchmarks/througput.eps}
   \end{center}
-  \caption{Throughput of microbenchmark. The error bars are the 2.5 and 97.5 percentiles.}
+  \caption{Throughput of microbenchmark in 1000 requests.}
   \label{fig:mictobenchmarkstp}
 \end{figure}
 
@@ -214,7 +214,16 @@ Since the system will not be saturated we expect no changes over time concerning
 \subsubsection{Results}
 There were multiple 2h tests performed. The final two 2h tests are the ones with id 174 \footnote{https://testmaster-asl-eth.renuo.ch/test\_runs/174} and 176 \footnote{https://testmaster-asl-eth.renuo.ch/test\_runs/176}. Both run stable and generated the following plots:
 
-TODO: insert plots
+
+% ------------------------------------------------
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[scale=0.6]{../exported_plots/2h/174_rt-final.eps}
+  \end{center}
+  \caption{Response time of 2h Test. The error bars are the 2.5\% and 97\% percentiles}
+  \label{fig:system-overview}
+\end{figure}
+
 
 \subsubsection{Interpretation}
 The final test runs (174 and 176) run as expected in the hypothesis.
@@ -461,7 +470,7 @@ By increasing the load on the system both response time and throughput should in
         \begin{center}
     \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_NrOfGoodRequests.eps}
   \end{center}
-  \caption{Load Test - Througput}
+  \caption{Throughput of load test in 1000 requests.}
   \label{fig:LoadTestThrougput}
 \end{figure}
 % ---------------------------------------
@@ -471,11 +480,10 @@ By increasing the load on the system both response time and throughput should in
         \begin{center}
     \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_ResponseTime.eps}
   \end{center}
-  \caption{Load Test - Response Time}
+  \caption{Response time of Load Test. The error bars are the 2.5\% and 97.5\% percentiles.}
   \label{fig:LoadTestResponseTime}
 \end{figure}
 % ---------------------------------------
-
 
 \subsubsection{Interpretation}
 
