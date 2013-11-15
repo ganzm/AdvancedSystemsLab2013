@@ -27,7 +27,7 @@ During a brainstorming session, a broad spectrum of performance relevant feature
       	node[concept] {\# Clients} 
       }
       child[concept color=green!50!black] {
-      	node[concept] {Use Shed Load [2007patterns]} 
+      	node[concept] {Use Shed Load} 
       }
       child {
       	node[concept] {\# Brokers} 
@@ -126,7 +126,7 @@ According to figure~\ref{fig:features_mindmap}, the secondary features are as fo
 \begin{enumerate}
   \item \textbf{Peek Message} When many selects occur (read a message, but don't remove it from the queue). This is mostly covered by the dequeue message feature and therefore only seen as a secondary feature.
   \item \textbf{Message Size} The average size of the messages payloads.
-  \item \textbf{Use Shed Load} Whether the fault tolerance pattern Shed Load [hanmer2007pattern] is used or not.
+  \item \textbf{Use Shed Load} Whether the fault tolerance pattern Shed Load \footnote{http://dl.acm.org/citation.cfm?id=SERIES12798.1557393} is used or not.
   \item \textbf{Garbage Collection} The time it takes for the garbage collection.
   \item \textbf{Indices} Whether indices are used or not.
   \item \textbf{Request Queue Length} The amount of messages on a broker which are buffered until the are processed.
