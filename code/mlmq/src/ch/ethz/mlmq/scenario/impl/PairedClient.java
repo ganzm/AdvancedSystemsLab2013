@@ -67,7 +67,7 @@ public class PairedClient extends ClientScenario {
 		sending = requesting;
 
 		// time when we started to send messages
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		boolean running = true;
 		for (int i = 0; running; i++) {
 			try {
@@ -90,7 +90,7 @@ public class PairedClient extends ClientScenario {
 					respondingAction();
 				}
 
-				long dt = System.nanoTime() - startTime;
+				long dt = System.nanoTime() / 1000 - startTime;
 
 				if (dt / waitTimeBetweenActions <= i) {
 					long timeToSleep = waitTimeBetweenActions - (dt % waitTimeBetweenActions);

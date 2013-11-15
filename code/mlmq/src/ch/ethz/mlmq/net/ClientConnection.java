@@ -50,7 +50,7 @@ public class ClientConnection implements Closeable {
 	}
 
 	public Response submitRequest(Request request, long responseTimeoutTime) throws IOException, MlmqRequestTimeoutException {
-		long requestStartTime = System.nanoTime();
+		long requestStartTime = System.nanoTime() / 1000;
 
 		Response response = null;
 		TimeoutTimerTask timeoutTask = null;
@@ -104,10 +104,10 @@ public class ClientConnection implements Closeable {
 				throw new IOException("Connection remotely closed by host");
 			}
 
-			perfLog.log(System.nanoTime() - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
+			perfLog.log(System.nanoTime() / 1000 - requestStartTime, "CSndReq#OK#" + request.getClass().getSimpleName() + ":"
 					+ (response == null ? "Null" : response.getClass().getSimpleName()));
 		} catch (Exception ex) {
-			perfLog.log(System.nanoTime() - requestStartTime, "CSndReq#Error#" + (wasTimedOut ? "Timeout" : ("#" + ex.getMessage())) + "#"
+			perfLog.log(System.nanoTime() / 1000 - requestStartTime, "CSndReq#Error#" + (wasTimedOut ? "Timeout" : ("#" + ex.getMessage())) + "#"
 					+ request.getClass().getSimpleName() + ":" + (response == null ? "Null" : response.getClass().getSimpleName()));
 
 			if (wasTimedOut) {

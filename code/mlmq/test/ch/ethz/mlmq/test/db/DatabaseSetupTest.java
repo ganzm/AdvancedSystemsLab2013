@@ -24,7 +24,7 @@ public class DatabaseSetupTest {
 	@Test
 	public void testSetup() throws SQLException {
 
-		String dbName = "mlmqUnitTest" + System.nanoTime();
+		String dbName = "mlmqUnitTest" + System.nanoTime() / 1000;
 		DatabaseInitializer dbInitializer = new DatabaseInitializer(config.getDbUrl(), config.getDbUserName(), config.getDbPassword(), dbName);
 
 		dbInitializer.connect();

@@ -28,7 +28,7 @@ public class SimpleSystemTest {
 
 	private static BrokerConfiguration config;
 	private static DatabaseInitializer dbInitializer;
-	private static String dbName = "mlmqunittest" + System.nanoTime();
+	private static String dbName = "mlmqunittest" + System.nanoTime() / 1000;
 
 	private BrokerImpl broker;
 

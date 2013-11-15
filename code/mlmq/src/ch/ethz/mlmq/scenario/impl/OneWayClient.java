@@ -63,14 +63,14 @@ public class OneWayClient extends ClientScenario {
 		sendInitialMessage();
 
 		// time when we started to send messages
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		boolean running = true;
 		for (int i = 0; running; i++) {
 			try {
 
 				performAction();
 
-				long dt = System.nanoTime() - startTime;
+				long dt = System.nanoTime() / 1000 - startTime;
 
 				if (dt / waitTimeBetweenActions <= i) {
 					long timeToSleep = waitTimeBetweenActions - (dt % waitTimeBetweenActions);

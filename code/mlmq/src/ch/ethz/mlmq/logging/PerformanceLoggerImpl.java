@@ -49,7 +49,7 @@ public class PerformanceLoggerImpl implements PerformanceLogger, Closeable {
 
 	@Override
 	public synchronized void log(long executionTime, String type) {
-		String logMessage = String.format(LOG_FORMAT, executionTime, System.nanoTime(), type, contextString);
+		String logMessage = String.format(LOG_FORMAT, executionTime, System.nanoTime() / 1000, type, contextString);
 		write(logMessage);
 	}
 

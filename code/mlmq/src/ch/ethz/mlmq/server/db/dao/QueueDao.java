@@ -80,7 +80,7 @@ public class QueueDao implements Closeable {
 
 		createQueueStmt.setString(2, name);
 
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		try (ResultSet rs = createQueueStmt.executeQuery()) {
 			if (!rs.next()) {
 				throw new SQLException("Expected single column result from " + createQueueStmt);
@@ -89,7 +89,7 @@ public class QueueDao implements Closeable {
 			int queueId = rs.getInt(1);
 			return new QueueDto(queueId);
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#createClientQueue");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#createClientQueue");
 		}
 	}
 
@@ -100,13 +100,13 @@ public class QueueDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public void deleteQueue(long queueIdToDelete) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		try {
 			deleteQueueStmt.setLong(1, queueIdToDelete);
 			deleteQueueStmt.execute();
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#deleteQueue");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#deleteQueue");
 		}
 	}
 
@@ -117,7 +117,7 @@ public class QueueDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public QueueDto getQueueByClientId(long clientId) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		queryQueueByClientIdStmt.setLong(1, clientId);
 		try (ResultSet rs = queryQueueByClientIdStmt.executeQuery()) {
@@ -129,7 +129,7 @@ public class QueueDao implements Closeable {
 				return null;
 			}
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#getQueueByClientId");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#getQueueByClientId");
 		}
 	}
 
@@ -140,7 +140,7 @@ public class QueueDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public QueueDto getQueueByName(String queueName) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		queryQueueByQueueNameStmt.setString(1, queueName);
 		try (ResultSet rs = queryQueueByQueueNameStmt.executeQuery()) {
@@ -153,7 +153,7 @@ public class QueueDao implements Closeable {
 				return null;
 			}
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#getQueueByName");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#getQueueByName");
 		}
 	}
 }

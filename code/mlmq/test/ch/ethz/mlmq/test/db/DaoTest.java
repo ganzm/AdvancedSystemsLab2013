@@ -30,7 +30,7 @@ public class DaoTest {
 	private static final Logger logger = Logger.getLogger("DaoTest");
 
 	private static DatabaseInitializer dbInitializer;
-	private static String dbName = "mlmqunittest" + System.nanoTime();
+	private static String dbName = "mlmqunittest" + System.nanoTime() / 1000;
 
 	private Connection connection;
 
@@ -94,7 +94,7 @@ public class DaoTest {
 		try (ClientDao clientDao = new ClientDao()) {
 			clientDao.init(connection);
 
-			String name = "Blub : strange _ Chars " + System.nanoTime();
+			String name = "Blub : strange _ Chars " + System.nanoTime() / 1000;
 
 			Integer clientIdInteger = clientDao.getClientId(name);
 			Assert.assertNull(clientIdInteger);

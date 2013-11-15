@@ -52,7 +52,7 @@ public class RequestProcessorTest {
 	private RequestProcessor processor;
 
 	private static DatabaseInitializer dbInitializer;
-	private static String dbName = "mlmqunittest" + System.nanoTime();
+	private static String dbName = "mlmqunittest" + System.nanoTime() / 1000;
 
 	private static DbConnectionPool pool;
 

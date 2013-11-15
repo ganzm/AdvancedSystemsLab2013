@@ -70,13 +70,13 @@ public class WorkerTaskQueueTest {
 			logger.severe(LoggerUtil.getStackTraceString(ex));
 		}
 
-		long startT = System.nanoTime();
+		long startT = System.nanoTime() / 1000;
 		long timeout = 500;
 
 		logger.info("Enqueue Task");
 		queue.enqueue(expectedTask);
 
-		while (!returnedFlag && System.nanoTime() - startT < timeout) {
+		while (!returnedFlag && System.nanoTime() / 1000 - startT < timeout) {
 			try {
 				Thread.sleep(10);
 			} catch (InterruptedException ex) {

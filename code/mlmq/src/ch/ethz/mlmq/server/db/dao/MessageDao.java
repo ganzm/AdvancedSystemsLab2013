@@ -131,7 +131,7 @@ public class MessageDao implements Closeable {
 	}
 
 	public void insertMessage(SendMessageRequest request, ClientApplicationContext clientContext) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		try {
 			for (long queueId : request.getQueueIds()) {
@@ -144,12 +144,12 @@ public class MessageDao implements Closeable {
 				insertMessageStmt.execute();
 			}
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#insertMessage");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#insertMessage");
 		}
 	}
 
 	public void insertMessage(long queueId, long clientId, byte[] content, int prio, Long clientContext) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		try {
 			insertMessageStmt.setLong(1, queueId);
@@ -166,12 +166,12 @@ public class MessageDao implements Closeable {
 			insertMessageStmt.execute();
 
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#insertMessage");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#insertMessage");
 		}
 	}
 
 	public MessageDto dequeueMessage(MessageQueryInfoDto queryInfo) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		int result = -1;
 
 		try {
@@ -193,7 +193,7 @@ public class MessageDao implements Closeable {
 			return message;
 		} finally {
 			commitTransStmt.execute();
-			long executionTime = System.nanoTime() - startTime;
+			long executionTime = System.nanoTime() / 1000 - startTime;
 			if (result == 1) {
 				perfLog.log(executionTime, "BDb#dequeueMessage#Ok#1");
 			} else if (result == -1) {
@@ -205,11 +205,11 @@ public class MessageDao implements Closeable {
 	}
 
 	public MessageDto peekMessage(MessageQueryInfoDto queryInfo) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		try {
 			return peekMessage(peekMessageStmt, queryInfo);
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#peekMessage");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#peekMessage");
 		}
 	}
 
@@ -258,7 +258,7 @@ public class MessageDao implements Closeable {
 	}
 
 	public long generateNewConversationContext() throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		try (ResultSet rs = generateNewConversationContextStmt.executeQuery()) {
 			if (rs.next()) {
@@ -266,7 +266,7 @@ public class MessageDao implements Closeable {
 			}
 			throw new SQLException("No Value found for generateNewConversationContext");
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#genConversationCtx");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#genConversationCtx");
 		}
 	}
 
@@ -278,7 +278,7 @@ public class MessageDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public List<QueueDto> getPublicQueuesContainingMessages(int maxNumQueues) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		List<QueueDto> result = new ArrayList<>();
 
@@ -290,7 +290,7 @@ public class MessageDao implements Closeable {
 				result.add(queue);
 			}
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#getPubQueues");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#getPubQueues");
 		}
 
 		return result;
@@ -304,7 +304,7 @@ public class MessageDao implements Closeable {
 	 * @throws SQLException
 	 */
 	public int getNumberOfMessages(long queueId) throws SQLException {
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 
 		getNumMsgPerQueueStmt.setLong(1, queueId);
 		try (ResultSet rs = getNumMsgPerQueueStmt.executeQuery()) {
@@ -313,7 +313,7 @@ public class MessageDao implements Closeable {
 			}
 			throw new SQLException("No Value found for getNumMsgPerQueueStmt");
 		} finally {
-			perfLog.log(System.nanoTime() - startTime, "BDb#getNumMessages");
+			perfLog.log(System.nanoTime() / 1000 - startTime, "BDb#getNumMessages");
 		}
 	}
 }

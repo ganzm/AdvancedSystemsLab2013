@@ -31,7 +31,7 @@ public class SendReceiveClient extends ClientScenario {
 	 */
 	private QueueDto queue;
 
-	private Random rnd = new Random(System.nanoTime());
+	private Random rnd = new Random(System.nanoTime() / 1000);
 
 	private final List<QueueDto> queues = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class SendReceiveClient extends ClientScenario {
 		String queueName = "QueueOf" + config.getName();
 
 		// time when we started to send messages
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		for (int i = 0; i < numMessages; i++) {
 			try {
 
@@ -72,7 +72,7 @@ public class SendReceiveClient extends ClientScenario {
 
 				performAction();
 
-				long dt = System.nanoTime() - startTime;
+				long dt = System.nanoTime() / 1000 - startTime;
 
 				if (dt / waitTimeBetweenMessages <= i) {
 					long timeToSleep = waitTimeBetweenMessages - (dt % waitTimeBetweenMessages);

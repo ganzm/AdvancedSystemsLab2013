@@ -34,7 +34,7 @@ public class PublicQueueConsumeClient extends ClientScenario {
 		QueueDto queue = null;
 
 		// time when we started to send messages
-		long startTime = System.nanoTime();
+		long startTime = System.nanoTime() / 1000;
 		boolean running = true;
 		for (int i = 0; running; i++) {
 			try {
@@ -48,7 +48,7 @@ public class PublicQueueConsumeClient extends ClientScenario {
 				// send message
 				receiveMessage(queue);
 
-				long dt = System.nanoTime() - startTime;
+				long dt = System.nanoTime() / 1000 - startTime;
 				if (dt / waitTimeBetweenMessages <= i) {
 					long timeToSleep = waitTimeBetweenMessages - (dt % waitTimeBetweenMessages);
 					Thread.sleep(timeToSleep);
