@@ -301,9 +301,56 @@ Mean performance concerning response time has a value of $10.24$. The effect of 
 
 Overall the most significant factor which affects performance the most (beside the load applied by clients) is the number of database connections. This indicates that the database is a bottle neck.
 
+
 %% -------------------------------------------
+\subsection{Load Test}
+To check the limits of the system a load test was performed where we start with a fixed number of middle ware instances and gradually increase the number of connected clients.
+
+\paragraph{Middle Ware}
+In total 16 middle ware instances are evenly spread across 4 Amazon instances. Each middle ware has 20 WorkerThreads and 15 concurrent database connections.
+
+\paragraph{Clients}
+Every 2 minute 20 OneWayClients try to connect. Each client tries to send and receive messages as fast as possible. In total 450 clients are spread across 15 Amazon instances (30 clients per instance).
+
+RequestTimeout is set to 1 second. A request is considered to be successful if processed within that bound. 
+
+\subsubsection{Hypothesis}
+
+By increasing the load on the system both response time and throughput should increase to a certain degree. By increasing the load more the system should become unstable and start trashing.
+
+\subsubsection{Results}
+
+% ---------------------------------------
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_NrOfGoodRequests.eps}
+  \end{center}
+  \caption{Load Test - Througput}
+  \label{fig:LoadTestThrougput}
+\end{figure}
+% ---------------------------------------
+
+% ---------------------------------------
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_ResponseTime.eps}
+  \end{center}
+  \caption{Load Test - Response Time}
+  \label{fig:LoadTestResponseTime}
+\end{figure}
+% ---------------------------------------
 
 
+\subsubsection{Interpretation}
+
+As expected the response time increases as the load on the system gets higher. Also worth mentioning is that the lines in Figure \ref{fig:LoadTestResponseTime} remain parallel. This means that the all component except the database remain stable concerning response time. The database needs more and more time to process queries while load is increased.
+
+The number of successfully processed requests reaches its peak between 5 and 10 minutes (approximate with 80 clients). The system is then saturated.
+
+This result is quite disappointing since it does not support our hypothesis. That type of experiment was repeated several times while increasing the number of total clients and still the system seems not to be saturated. It was decided to not repeat the experiment with even more clients (because our Amazon voucher was used up).
+
+
+%% -------------------------------------------
 \subsection{Performance Breakup for Different Tiers}
 
 TODO: db vs client (vs broker?) for load test
