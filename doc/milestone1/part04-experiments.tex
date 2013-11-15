@@ -62,7 +62,7 @@ The time to send a message has been measured:\\
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Test Run ID & Component & Median [$\mu$s] & Mean [$\mu$s] & StdDev [$\mu$s] \\ \hline
+\textbf{Test Run ID} & \textbf{Component} & \textbf{Median [$\mu$s]} & \textbf{Mean [$\mu$s]} & \textbf{StdDev [$\mu$s]} \\ \hline
 183 & Client & 6832 & 7365.251888 & 4187.470317 \\ \hline
 183 & Middleware & 5467 & 5694.925436 & 2628.921725 \\ \hline
 183 & Database & 5424 & 5652.727388 & 2576.826615 \\ \hline
@@ -73,7 +73,7 @@ Test Run ID & Component & Median [$\mu$s] & Mean [$\mu$s] & StdDev [$\mu$s] \\ \
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Test Run ID & Component & \textbf{Median [$\mu$s]} & Mean [$\mu$s] & StdDev [$\mu$s] \\ \hline
+\textbf{Test Run ID} & \textbf{Component} & \textbf{Median [$\mu$s]} & \textbf{Mean [$\mu$s]} & \textbf{StdDev [$\mu$s]} \\ \hline
 183 & Client & 8954 & 9796.484939 & 4927.697663 \\ \hline
 183 & Middleware & 7617 & 8073.361544 & 3467.291457 \\ \hline
 183 & Database & 7575 & 8029.920168 & 3461.8049 \\ \hline
@@ -84,7 +84,7 @@ Test Run ID & Component & \textbf{Median [$\mu$s]} & Mean [$\mu$s] & StdDev [$\m
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+\textbf{Component} & \textbf{Type} & \textbf{Expected Time [$\mu$s]} & \textbf{Expected Time [\%]} \\ \hline
 \begin{tabular}[x]{@{}c@{}}Client and Network \\Client-Middleware\end{tabular} & Send & 1365 & 19.9795081967213 \\ \hline
 \begin{tabular}[x]{@{}c@{}}Middleware after \\deserialization\end{tabular}  & Send & 43 & 0.629391100702576 \\ \hline
 \begin{tabular}[x]{@{}c@{}}Database and Network \\Middleware-Database\end{tabular} & Send & 5424 & 79.3911007025761 \\ \hline
@@ -95,7 +95,7 @@ Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline 
-Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+\textbf{Component} & \textbf{Type} & \textbf{Expected Time [$\mu$s]} & \textbf{Expected Time [\%]} \\ \hline
 \begin{tabular}[x]{@{}c@{}}Client and Network \\Client-Middleware\end{tabular} & Receive & 1337 & 14.9318740227831 \\ \hline
 \begin{tabular}[x]{@{}c@{}}Middleware after \\deserialization\end{tabular}  & Receive & 42 & 0.469064105427742 \\ \hline
 \begin{tabular}[x]{@{}c@{}}Database and Network \\Middleware-Database\end{tabular} & Receive & 7575 & 84.5990618717892\\ \hline
@@ -108,7 +108,7 @@ Thus we conclude the following final results for the send message:\\
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline
-Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+\textbf{Component} & \textbf{Type} & \textbf{Expected Time [$\mu$s]} & \textbf{Expected Time [\%]} \\ \hline
 Client & Send & 43 & 0.629391100702576 \\ \hline
 Middleware & Send & 43 & 0.629391100702576 \\ \hline
 Database & Send & 4016 & 58.7822014051522 \\ \hline
@@ -120,7 +120,7 @@ Network & Send & 2644 & 38.7002341920375 \\ \hline
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline
-Component & Type & Expected Time [$\mu$s] & Expected Time [\%] \\ \hline
+\textbf{Component} & \textbf{Type} & \textbf{Expected Time [$\mu$s]} & \textbf{Expected Time [\%]} \\ \hline
 Client & Receive & 42 & 0.469064105427742 \\ \hline
 Middleware & Receive & 42 & 0.469064105427742 \\ \hline
 Database & Receive & 6196 & 69.1981237435783 \\ \hline
@@ -136,7 +136,7 @@ As described in the previous section, the time used for the code is 0.042 ms and
 
 \subsubsection{Network performance}
 
-Even though the network connection throughput is specified by Amazon, only a measurement tells the truth. To confirm this, a network performance test was executed with iperf. We simulated a bi-directional data transfer between a middleware/client and the database. We get about 841Mbits/s upload to the database and 93.1Mbits/s download to the middleware/client if iperf is run in bidirectional mode (send and receive in parallel. If only one direction is used, then the throughput from middleware/client to database is 959Mbits/s and from database to middleware/client it is about 312Mbits/s. We also notice that the variance for the single values are rather big.\\
+Even though the network connection throughput is specified by Amazon, only a measurement tells the truth. To confirm this, a network performance test was executed with iperf. We simulated a bi-directional data transfer between a middleware/client and the database. We get 841Mbits/s upload to the database and 93.1Mbits/s download to the middleware/client if iperf is run in bidirectional mode (send and receive in parallel). If only one direction is used, then the throughput from middleware/client to database is 959Mbits/s and from database to middleware/client it is 312Mbits/s. We also notice that the variance for the single values are rather big.\\
 
 \begin{figure}[H]
 \begin{center}
@@ -186,7 +186,7 @@ TCP window size: 22.9 KByte (default)
 [  3]  0.0-60.0 sec  2.18 GBytes   312 Mbits/sec
 \end{verbatim}
 \end{center}
-\caption{Unidirectional test, database to middleware / client}
+\caption{Unidirectional test, database to middleware/client}
 \label{fig:iperfserver}
 \end{figure}
 
@@ -214,7 +214,7 @@ TCP window size: 22.9 KByte (default)
 \label{fig:iperfserver2}
 \end{figure}
 
-Sending one message uses about 20 Bytes without payload, because we use custom serialization (See \ref{sub:des-msg-ser} \nameref{sub:des-msg-ser}). Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without or only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
+Sending one message uses about 20 Bytes without payload, because we use custom serialization (see \ref{sub:des-msg-ser} \nameref{sub:des-msg-ser}). Thus, our message size will be between 20 Bytes and 2020 Bytes. With a network connection that supports 100Mbit/s we can send 625'000 (without payload) up to 6188 (with payload) per second. In this project we focus on messages without or only little payload, and thus the network bandwidth is not a bottleneck for the throughput for the tests.
 
 
 \subsubsection{Component Limits}
@@ -223,7 +223,7 @@ In the microbenchmarks, the limit for the amount of messages a single client was
 
 \begin{tabular}{|l|l|r|r|r|}
 \hline
-Duration [s] & Requests sent \\ \hline
+\textbf{Duration [s]} & \textbf{Requests sent} \\ \hline
 100 & 23465 \\ \hline
 \textbf{1} & \textbf{234.65} \\ \hline
 \end{tabular}
@@ -258,9 +258,9 @@ During the project, the system evolved and thus some test runs were invalidated 
 \subsubsection{Experiment setup}
 The experiment is performed on the Amazon cloud with constant load. For the setup configuration, the project specifications were used specifications (80 clients).\\
 
-\begin{tabular}{|l|l|}
+\begin{tabular}{|l|r|}
 \hline 
-Component & Amazon instance type and availability zone \\
+\textbf{Component} & \textbf{Amazon instance type and availability zone} \\
 \hline 
 database & m1.medium, eu-west-1a \\ 
 middlewares & m1.small, eu-west-1a \\ 
@@ -271,11 +271,11 @@ clients & m1.small, eu-west-1a \\
 
 \paragraph{Middleware} In total 6 middleware components are running On 2 Amazon instances.
 
-\paragraph{Clients} The following mix of clients are used for the 2 hour test.
+\paragraph{Clients} The following mix of clients are used for the 2 hour test.\\
 
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|r|}
 \hline 
-Client type mix & \# \\ 
+\textbf{Client type mix} & \textbf{\#} \\ 
 \hline 
 OneWayClient & 1x30 (machines x jvms)  \\ 
 \hline 
@@ -335,7 +335,7 @@ The number of simultaneously connected clients is varied between 8 and 30. There
 
 \begin{tabular}{|l|c|c|}
 \hline 
-\textbf{Client type mix } & \# & \# \\ 
+\textbf{Client type mix } & \textbf{\#} & \textbf{\#} \\ 
 \hline 
 OneWayClient & 16 & 8  \\ 
 \hline 

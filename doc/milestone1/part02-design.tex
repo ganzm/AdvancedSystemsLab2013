@@ -53,6 +53,17 @@ The first approach to serialize messages was using the java's built in stream ba
 
 Theses issues brought us to the decision to implement custom serialisation and deserialisation supporting pooled ByteBuffers.
 
+\subsubsection{Example}
+A SendMessageRequest for instance is serialized as following.
+
+\begin{enumerate}
+\item 4 bytes - lenght of the message payload
+\item 4 bytes - type of the message (e.g. SendMessageRequest)
+\item 8 bytes per recipient queue plus 4 bytes list lenght overhead
+\item 4 bytes priority
+\item 0-2000 byte message content
+\end{enumerate}
+
 \subsection{Load Shedding}
 With the current design requests are queued in a single request queue. If workers are slow requests begin to queue up. If the queue is full adding another request fails. The request from the client is silently dropped. This behaviour is commonly known as load shedding. The system tries as quick as possible to get rid of load which cant be handled any more. The point where the system starts trashing will be moved further away.
 
