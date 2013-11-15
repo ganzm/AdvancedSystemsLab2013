@@ -19,7 +19,7 @@ public class PerformanceLoggerTest {
 	public void testPerformanceLogger() throws FileNotFoundException, IOException {
 		PerformanceLoggerConfig config = new PerformanceLoggerConfig("log", "logtest");
 
-		final long timeInMillis = System.currentTimeMillis();
+		final long timeInMillis = System.nanoTime();
 
 		try {
 			PerformanceLoggerImpl logger = new PerformanceLoggerImpl(config) {

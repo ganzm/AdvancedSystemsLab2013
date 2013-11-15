@@ -45,7 +45,7 @@ public class ClientDao implements Closeable {
 	}
 
 	public Integer getClientId(String clientName) throws SQLException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		getClientByNameStatement.setString(1, clientName);
 
@@ -56,12 +56,12 @@ public class ClientDao implements Closeable {
 
 			return null;
 		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "BDb#getClientId");
+			perfLog.log(System.nanoTime() - startTime, "BDb#getClientId");
 		}
 	}
 
 	public int insertNewClient(String name) throws SQLException {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		insertNewClientStmt.setString(1, name);
 
@@ -73,7 +73,7 @@ public class ClientDao implements Closeable {
 			int clientId = rs.getInt(1);
 			return clientId;
 		} finally {
-			perfLog.log(System.currentTimeMillis() - startTime, "BDb#insertNewClient");
+			perfLog.log(System.nanoTime() - startTime, "BDb#insertNewClient");
 		}
 	}
 }

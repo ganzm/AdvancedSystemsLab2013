@@ -32,7 +32,7 @@ public class PublicQueueProduceClient extends ClientScenario {
 		QueueDto queue = null;
 
 		// time when we started to send messages
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		boolean running = true;
 		for (int i = 0; running; i++) {
 			try {
@@ -45,7 +45,7 @@ public class PublicQueueProduceClient extends ClientScenario {
 				// send message
 				sendSimpleMessage(queue, i);
 
-				long dt = System.currentTimeMillis() - startTime;
+				long dt = System.nanoTime() - startTime;
 				if (dt / waitTimeBetweenMessages <= i) {
 					long timeToSleep = waitTimeBetweenMessages - (dt % waitTimeBetweenMessages);
 					Thread.sleep(timeToSleep);

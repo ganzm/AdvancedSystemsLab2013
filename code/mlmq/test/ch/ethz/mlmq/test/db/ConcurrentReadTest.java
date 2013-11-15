@@ -27,7 +27,7 @@ public class ConcurrentReadTest {
 	private static final Logger logger = Logger.getLogger("DaoTest");
 
 	private static DatabaseInitializer dbInitializer;
-	private static String dbName = "mlmqunittest" + System.currentTimeMillis();
+	private static String dbName = "mlmqunittest" + System.nanoTime();
 
 	private Connection connection1;
 	private Connection connection2;

@@ -240,8 +240,8 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		logger.fine("writing to Client " + clientInstance + " num bytes " + byteCount);
 
 		if (clientInstance.afterWrite()) {
-			long time = System.currentTimeMillis() - clientInstance.getStartSendResponseTime();
-			long totalTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
+			long time = System.nanoTime() - clientInstance.getStartSendResponseTime();
+			long totalTime = System.nanoTime() - clientInstance.getFirstRequestByteSeenTimeStamp();
 
 			if (false) {
 				perfLog.log(time, "BSndResp");
@@ -309,7 +309,7 @@ public class BrokerNetworkInterface implements Runnable, Closeable {
 		}
 
 		// do performance logging
-		long receiveTime = System.currentTimeMillis() - clientInstance.getFirstRequestByteSeenTimeStamp();
+		long receiveTime = System.nanoTime() - clientInstance.getFirstRequestByteSeenTimeStamp();
 		if (false)
 			perfLog.log(receiveTime, "BRcvReq");
 

@@ -74,7 +74,7 @@ public class Worker extends Thread {
 	}
 
 	private void process(WorkerTask task) {
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 
 		CloseableByteBuffer requestBuffer = task.getAndRemoveRequestBuffer();
 		ByteBuffer rawRequest = requestBuffer.getByteBuffer();
@@ -101,6 +101,6 @@ public class Worker extends Thread {
 			responseString = "FailedQueueFull";
 		}
 
-		perfLog.log(System.currentTimeMillis() - startTime, "BProcReq#" + request.getClass().getSimpleName() + ":" + responseString);
+		perfLog.log(System.nanoTime() - startTime, "BProcReq#" + request.getClass().getSimpleName() + ":" + responseString);
 	}
 }

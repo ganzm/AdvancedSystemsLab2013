@@ -35,7 +35,7 @@ public class SimpleSendClient extends ClientScenario {
 		String queueName = "QueueOf" + config.getName();
 
 		// time when we started to send messages
-		long startTime = System.currentTimeMillis();
+		long startTime = System.nanoTime();
 		for (int i = 0; i < numMessages; i++) {
 			try {
 
@@ -47,7 +47,7 @@ public class SimpleSendClient extends ClientScenario {
 				// send message
 				sendSimpleMessage(queue, i);
 
-				long dt = System.currentTimeMillis() - startTime;
+				long dt = System.nanoTime() - startTime;
 				if (dt / waitTimeBetweenMessages <= i) {
 					long timeToSleep = waitTimeBetweenMessages - (dt % waitTimeBetweenMessages);
 					Thread.sleep(timeToSleep);

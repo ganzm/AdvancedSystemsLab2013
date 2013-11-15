@@ -117,7 +117,7 @@ public class ConnectedClient {
 
 		selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 
-		startSendResponseTime = System.currentTimeMillis();
+		startSendResponseTime = System.nanoTime();
 	}
 
 	/**
@@ -143,7 +143,7 @@ public class ConnectedClient {
 	 * Used for performance logging
 	 */
 	public void setFirstRequestByteSeenTimeStamp() {
-		firstRequestByteSeen = System.currentTimeMillis();
+		firstRequestByteSeen = System.nanoTime();
 	}
 
 	/**
