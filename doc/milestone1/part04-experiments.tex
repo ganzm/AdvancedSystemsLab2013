@@ -43,7 +43,7 @@ This section starts with some plots from the microbenchmarks.
 	\begin{center}
     \includegraphics[scale=0.55]{../exported_plots/microbenchmarks/response_time.eps}
   \end{center}
-  \caption{Response time of microbenchmark. The error bars are the 2.5\% and 97.5\% percentiles.}
+  \caption{Resonse time of microbenchmark. The error bars are the 2.5\% and 97.5\% percentiles.}
   \label{fig:mictobenchmarksrt}
 \end{figure}
 
@@ -51,7 +51,7 @@ This section starts with some plots from the microbenchmarks.
 	\begin{center}
     \includegraphics[scale=0.55]{../exported_plots/microbenchmarks/througput.eps}
   \end{center}
-  \caption{Throughput of microbenchmark in 1000 requests.}
+  \caption{Throughput of microbenchmark. The error bars are the 2.5 and 97.5 percentiles.}
   \label{fig:mictobenchmarkstp}
 \end{figure}
 
@@ -139,7 +139,7 @@ TODO...
 
 \subsubsection{Network performance}
 
-Amazon specifies that we have a 1 Gbit/s network connection. To confirm this, a network performance test was executed with iperf. We simulated a bi-directional data transfer between a middleware/client and the database. We get about 841Mbits/s upload to the database and 93.1Mbits/s download to the middleware/client if iperf is run in bidirectional mode (send and receive in parallel. If only one direction is used, then the throughput from middleware/client to database is 959Mbits/s and from database to middleware/client it is about 312Mbits/s. We also notice that the variance for the single values are rather big.\\
+Even though the network connection throughput is specified by Amazon, only a measurement tells the truth. To confirm this, a network performance test was executed with iperf. We simulated a bi-directional data transfer between a middleware/client and the database. We get about 841Mbits/s upload to the database and 93.1Mbits/s download to the middleware/client if iperf is run in bidirectional mode (send and receive in parallel. If only one direction is used, then the throughput from middleware/client to database is 959Mbits/s and from database to middleware/client it is about 312Mbits/s. We also notice that the variance for the single values are rather big.\\
 
 \begin{figure}[H]
 \begin{center}
@@ -258,57 +258,34 @@ To verify that the system runs stable over a long period of time an experiment i
 
 During the project, the system evolved and thus some test runs were invalidated in this process. Here, the final two 2h test runs are presented. The other 2h test runs can be found and analysed on the Testmaster\footnote{https://testmaster-asl-eth.renuo.ch/}.\\
 
-\subsubsection{Experiment setup}
+\paragraph{Experiment setup}
 The experiment is performed on the Amazon cloud with constant load. For the setup configuration, the project specifications were used specifications (80 clients).\\
 
 \begin{tabular}{|l|l|}
 \hline 
-Amazon instance type and availability zone & Value \\
+Parameter & Value \\
 \hline 
-database & m1.medium, eu-west-1a \\ 
-middlewares & m1.small, eu-west-1a \\ 
-clients & m1.small, eu-west-1a \\ 
+Amazon instance type and availiblity zone for the database & m1.medium, eu-west-1a \\ 
+Amazon instance type and availiblity zone for the middlewares & m1.small, eu-west-1a \\ 
+Amazon instance type and availiblity zone for the clients & m1.small, eu-west-1a \\ 
+Number of middlewares & 2 \\ 
+OneWayClient & 1x30 (machines x jvms) \\ 
+PairedClient & 1x16 (machines x jvms) \\ 
+PublicQueueConsumeClient / PublicQueueProduceClient & 2x15 (machines x jvms) \\
+Middlware & 2x3 (machines x jvms) \\ 
+Client message send interval (TODO: think time?) & 10ms \\
 \hline 
 \end{tabular}
 
-
-\paragraph{Middleware} In total 6 middleware components are running On 2 Amazon instances.
-
-\paragraph{Clients} The following mix of clients are used for the 2 hour test.
-
-\begin{tabular}{|l|c|c|}
-\hline 
-\textbf{Client type mix } & \# \\ 
-\hline 
-OneWayClient & 1x30 (machines x jvms)  \\ 
-\hline 
-PairedClient & 1x16 (machines x jvms) \\ 
-\hline 
-PublicQueueConsumer & 1x10 (machines x jvms) \\ 
-\hline 
-PublicQueueProducer & 1x5 (machines x jvms) \\ 
-\hline 
-\end{tabular} 
-
-
-\subsubsection{Hypothesis}
+\paragraph{Hypothesis}
 Since the system will not be saturated we expect no changes over time concerning response time and throughput. The mixture of clients generating load is chosen such that there is a constant number of messages in the system. Increased SQL query execution time should not be observable.
 
-\subsubsection{Results}
+\paragraph{Results}
 There were multiple 2h tests performed. The final two 2h tests are the ones with id 174 \footnote{https://testmaster-asl-eth.renuo.ch/test\_runs/174} and 176 \footnote{https://testmaster-asl-eth.renuo.ch/test\_runs/176}. Both run stable and generated the following plots:
 
+TODO: insert plots
 
-% ------------------------------------------------
-\begin{figure}[H]
-  \begin{center}
-    \includegraphics[scale=0.6]{../exported_plots/2h/174_rt-final.eps}
-  \end{center}
-  \caption{Response time of 2h Test. The error bars are the 2.5\% and 97\% percentiles}
-  \label{fig:system-overview}
-\end{figure}
-
-
-\subsubsection{Interpretation}
+\paragraph{Interpretation}
 The final test runs (174 and 176) run as expected in the hypothesis.
 
 %% -------------------------------------------
@@ -553,7 +530,7 @@ By increasing the load on the system both response time and throughput should in
         \begin{center}
     \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_NrOfGoodRequests.eps}
   \end{center}
-  \caption{Throughput of load test in 1000 requests.}
+  \caption{Load Test - Througput}
   \label{fig:LoadTestThrougput}
 \end{figure}
 % ---------------------------------------
@@ -563,10 +540,11 @@ By increasing the load on the system both response time and throughput should in
         \begin{center}
     \includegraphics[scale=0.5]{../exported_plots/LoadTest/2016_ResponseTime.eps}
   \end{center}
-  \caption{Response time of Load Test. The error bars are the 2.5\% and 97.5\% percentiles.}
+  \caption{Load Test - Response Time}
   \label{fig:LoadTestResponseTime}
 \end{figure}
 % ---------------------------------------
+
 
 \subsubsection{Interpretation}
 
