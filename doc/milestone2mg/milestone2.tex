@@ -1,0 +1,169 @@
+\documentclass[a4paper]{article}
+
+\usepackage{numprint}
+\usepackage{nameref}
+\usepackage{float}
+\usepackage{url}
+\usepackage{graphicx}	% For figure environment
+\usepackage{epstopdf}
+\usepackage[center]{subfigure}
+\usepackage{amssymb}	% For mathematical figures like \mathbb{R}
+\usepackage{amsmath}
+\usepackage{framed}
+\usepackage{tikz}
+\usetikzlibrary{mindmap,trees}
+\usepackage{pdflscape}
+\usepackage[a4paper]{geometry}
+\usepackage{subfiles}
+\usepackage{listings}
+\usepackage{color}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\usepackage{array}
+\usepackage{booktabs}% http://ctan.org/pkg/booktabs
+\usepackage{xparse}% http://ctan.org/pkg/xparse
+% Rotation: \rot[<angle>][<width>]{<stuff>}
+\NewDocumentCommand{\rot}{O{45} O{1em} m}{\makebox[#2][l]{\rotatebox{#1}{#3}}}%
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true
+  tabsize=3
+}
+
+
+\title{Advanced Systems Lab - Milestone II} 
+\author{Matthias Ganz (ganzm@ethz.ch)} 
+\date{\today} 
+
+
+\begin{document}
+
+\maketitle
+
+\pagebreak
+
+\tableofcontents
+
+\pagebreak
+
+\begin{abstract}
+
+This document describes an analytical model of the message queuing system which was build during Milestone I. Analytical studies are presented and compared with the results obtained before.
+
+
+\end{abstract}
+
+\pagebreak
+
+%% ----------------------------------------------
+% Section - The System
+%% ----------------------------------------------
+\section{The System}
+
+This chapter should briefly show the most important components of the System Under Test (SUT). The curious reader is referred to Milestone I paper where in depth information about the technical details are stated.
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.4]{../drawings/broker-threading.png}
+  \end{center}
+  \caption{System Under Test}
+  \label{fig:sut}
+\end{figure}
+
+%% ----------------------------------------------
+
+Requests from clients are read and pushed to Request Queue. This Queue is processed by many worker threads which utilize pooled database connections to generate an appropriate response. Theses responses are put back into the response queue which is processed by the networking interface.
+
+
+%% ----------------------------------------------
+% Section System Model
+%% ----------------------------------------------
+\section{Model of the System}
+
+\subsection{Modelling a closed system}
+Due to the nature of the tests performed during Milestone I the system is a closed queuing system. Each experiment was performed with a fixed number of clients. Each client is issuing at max one concurrent request. Therefore the number of messages in the system never exceed the number of clients.
+
+
+\subsection{Service Centers}
+
+From figure \ref{fig:sut} on can derrivate the following components of the system model.
+
+\subsubsection{Network Receive}
+
+
+\subsubsection{Request Queue}
+
+
+\subsubsection{Network Send}
+
+
+\subsection{Kendall's Notation}
+
+\section{Refined System Model}
+
+
+
+\section{Memos}
+
+- create a single queue system with the 
+
+- hierarchical decomposition
+
+- decompose into smaller network
+
+\section{Refined Model of the System}
+
+\section{Mean-Value Analysis}
+
+
+%% ----------------------------------------------
+% Section MEMOS
+%% ----------------------------------------------
+\section{Memos}
+
+open or closed system
+- do we have an open or a closed system? It's closed!
+
+- use bullshit word "service center"
+
+- build alanytical queuing model of the whole system
+  - parameters
+- build alanytical queuing model for each part of the system
+  - parameters
+- explain where data matches the model and where not
+
+- interactive response time law, not applicable because of client implementation
+
+analytical model, 
+
+
+- network of queues
+  - not too fine, abstract away threads
+  
+  
+- explain why the model matches reality (or not)
+
+
+- siehe buch seite 1078 für Anregungen was man so machen müsste
+
+
+\end{document}
+
