@@ -13,7 +13,9 @@ public class InterArrivalTimeHistogram {
 		ArgUtil argUtil = ArgUtil.parseArgs(args);
 
 		String directoryToLogFiles = argUtil.getMandatory("directory_to_log_files");
-		String messageType = "BRcvReq"; // argUtil.getOptional("message_type", "");
+
+		// String messageType = "BRcvReq";
+		String messageType = "BTotReqResp";
 
 		List<File> files = Main.getAllLogFiles(directoryToLogFiles);
 
