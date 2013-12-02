@@ -110,7 +110,7 @@ public class Main {
 			gnuP.setLineLabels(argUtil.getMandatory("line_label"));
 	}
 
-	private static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
+	public static List<File> getPerformanceLogFiles(String directoryToLogFiles) {
 		File parent = FileUtils.getFile(directoryToLogFiles);
 
 		List<File> files = new ArrayList<>();
@@ -118,6 +118,16 @@ public class Main {
 		for (File file : FileUtils.listFiles(parent, new String[] { "log" }, true))
 			if (file.getAbsolutePath().contains("performance_log"))
 				files.add(file);
+
+		return files;
+	}
+
+	public static List<File> getAllLogFiles(String directoryToLogFiles) {
+		File parent = FileUtils.getFile(directoryToLogFiles);
+
+		List<File> files = new ArrayList<>();
+		for (File file : FileUtils.listFiles(parent, new String[] { "log" }, true))
+			files.add(file);
 
 		return files;
 	}
