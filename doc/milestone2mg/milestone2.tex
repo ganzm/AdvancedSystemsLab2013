@@ -74,7 +74,7 @@ This document describes an analytical model of the message queuing system which 
 %% ----------------------------------------------
 \section{The System}
 
-This chapter should briefly show the most important components of the System Under Test (SUT). The curious reader is referred to Milestone I paper where in depth information about the technical details are stated.
+This chapter should briefly show the most important components of the System Under Test (SUT). The curious reader is referred to the document Milestone I. In depth information about the technical details are stated there.
 
 
 % ------------------------------------------------
@@ -90,7 +90,7 @@ This chapter should briefly show the most important components of the System Und
 
 %% ----------------------------------------------
 
-Requests from clients are read and pushed to Request Queue. This Queue is processed by many worker threads which utilize pooled database connections to generate an appropriate response. Theses responses are put back into the response queue which is processed by the networking interface.
+Requests from clients are read and pushed to Request Queue. This Queue is processed by a fixed numer of worker threads which utilize pooled database connections to generate an appropriate response. Theses responses are put back into the response queue which is processed by the networking interface.
 
 
 %% ----------------------------------------------
@@ -99,25 +99,93 @@ Requests from clients are read and pushed to Request Queue. This Queue is proces
 \section{Model of the System}
 
 \subsection{Modelling a closed system}
-Due to the nature of the tests performed during Milestone I the system is a closed queuing system. Each experiment was performed with a fixed number of clients. Each client is issuing at max one concurrent request. Therefore the number of messages in the system never exceed the number of clients.
+Due to the nature of the tests performed during Milestone I the system should be modeled as a closed queuing system. Each experiment was performed with a fixed number of clients. Each client is issuing at max one concurrent request. Therefore the number of messages in the system never exceed the number of clients.
 
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.4]{../drawings-ms2/sut.eps}
+  \end{center}
+  \caption{Closed System}
+  \label{fig:closedsystem}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+
+\subsection{Kendall's Notation}
+In this chapter we look at the system as a black box. To describe it \textit{Kendall's Notation} is used. The 6 characteristic parameters A/S/m/B/K/SD are defined as followed.
+
+\subsubsection{(A) Arrival Process}
+
+The interarrivaltime is assumed to be exponentially distributed. This can be shown from figure TODO. Therefore parameter a) is M (Markovian)
+
+\subsubsection{(S) Service Time Distribution }
+
+Again it is assumed that the service time distribution is memoryless exponentially distributed. TODO see figure.
+
+\subsubsection{(m) Number of Servers}
+
+This parameter is determine by the number of middleware instances running.
+
+\subsubsection{(B) Buffer - System Capacity }
+
+
+\subsubsection{(K) Population Size}
+
+
+\subsubsection{(SD) Service Disciplin}
+Because the whole messaging system consists of queues  First Come First Server (FCFS) service disciplin is assumed for our system model.
+
+
+\section{Refined System Model}
+
+Modeling the system as a black box is not very accurate. To be able to do a more distinct analysis and to identify bottle neck components a queueing ...
 
 \subsection{Service Centers}
 
-From figure \ref{fig:sut} on can derrivate the following components of the system model.
+From figure \ref{fig:sut} on can derive the following components of the system model.
 
 \subsubsection{Network Receive}
+The first queue where clients issue requests is the networking part of the middle ware. The queue size of this not too clear \\
 
+\begin{tabular}{|l|c|}
+\hline 
+Queue Size & Number of clients \\ 
+\hline 
+Service Node Count & 1 \\ 
+\hline 
+\end{tabular} 
 
 \subsubsection{Request Queue}
+This node represents the request queue and the worker threads attached to it.\\
+
+\begin{tabular}{|l|c|}
+\hline 
+Queue Size & Corresponds to Request Queue size (default 50)\\ 
+\hline 
+Service Node Count & Corresponds to \# of worker thread \\ 
+\hline 
+\end{tabular} 
+
+\subsubsection{Database}
+This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units)
+
+\begin{tabular}{|l|c|}
+\hline 
+Queue Size & Corresponds to Request Queue size (default 50)\\ 
+\hline 
+Service Node Count & Corresponds to the total number of database connections \\ 
+\hline 
+\end{tabular} 
 
 
 \subsubsection{Network Send}
 
-
-\subsection{Kendall's Notation}
-
-\section{Refined System Model}
 
 
 
