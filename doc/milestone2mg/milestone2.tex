@@ -97,6 +97,7 @@ Requests from clients are read and pushed to Request Queue. This Queue is proces
 % Section System Model
 %% ----------------------------------------------
 \section{Model of the System}
+\label{sec:SystemModel}
 
 \subsection{Modelling a closed system}
 Due to the nature of the tests performed during Milestone I the system should be modeled as a closed queuing system. Each experiment was performed with a fixed number of clients. Each client is issuing at max one concurrent request. As long as the system is in its healthy boundaries no messages are discarded by the middleware. Therefore the number of messages in the system never exceed the number of clients.
@@ -118,9 +119,10 @@ Due to the nature of the tests performed during Milestone I the system should be
 
 
 \subsection{Kendall's Notation}
-In this chapter we look at the system as a black box. To describe it \textit{Kendall's Notation} is used. The 6 characteristic parameters A/S/m/B/K/SD are defined as followed.
+In this chapter we look at the system as a black box and describe it with \textit{Kendall's Notation}. The 6 characteristic parameters A/S/m/B/K/SD are defined as followed.
 
 \subsubsection{(A) Arrival Process}
+\label{subsub:ArrivalProcess}
 
 The interarrivaltime is modeled to be exponentially distributed. This can be shown from figure \ref{fig:interarrivaltime}. Data for this plot where obtained from a shortened 2 hour test with mixed types of clients. From the diagram I assume parameter a) to be \textit{Markovian (M)}.
 
@@ -141,9 +143,7 @@ The interarrivaltime is modeled to be exponentially distributed. This can be sho
 
 \subsubsection{(S) Service Time Distribution }
 
-Again it is assumed that the service time distribution is memoryless exponentially distributed. TODO see figure.
-
-
+Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in section \ref{subsub:ArrivalProcess} show an exponential distribution of service time.
 
 % ------------------------------------------------
 % Figure 
@@ -165,48 +165,70 @@ This parameter is determine by the number of middleware instances running.
 
 \subsubsection{(B) Buffer - System Capacity }
 
+TODO
 
 \subsubsection{(K) Population Size}
 
+Since we are modelling a closed system the population size can be set to the number of clients participating in the experiment.
 
-\subsubsection{(SD) Service Disciplin}
-Because the whole messaging system consists of queues  First Come First Server (FCFS) service disciplin is assumed for our system model.
-
+\subsubsection{(SD) Service Discipline}
+Because the whole messaging system consists of queues  First Come First Server (FCFS) service discipline is assumed for our system model.
 
 \section{Refined System Model}
 
-Modeling the system as a black box is not very accurate. To be able to do a more distinct analysis and to identify bottle neck components a queueing ...
+Modelling the system as a black box is not very accurate. To be able to do a more distinct analysis and to identify bottle neck components the black box queue is refined into a queueing network.
+
+Figure \ref{fig:systemmodel-singlebroker} shows the model of the system with only one middleware instance. It is modelled having four different service centers which are described in the following subsection.
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../drawings-ms2/systemmodel-singlebroker.eps}
+  \end{center}
+  \caption{System Model with one Middleware}
+  \label{fig:systemmodel-singlebroker}
+\end{figure}
+
+%% ----------------------------------------------
 
 \subsection{Service Centers}
-
-From figure \ref{fig:sut} on can derive the following components of the system model.
-
 \subsubsection{Network Receive}
-The first queue where clients issue requests is the networking part of the middle ware. The queue size of this not too clear \\
+\label{subsub:ServiceCenterNetworkReceive}
 
-\begin{tabular}{|l|c|}
+This service center represents the networking part where the middleware gets a request and buffers it until completely received. The number of service nodes is 1 because receiving and buffering is done single threaded by the nio networking interface.\\
+
+\begin{tabular}{|l|l|}
 \hline 
-Queue Size & Number of clients \\ 
+Type & load dependent \\ 
+\hline 
+Queue Size & unbound\\ 
 \hline 
 Service Node Count & 1 \\ 
 \hline 
 \end{tabular} 
 
-\subsubsection{Request Queue}
-This node represents the request queue and the worker threads attached to it.\\
+\subsubsection{Process Request}
+This service center represents the request queue and the worker threads attached to it. The queue is represented by an actual queue and workers implemented in java. The queue size is fixed and corresponds with the size of the java queue (which is configurable and by default set to 100) \\
 
-\begin{tabular}{|l|c|}
+\begin{tabular}{|l|l|}
 \hline 
-Queue Size & Corresponds to Request Queue size (default 50)\\ 
+Type & load dependent \\ 
+\hline 
+Queue Size & Corresponds to Request Queue size (default 100)\\ 
 \hline 
 Service Node Count & Corresponds to \# of worker thread \\ 
 \hline 
 \end{tabular} 
 
 \subsubsection{Database}
-This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units)
+This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). The queue size is modelled to be infinite. The number of service nodes is set to two which matches the ECU count.
 
-\begin{tabular}{|l|c|}
+
+\begin{tabular}{|l|l|}
+\hline 
+Type & load dependent \\ 
 \hline 
 Queue Size & Corresponds to Request Queue size (default 50)\\ 
 \hline 
@@ -216,31 +238,53 @@ Service Node Count & Corresponds to the total number of database connections \\
 
 
 \subsubsection{Network Send}
+This service center represents the networking part where the middleware sends back a response. Responses to transmit are buffered in a java response queue. So the queue size corresponds to the size of the java queue. As in section  \ref{subsub:ServiceCenterNetworkReceive} the service node count is one. \\
+
+\begin{tabular}{|l|l|}
+\hline 
+Type & load dependent \\ 
+\hline 
+Queue Size & Corresponds to Response Queue size (default 100)\\ 
+\hline 
+Service Node Count & 1 \\ 
+\hline 
+\end{tabular} 
+
+\subsection{Modelling Multiple Middlewares}
+
+The model shown in section \ref{sec:SystemModel} takes only one middle ware into account. Since clients are evenly distributed among stateless middle wares queues of the middle wares can be merged. This means that for each broker added the queue size and service node count is increased accordingly.
+
+\paragraph{For example} if there are 8 middleware the queue size of the \textit{Network Receive} compoenent is still unbound but the service node count is 8 instead of 1.
 
 
-
-
-\section{Memos}
-
-- create a single queue system with the 
-
-- hierarchical decomposition
-
-- decompose into smaller network
-
-\section{Refined Model of the System}
-
-
+%% ----------------------------------------------
+% Section MVA
+%% ----------------------------------------------
 \section{Mean-Value Analysis}
 
 %% ----------------------------------------------
 % Section Experiments
 %% ----------------------------------------------
 \section{Experiment}
-For this milestone it was decided to repeat the experiment where the load is gradually increased until the system trashes. The previous example was flawed because the number of clients were dynamically increased without stopping the measurements. Warmup time of the freshly connected clients was not considered properly.
+For this milestone it was decided to repeat the experiment where the load is gradually increased until the system trashes. The previous one performed for milestone 1 was flawed because the number of clients were dynamically increased without stopping the measurements. Warmup time of the freshly connected clients were not considered properly.
 
 \subsection{Experiment Setup}
-The experiment setup consists of a single database, 16 middleware instances and OneWayClients with a think time of 10ms. The experiment is split up into 7 minute blocks (with 1 minute warmup and cooldown time). For each sub experiment the number of clients is increased by 25.
+
+\begin{tabular}{|l|l|}
+\hline 
+\textbf{Parameter} & \textbf{Value} \\ 
+\hline 
+Broker & 8 distributed over 4 Amazon EC2 medium  instances (2 VCU per instance)\\ 
+\hline 
+Client Type & OneWayClient \\ 
+\hline 
+Client Think Time & 10ms \\ 
+\hline 
+\# of Clients & 30 - 450 \\ 
+\hline 
+Experiment Duration & 7min \\ 
+\hline 
+\end{tabular} 
 
 
 \subsection{Hypothesis}
@@ -250,6 +294,15 @@ a certain degree. By increasing the load more the system should become unstable 
 trashing.
 
 \subsection{Result}
+
+
+\begin{tabular}{|l|l|}
+\hline 
+TestRunId & \# of Clients \\ 
+\hline 
+191 & 30 \\ 
+\hline 
+\end{tabular} 
 
 \subsection{Interpretation}
 
@@ -285,7 +338,7 @@ analytical model,
 - explain why the model matches reality (or not)
 
 
-- siehe buch seite 1078 für Anregungen was man so machen müsste
+- siehe buch seite 1078 fuer Anregungen was man so machen müsste
 
 Sample book ref \cite[Page 556]{Raj}
 
