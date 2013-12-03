@@ -57,21 +57,27 @@ public class Configuration {
 	}
 
 	protected void parseScenarioMapping(Properties props) {
+		String brokersToParse = null;
+		String clientsToParse = null;
+		try {
 
-		String brokersToParse = getStringConfig(SCENARIO_MAPPING_BROKER);
-		brokerScenarioMappings = parseBrokerScenarioMapping(brokersToParse);
+			brokersToParse = getStringConfig(SCENARIO_MAPPING_BROKER);
+			brokerScenarioMappings = parseBrokerScenarioMapping(brokersToParse);
 
-		String clientsToParse = getStringConfig(SCENARIO_MAPPING_CLIENT);
-		clientScenarioMappings = parseClientScenarioMapping(clientsToParse);
+			clientsToParse = getStringConfig(SCENARIO_MAPPING_CLIENT);
+			clientScenarioMappings = parseClientScenarioMapping(clientsToParse);
 
-		int myPosition = getIntConfig(SCENARIO_MYPOSITION);
-		String myType = getStringConfig(SCENARIO_MYTYPE);
-		if (Configuration.SCENARIO_MYTYPE_BROKER_VALUE.equals(myType)) {
-			myMapping = brokerScenarioMappings.get(myPosition);
-		} else if (Configuration.SCENARIO_MYTYPE_CLIENT_VALUE.equals(myType)) {
-			myMapping = clientScenarioMappings.get(myPosition);
-		} else {
-			throw new RuntimeException("Invalid Configuration - Unexpected myType " + myType);
+			int myPosition = getIntConfig(SCENARIO_MYPOSITION);
+			String myType = getStringConfig(SCENARIO_MYTYPE);
+			if (Configuration.SCENARIO_MYTYPE_BROKER_VALUE.equals(myType)) {
+				myMapping = brokerScenarioMappings.get(myPosition);
+			} else if (Configuration.SCENARIO_MYTYPE_CLIENT_VALUE.equals(myType)) {
+				myMapping = clientScenarioMappings.get(myPosition);
+			} else {
+				throw new RuntimeException("Invalid Configuration - Unexpected myType " + myType);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Error while parsing ScenarioMapping BrokerScenario[" + brokersToParse + "] clientScenario[" + clientsToParse + "]", e);
 		}
 	}
 
