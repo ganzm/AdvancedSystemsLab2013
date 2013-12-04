@@ -63,20 +63,14 @@ public class OneWayClient extends ClientScenario {
 		sendInitialMessage();
 
 		// time when we started to send messages
-		long startTime = System.currentTimeMillis();
 		boolean running = true;
-		for (int i = 0; running; i++) {
+		while (running) {
 			try {
 
 				performAction();
 
-				long dt = System.currentTimeMillis() - startTime;
+				Thread.sleep(waitTimeBetweenActions);
 
-				if (dt / waitTimeBetweenActions <= i) {
-					long timeToSleep = waitTimeBetweenActions - (dt % waitTimeBetweenActions);
-					Thread.sleep(timeToSleep);
-					// else { We are behind in sending messages - don't sleep }
-				}
 			} catch (MlmqRequestTimeoutException e) {
 				logger.severe("MlmqRequestTimeoutException - try to reconnect " + LoggerUtil.getStackTraceString(e));
 				connectClient();
