@@ -143,7 +143,7 @@ The interarrivaltime is modeled to be exponentially distributed. This can be sho
 
 \subsubsection{(S) Service Time Distribution }
 
-Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in section \ref{subsub:ArrivalProcess} show an exponential distribution of service time.
+Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in chapter \ref{subsub:ArrivalProcess} show an exponential distribution of service time.
 
 % ------------------------------------------------
 % Figure 
@@ -175,6 +175,7 @@ Since we are modelling a closed system the population size can be set to the num
 Because the whole messaging system consists of queues  First Come First Server (FCFS) service discipline is assumed for our system model.
 
 \section{Refined System Model}
+\label{sec:RefinedSystemModel}
 
 Modelling the system as a black box is not very accurate. To be able to do a more distinct analysis and to identify bottle neck components the black box queue is refined into a queueing network.
 
@@ -194,14 +195,18 @@ Figure \ref{fig:systemmodel-singlebroker} shows the model of the system with onl
 %% ----------------------------------------------
 
 \subsection{Service Centers}
+
+\subsubsection{Client}
+The clients are modelled as Delay Centers. The time a client is sleeping between two requests is the think time $Z$.
+
 \subsubsection{Network Receive}
 \label{subsub:ServiceCenterNetworkReceive}
 
-This service center represents the networking part where the middleware gets a request and buffers it until completely received. The number of service nodes is 1 because receiving and buffering is done single threaded by the nio networking interface.\\
+This service center represents the networking part where the middleware gets a request and buffers it until completely received. For this queue also the time used sending the request over the network is taken into account. The number of service nodes is 1 because receiving and buffering is done single threaded by the nio networking interface.\\
 
 \begin{tabular}{|l|l|}
 \hline 
-Type & load dependent \\ 
+Type & fixed capacity \\ 
 \hline 
 Queue Size & unbound\\ 
 \hline 
@@ -223,16 +228,16 @@ Service Node Count & Corresponds to \# of worker thread \\
 \end{tabular} 
 
 \subsubsection{Database}
-This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). The queue size is modelled to be infinite. The number of service nodes is set to two which matches the ECU count.
+This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). The queue size is modelled to be infinite. The number of service nodes is set to 2.\\
 
 
 \begin{tabular}{|l|l|}
 \hline 
-Type & load dependent \\ 
+Type & fixed-capacity service center \\ 
 \hline 
-Queue Size & Corresponds to Request Queue size (default 50)\\ 
+Queue Size & unbound \\ 
 \hline 
-Service Node Count & Corresponds to the total number of database connections \\ 
+Service Node Count & 2 \\ 
 \hline 
 \end{tabular} 
 
@@ -252,9 +257,62 @@ Service Node Count & 1 \\
 
 \subsection{Modelling Multiple Middlewares}
 
-The model shown in section \ref{sec:SystemModel} takes only one middle ware into account. Since clients are evenly distributed among stateless middle wares queues of the middle wares can be merged. This means that for each broker added the queue size and service node count is increased accordingly.
+The model shown in section \ref{sec:SystemModel} takes only one middleware into account. Since clients are evenly distributed among multiple stateless middlewares and the visit ratio $V_i$ of the $i$-th queue for $n$ instances is $1 \over n$ we can simplify the model by merging all of them together. This means that for each broker added the queue size and service node count is increased accordingly. This assumption is backed by the Forced Flow law. In a closed system no request leaves the system.
 
-\paragraph{For example} if there are 8 middleware the queue size of the \textit{Network Receive} compoenent is still unbound but the service node count is 8 instead of 1.
+\paragraph{For example} if there are 8 middleware the queue size of the \textit{Network Receive} component is still unbound but the service node count is 8 instead of 1 (it becomes a load dependent service center).
+
+%% ----------------------------------------------
+% Section Single Queues
+%% ----------------------------------------------
+\section{Analysing the Queues}
+
+To further analyse the queues defined in section \ref{sec:RefinedSystemModel} the experiment described in section \ref{sec:experiment} with a client count of 120 was taken. All measurement values used here are taken from there.
+
+\subsection{Network Receive - M/M/8}
+Since we scale the number of middlewares to 8 this queue becomes a M/M/8 queue. The queue size is still infinite.
+
+
+From the experiment the following values were measured:
+
+\begin{tabular}{|c|c|c|}
+\hline 
+$\lambda$ & mean arrival rate & TODO \\ 
+\hline 
+$\mu$ & mean service rate & TODO \\ 
+\hline 
+$m$ & number of service nodes & 8 \\ 
+\hline 
+\end{tabular} 
+
+\subsubsection{Traffic intensity $\rho$}
+
+$$ \rho = \lambda / (m \mu) = TODO$$
+
+Since $\rho$ is below 1 this system is stable.
+
+
+See \cite[Box 31.2]{Raj}
+
+
+\subsection{Network Receive - M/M/8}
+
+\subsection{Process Request - M/M/8* / 100*8}
+
+\subsection{Network Receive - M/M/8}
+
+\subsection{Network Receive - M/M/8}
+
+\begin{tabular}{|l|l|}
+\hline 
+$\lambda_{rx}$ & arrival rate in requests per minute \\
+\hline 
+$\mu_{rx}$ & service rate of a single service node in requests per minute \\
+\hline 
+$m_{rx}$ & number of service nodes \\
+\hline 
+\end{tabular}
+
+Traffic intensity $\rho = {\lambda} / {(m \mu)}$ should be less than 1.
 
 
 %% ----------------------------------------------
@@ -262,10 +320,75 @@ The model shown in section \ref{sec:SystemModel} takes only one middle ware into
 %% ----------------------------------------------
 \section{Mean-Value Analysis}
 
+A Mean-Value Analysis was performed for the system. According to \cite[Box 31.2]{Raj} the following input parameters of the system are needed.
+
+\begin{tabular}{|c|c|}
+\hline 
+$Z$ & Thinktime \\ 
+\hline 
+$S_i$ & Service timer per Visit \\ 
+\hline 
+$V_i$ & Number of Visits \\ 
+\hline 
+M & Number of Devices \\ 
+\hline 
+N & Number of User \\ 
+\hline 
+$\mu_i(j)$ & • \\ 
+\hline 
+• & • \\ 
+\hline 
+\end{tabular} 
+
+
+
+\subsection{Measured Values}
+
+\begin{tabular}{|l|l|}
+\hline 
+$N$ & Number of clients in the system \\ 
+\hline 
+$X$ & Total throughput in requests per second \\ 
+\hline 
+\end{tabular} 
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+$N$ & $X$ & • & • & • \\ 
+\hline 
+30 & • & • & • & • \\ 
+\hline 
+60 & • & • & • & • \\ 
+\hline 
+90 & • & • & • & • \\ 
+\hline 
+120 & • & • & • & • \\ 
+\hline 
+120 & • & • & • & • \\ 
+\hline 
+\end{tabular} 
+
+\subsection{Service Times}
+
+\begin{tabular}{|c|c|c|c|c|}
+\hline 
+  & Network Receive & Process Request & Database & Network Send \\ 
+\hline 
+Mean service time $S$ & • & • & • & • \\ 
+\hline 
+Visit Ratio $V$ & • & • & • & • \\ 
+
+\hline 
+\end{tabular} 
+
+
+- balanced job bounds
+
 %% ----------------------------------------------
 % Section Experiments
 %% ----------------------------------------------
 \section{Experiment}
+\label{sec:experiment}
 For this milestone it was decided to repeat the experiment where the load is gradually increased until the system trashes. The previous one performed for milestone 1 was flawed because the number of clients were dynamically increased without stopping the measurements. Warmup time of the freshly connected clients were not considered properly.
 
 \subsection{Experiment Setup}
@@ -275,6 +398,10 @@ For this milestone it was decided to repeat the experiment where the load is gra
 \textbf{Parameter} & \textbf{Value} \\ 
 \hline 
 Broker & 8 distributed over 4 Amazon EC2 medium  instances (2 VCU per instance)\\ 
+\hline 
+\# of Worker Thread & 20 per middleware \\
+\hline 
+\# of DB Connections & 15 per middleware \\
 \hline 
 Client Type & OneWayClient \\ 
 \hline 
