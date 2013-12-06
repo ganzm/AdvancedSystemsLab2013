@@ -314,6 +314,53 @@ $m_{rx}$ & number of service nodes \\
 
 Traffic intensity $\rho = {\lambda} / {(m \mu)}$ should be less than 1.
 
+%% ----------------------------------------------
+% Section Bottleneck Analysis
+%% ----------------------------------------------
+\section{Bottleneck Analysis}
+
+A bottleneck analysis was performed to determine which component limits the total capacity of the system. Table \ref{tabular:BottleneckParams} shows the values required for this Analysis.
+
+Row $S$ and $X$ are measurement values obtained from Milestone I. By applying \textit{Utilisation Law} \ref{eq:UtilisationLaw} row $U$ can be calculated.   
+
+\begin{equation}
+\label{eq:UtilisationLaw}
+U = X S
+\end{equation}
+
+
+The last row $D$ is obtained by combining \textit{Utilisation Law} and \textit{Forced Flow Law} \ref{eq:Demand}. 
+
+\begin{equation}
+\label{eq:Demand}
+U = X_{total} D
+\end{equation}
+
+
+\begin{figure}[H]
+\label{tabular:BottleneckParams}
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|l|}
+\hline 
+ & \textbf{Network Receive} & \textbf{Process Request} & \textbf{Database} & \textbf{Network Send}\\ 
+\hline
+\textbf{$S$ Mean Service Time [ms]} & • & • & • & • \\
+\hline 
+\textbf{$X$ Throughput [req/min]} & • & • & • & • \\
+\hline
+\textbf{$U$ Utilisation} & • & • & • & • \\
+\hline
+\textbf{$D$ Demand} & • & • & • & • \\
+\hline
+\end{tabular} 
+\caption{Bottleneck Analysis Input Parameters}
+\end{center}
+\end{figure}
+
+
+- Mean Service Time per Device $S_i$\\
+- Throughput per Device $X_i$
+
 
 %% ----------------------------------------------
 % Section MVA
@@ -393,6 +440,10 @@ For this milestone it was decided to repeat the experiment where the load is gra
 
 \subsection{Experiment Setup}
 
+
+\begin{figure}[H]
+\label{tabular:experimentsetup}
+\begin{center}
 \begin{tabular}{|l|l|}
 \hline 
 \textbf{Parameter} & \textbf{Value} \\ 
@@ -412,6 +463,9 @@ Client Think Time & 10ms \\
 Experiment Duration & 7min \\ 
 \hline 
 \end{tabular} 
+%\caption{Experiment Parameters}
+\end{center}
+\end{figure}
 
 
 \subsection{Hypothesis}
@@ -431,8 +485,47 @@ TestRunId & \# of Clients \\
 \hline 
 \end{tabular} 
 
+\subsection{Sanity Check}
+
+The measured data can be check if they are plausible using the \textit{Interactive Response Time Law}.
+
+\begin{equation}
+\label{eq:InteractiveResponseTimeLaw}
+X = {{N} \over {R + Z}}
+\end{equation}
+
+
+Where $X$ is the throughput, $N$ the number of clients, $R$ the response time and $Z$ the think 	time. Table \ref{tabular:experimentsanitycheck} shows the table containing the measured values. Column $Z$ with the think time was calculated using formula \ref{eq:InteractiveResponseTimeLaw}. 
+
+\begin{figure}[H]
+\label{tabular:experimentsanitycheck}
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline 
+$N$ & $X$ [req/min] & $R$ [ms] & $Z$ [ms]\\
+\hline 
+30&	49970&	20&	16\\
+60&	85833&	32&	10\\
+90&	94047&	48&	9\\
+120&	99332&	60&	12\\
+150&	101191&	72&	17\\
+180&	99415&	92&	17\\
+210&	98858&	109&	18\\
+\hline 
+\end{tabular} 
+\caption{Calculated Think Time}
+\end{center}
+\end{figure}
+
+
+
+
+
 \subsection{Interpretation}
 
+TODO - describe graphs\\
+
+The calculated think time has the expected magnitude and does not vary too much (around 15ms). The measured data seem to be plausible.
 
 %% ----------------------------------------------
 % Section MEMOS
