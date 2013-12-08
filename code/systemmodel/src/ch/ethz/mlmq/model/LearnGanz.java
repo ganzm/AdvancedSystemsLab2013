@@ -58,6 +58,8 @@ public class LearnGanz {
 
 		initializeMVA(queues, qPerQueue, pJPerQueue);
 
+		logResultHeader();
+
 		for (int n = 1; n <= N; n++) {
 
 			// calculate Response Time R (per Queue)
@@ -140,7 +142,21 @@ public class LearnGanz {
 				}
 			}
 
+			logResult(n, X, rTotal, uPerQueue, rPerQueue, qPerQueue, pJPerQueue);
 		}
+	}
+
+	private static void logResultHeader() {
+
+	}
+
+	private static void logResult(int n, BigDecimal X, BigDecimal R, BigDecimal[] uPerQueue, BigDecimal[] rPerQueue, List<BigDecimal> qPerQueue,
+			List<List<BigDecimal>> pJPerQueue) {
+
+		System.out.println("Number of Users N;System Througput X; System Response Time R;");
+
+		System.out.println(n + ";" + X + ";" + R);
+
 	}
 
 	private static void initializeMVA(List<Queue> queues, List<BigDecimal> qPerQueue, List<List<BigDecimal>> pJPerQueue) {
