@@ -321,7 +321,7 @@ Traffic intensity $\rho = {\lambda} / {(m \mu)}$ should be less than 1.
 
 A bottleneck analysis was performed to determine which component limits the total capacity of the system. Table \ref{tabular:BottleneckParams} shows the values required for this Analysis.
 
-Row $S$ and $X$ are measurement values obtained from Milestone I. By applying \textit{Utilisation Law} \ref{eq:UtilisationLaw} row $U$ can be calculated.   
+Row $S$ and $X$ are measurement values obtained from Milestone I. By applying \textit{Utilisation Law} (eq. \ref{eq:UtilisationLaw}) row $U$ can be calculated.   
 
 \begin{equation}
 \label{eq:UtilisationLaw}
@@ -329,7 +329,7 @@ U = X S
 \end{equation}
 
 
-The last row $D$ is obtained by combining \textit{Utilisation Law} and \textit{Forced Flow Law} \ref{eq:Demand}. 
+The last row $D$ is obtained by combining \textit{Utilisation Law} and \textit{Forced Flow Law} (eq. \ref{eq:Demand}). 
 
 \begin{equation}
 \label{eq:Demand}
@@ -459,6 +459,8 @@ Client Type & OneWayClient \\
 Client Think Time & 10ms \\ 
 \hline 
 \# of Clients & 30 - 450 \\ 
+\hline 
+Request Timeout & 1 s
 \hline 
 Experiment Duration & 7min \\ 
 \hline 
