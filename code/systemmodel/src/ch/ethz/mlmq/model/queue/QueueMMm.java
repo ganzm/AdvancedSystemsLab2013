@@ -9,14 +9,19 @@ public class QueueMMm extends Queue {
 	 */
 	private int m;
 
-	public QueueMMm(String name, double lambda, double mu, int m) {
-		super(name, lambda, mu);
+	public QueueMMm(String name, double lambda, double s, int m) {
+		super(name, lambda, s);
 		this.m = m;
 	}
 
-	public BigDecimal getTraficIntensity() {
+	@Override
+	public BigDecimal getServiceRateWithNJobs(int n) {
+		return getMeanServiceRate();
+	}
 
-		BigDecimal mTimesMu = new BigDecimal(m).multiply(new BigDecimal(mu));
+	public BigDecimal getTraficIntensity() {
+		BigDecimal mu = getMeanServiceRate();
+		BigDecimal mTimesMu = new BigDecimal(m).multiply(mu);
 		return new BigDecimal(lambda).divide(mTimesMu, PRECISION, ROUND);
 	}
 

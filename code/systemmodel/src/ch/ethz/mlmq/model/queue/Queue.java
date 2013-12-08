@@ -4,9 +4,9 @@ import java.math.BigDecimal;
 
 public abstract class Queue {
 
-	final int PRECISION = 50;
+	public static final int PRECISION = 50;
 
-	final int ROUND = BigDecimal.ROUND_HALF_UP;
+	public static final int ROUND = BigDecimal.ROUND_HALF_UP;
 
 	/**
 	 * Queue name
@@ -19,16 +19,39 @@ public abstract class Queue {
 	protected final double lambda;
 
 	/**
-	 * Service Rate
+	 * Mean Service Time per job
 	 */
-	protected final double mu;
+	protected double s;
 
-	public Queue(String name, double lambda, double mu) {
+	public Queue(String name, double lambda, double s) {
 		this.name = name;
 		this.lambda = lambda;
-		this.mu = mu;
-
+		this.s = s;
 	}
+
+	public BigDecimal getMeanServiceTime() {
+		return new BigDecimal(s);
+	}
+
+	/**
+	 * Mean Service Rate
+	 * 
+	 * mu
+	 * 
+	 * 
+	 * @return
+	 */
+	public BigDecimal getMeanServiceRate() {
+		return BigDecimal.ONE.divide(new BigDecimal(s), PRECISION, ROUND);
+	}
+
+	/**
+	 * Service Rate with n jobs in the system
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public abstract BigDecimal getServiceRateWithNJobs(int n);
 
 	public String getName() {
 		return name;

@@ -14,14 +14,25 @@ public class QueueMMmB extends Queue {
 	 */
 	private int B;
 
-	public QueueMMmB(String name, double lambda, double mu, int m, int B) {
-		super(name, lambda, mu);
+	public QueueMMmB(String name, double lambda, double s, int m, int B) {
+		super(name, lambda, s);
 		this.m = m;
 		this.B = B;
 	}
 
+	@Override
+	public BigDecimal getServiceRateWithNJobs(int n) {
+		if (n < m) {
+			return new BigDecimal(m).divide(new BigDecimal(s), PRECISION, ROUND);
+		} else {
+			return new BigDecimal(n).divide(new BigDecimal(s), PRECISION, ROUND);
+		}
+	}
+
 	public BigDecimal getTraficIntensity() {
-		BigDecimal mTimesMu = new BigDecimal(m).multiply(new BigDecimal(mu));
+
+		BigDecimal mu = getMeanServiceRate();
+		BigDecimal mTimesMu = new BigDecimal(m).multiply(mu);
 		return new BigDecimal(lambda).divide(mTimesMu, PRECISION, ROUND);
 	}
 
