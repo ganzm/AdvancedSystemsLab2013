@@ -29,6 +29,8 @@ public abstract class Queue {
 		this.s = s;
 	}
 
+	public abstract BigDecimal getTraficIntensity();
+
 	public BigDecimal getMeanServiceTime() {
 		return new BigDecimal(s);
 	}
@@ -66,4 +68,10 @@ public abstract class Queue {
 
 		return result;
 	}
+
+	public abstract BigDecimal getMeanNrOfJobsInSystem();
+
+	public abstract BigDecimal getMeanNrOfJobsInQueue();
+
+	public abstract BigDecimal getProbabilityNumJobsInSystem(int n);
 }

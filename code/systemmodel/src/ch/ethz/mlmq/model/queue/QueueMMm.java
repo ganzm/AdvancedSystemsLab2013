@@ -88,7 +88,7 @@ public class QueueMMm extends Queue {
 		BigDecimal tmp = mTimesRho.pow(m);
 		tmp = tmp.multiply(p0);
 		tmp = tmp.divide(BigDecimal.ONE.subtract(rho), PRECISION, ROUND);
-		tmp = tmp.divide(factorial(m));
+		tmp = tmp.divide(factorial(m), PRECISION, ROUND);
 		return tmp;
 	}
 

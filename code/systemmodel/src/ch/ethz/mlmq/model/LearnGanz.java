@@ -10,40 +10,85 @@ import ch.ethz.mlmq.model.queue.QueueMMmB;
 
 public class LearnGanz {
 
+	private static void createQueues(List<Queue> queues, List<Integer> visitCounts) {
+		int workerThreadCount = 20;
+		int brokerCount = 8;
+		int dbConnectionCount = 15;
+
+		// arrivalrate jobs/ms
+		double lambda1 = 1.5d;
+		// service time per job
+		double s1 = 3;
+
+		// M/M/8 Queue
+		QueueMMm queue1 = new QueueMMm("Network Receive", lambda1 / ((double) brokerCount), s1, brokerCount);
+
+		// WorkerThreadCount
+		int queueSize = brokerCount * workerThreadCount;
+		// Service Time
+		double s2 = 1;
+		QueueMMmB queue2 = new QueueMMmB("ProcessRequest", lambda1 / ((double) brokerCount), s2, brokerCount, queueSize);
+
+		// M/M/2
+
+		// db service time
+		double s3 = 7;
+		double optimalServiceNodeCount = lambda1 * s3;
+
+		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 12);
+
+		BigDecimal intensity = queue3.getTraficIntensity();
+
+		// M/M/8
+		QueueMMm queue4 = new QueueMMm("Network Send", lambda1 / ((double) brokerCount), s1, brokerCount);
+
+		queues.add(queue1);
+		visitCounts.add(1);
+
+		queues.add(queue2);
+		visitCounts.add(1);
+
+		queues.add(queue3);
+		visitCounts.add(1);
+
+		queues.add(queue4);
+		visitCounts.add(1);
+	}
+
 	public static void main(String[] args) {
 
-		QueueMMm queue = new QueueMMm("First Queue", 5, 11, 2);
-		QueueMMmB queueB = new QueueMMmB("Network Receive", 5, 11, 2, 10);
-
-		System.out.println("Queue: " + queueB);
-		System.out.println("Traffic Intensity: " + queueB.getTraficIntensity());
-		System.out.print("Probability of n Jobs in the System:\n");
-
-		BigDecimal sum = BigDecimal.ZERO;
-		for (int i = 0; i < 30; i++) {
-			BigDecimal tmp = queueB.getProbabilityNumJobsInSystem(i);
-
-			sum = sum.add(tmp);
-			System.out.print("\t" + tmp + "\n");
-		}
-		System.out.println("Total (should be 1)" + sum);
-		// System.out.println("Probability of Queueing " + queue.getProbabilityOfQueueing());
-		System.out.println("MeanNrOfJobsInSystem " + queueB.getMeanNrOfJobsInSystem());
-		System.out.println("MeanNrOfJobsInQueue " + queueB.getMeanNrOfJobsInQueue());
-
-		//
 		List<Queue> queues = new ArrayList<>();
 		List<Integer> visitCounts = new ArrayList<>();
+		createQueues(queues, visitCounts);
 
-		queues.add(queue);
-		visitCounts.add(1000);
-
-		queues.add(queueB);
-		visitCounts.add(1000);
+		evaluateQueues(queues);
 
 		int thinktime = 15;
 		int N = 100;
-		performMVA(queues, visitCounts, thinktime, N);
+		// performMVA(queues, visitCounts, thinktime, N);
+	}
+
+	private static void evaluateQueues(List<Queue> queues) {
+
+		for (Queue queue : queues) {
+
+			System.out.println("======================================================");
+			System.out.println("Queue: " + queue);
+			System.out.println("Traffic Intensity: " + queue.getTraficIntensity());
+			System.out.print("Probability of n Jobs in the System:\n");
+
+			BigDecimal sum = BigDecimal.ZERO;
+			for (int i = 0; i < 30; i++) {
+				BigDecimal tmp = queue.getProbabilityNumJobsInSystem(i);
+
+				sum = sum.add(tmp);
+				System.out.print("\t" + tmp + "\n");
+			}
+			System.out.println("Total (should be 1)" + sum);
+			// System.out.println("Probability of Queueing " + queue.getProbabilityOfQueueing());
+			System.out.println("MeanNrOfJobsInSystem " + queue.getMeanNrOfJobsInSystem());
+			System.out.println("MeanNrOfJobsInQueue " + queue.getMeanNrOfJobsInQueue());
+		}
 	}
 
 	private static void performMVA(List<Queue> queues, List<Integer> visitCounts, int thinktime, int N) {
