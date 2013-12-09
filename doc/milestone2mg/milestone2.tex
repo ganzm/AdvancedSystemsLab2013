@@ -228,8 +228,7 @@ Service Node Count & Corresponds to \# of worker thread \\
 \end{tabular} 
 
 \subsubsection{Database}
-This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). The queue size is modelled to be infinite. The number of service nodes is set to 2.\\
-
+This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). However in a first attempt the service node count was set to 2. This however turned out to be not quite accurate (see section \ref{sub:QueueDatabase} for further explanations).  The queue size is modelled to be infinite.\\
 
 \begin{tabular}{|l|l|}
 \hline 
@@ -237,7 +236,7 @@ Type & fixed-capacity service center \\
 \hline 
 Queue Size & unbound \\ 
 \hline 
-Service Node Count & 2 \\ 
+Service Node Count & 12 \\ 
 \hline 
 \end{tabular} 
 
@@ -266,53 +265,76 @@ The model shown in section \ref{sec:SystemModel} takes only one middleware into 
 %% ----------------------------------------------
 \section{Analysing the Queues}
 
-To further analyse the queues defined in section \ref{sec:RefinedSystemModel} the experiment described in section \ref{sec:experiment} with a client count of 120 was taken. All measurement values used here are taken from there.
+To further analyse the queues the experiment described in section \ref{sec:experiment} with a client count of 90 was taken. The system is nearly at maximum load but not yet saturated. All measurement values used here are taken from there.
 
 \subsection{Network Receive - M/M/8}
-Since we scale the number of middlewares to 8 this queue becomes a M/M/8 queue. The queue size is still infinite.
+\label{sub:QueueNwReceive}
+
+Since we scale the number of middlewares to 8 this queue becomes a M/M/8 queue. The queue size is still infinite. The arrival rate is the total number of requests divided by the experiment run time. The mean service rate is is taken from the measurement from Milestone I. For that we take into account the network delay and the time taken by the middleware reading the network socket and putting the data into the Request Queue.
 
 
-From the experiment the following values were measured:
+From the experiment the following values were measured:\\
 
 \begin{tabular}{|c|c|c|}
 \hline 
-$\lambda$ & mean arrival rate & TODO \\ 
+% arrival rate 47023 msg/30s / 8 broker
+$\lambda$ & mean arrival rate & 195 requests / s \\ 
 \hline 
-$\mu$ & mean service rate & TODO \\ 
+$\mu$ & mean service rate & ${1 / {3ms}}$\\ 
 \hline 
 $m$ & number of service nodes & 8 \\ 
 \hline 
 \end{tabular} 
 
 \subsubsection{Traffic intensity $\rho$}
+\begin{equation}
+\label{eq:TraficIntensity}
+\rho = \lambda / (m \mu)
+\end{equation}
 
-$$ \rho = \lambda / (m \mu) = TODO$$
 
 Since $\rho$ is below 1 this system is stable.
 
 
 See \cite[Box 31.2]{Raj}
 
+\subsection{Process Request - M/M/160/800}
+This queue takes into account message deserialisation, processing and serialsation of the response. Database transactions are not included in. The number of service node corresponds to the total number of worker threads. Queue size matches the default queue size of 100 for each of the 8 brokers. The arrival rate is the same as for the previous queue since no messages are lost.\\
 
-\subsection{Network Receive - M/M/8}
-
-\subsection{Process Request - M/M/8* / 100*8}
-
-\subsection{Network Receive - M/M/8}
-
-\subsection{Network Receive - M/M/8}
-
-\begin{tabular}{|l|l|}
+\begin{tabular}{|c|c|c|}
 \hline 
-$\lambda_{rx}$ & arrival rate in requests per minute \\
+% arrival rate 47023 msg/30s
+$\lambda$ & mean arrival rate & 195 requests / s \\ 
 \hline 
-$\mu_{rx}$ & service rate of a single service node in requests per minute \\
+$\mu$ & mean service rate & $1/1ms$ \\ 
 \hline 
-$m_{rx}$ & number of service nodes \\
+$m$ & number of service nodes & 160 \\ 
 \hline 
-\end{tabular}
+\end{tabular} 
 
-Traffic intensity $\rho = {\lambda} / {(m \mu)}$ should be less than 1.
+
+\subsection{Database - M/M/12}
+\label{sub:QueueDatabase}
+
+For the database the mean arrival rate is 8 times higher than for the other queues. This is because the load is evenly spread accross 8 middleware instances while there is only one database.
+
+The number for the mean service rate was taken from the micro benchmark out of Milestone I. While evaluating the traffic intensity for this queue I recognized that setting the number of processing nodes to 2 as initially intended leads to a traffic intensity which is not stable any more ($>1$). I chose to estimate number of service nodes as following. As seen in section \ref{sec:experiment} the system seems to become unstable with about 100 clients. I now assume traffic intensity to be 1 at this point. This leads to the number of service nodes of 12. My first attempt to set this number to 2 (\# of CPU's) seemed to be not quite right. It actually makes sense giving it a second thought. There are no exclusive table locks on the database  like for other teams. So parallel scalability of the database component should be way better than with only 2 service nodes.\\
+
+\begin{tabular}{|c|c|c|}
+\hline 
+% arrival rate 47023 msg/30s
+$\lambda$ & mean arrival rate & 1567 requests / s \\ 
+\hline 
+$\mu$ & mean service rate & $1/7ms$ \\ 
+\hline 
+$m$ & number of service nodes & 12 \\ 
+\hline 
+\end{tabular} 
+
+
+\subsection{Network Send - M/M/8}
+This queue is symmetric to \ref{sub:QueueNwReceive}.
+
 
 %% ----------------------------------------------
 % Section Bottleneck Analysis
@@ -460,7 +482,7 @@ Client Think Time & 10ms \\
 \hline 
 \# of Clients & 30 - 450 \\ 
 \hline 
-Request Timeout & 1 s
+Request Timeout & 1 s\\
 \hline 
 Experiment Duration & 7min \\ 
 \hline 
@@ -479,13 +501,45 @@ trashing.
 \subsection{Result}
 
 
-\begin{tabular}{|l|l|}
-\hline 
-TestRunId & \# of Clients \\ 
-\hline 
-191 & 30 \\ 
-\hline 
-\end{tabular} 
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/experiment-rt.eps}
+  \end{center}
+  \caption{Histogram showing Response Times\newline(Error bars are the 2.5\% and 97.5\% percentiles)}
+  \label{fig:experiment-rt}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/experiment-tp.eps}
+  \end{center}
+  \caption{Histogram showing number of successfull Requests\newline(Error bars are standard deviation)}
+  \label{fig:experiment-tp}
+\end{figure}
+
+%% ----------------------------------------------
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/experiment-err.eps}
+  \end{center}
+  \caption{Histogram showing Failed Requests\newline(Error bars are standard deviation)}
+  \label{fig:experiment-error}
+\end{figure}
+
+%% ----------------------------------------------
 
 \subsection{Sanity Check}
 
@@ -497,12 +551,12 @@ X = {{N} \over {R + Z}}
 \end{equation}
 
 
-Where $X$ is the throughput, $N$ the number of clients, $R$ the response time and $Z$ the think 	time. Table \ref{tabular:experimentsanitycheck} shows the table containing the measured values. Column $Z$ with the think time was calculated using formula \ref{eq:InteractiveResponseTimeLaw}. 
+Where $X$ is the throughput, $N$ the number of clients, $R$ the response time and $Z$ the think 	time. Table \ref{tabular:experimentsanitycheck} shows the table containing the measured values. Column $Z$ was calculated based on the measured values $X$ and $R$ using formula \ref{eq:InteractiveResponseTimeLaw}. 
 
 \begin{figure}[H]
 \label{tabular:experimentsanitycheck}
 \begin{center}
-\begin{tabular}{|l|l|l|l|}
+\begin{tabular}{|r|r|r|r|}
 \hline 
 $N$ & $X$ [req/min] & $R$ [ms] & $Z$ [ms]\\
 \hline 
@@ -513,6 +567,9 @@ $N$ & $X$ [req/min] & $R$ [ms] & $Z$ [ms]\\
 150&	101191&	72&	17\\
 180&	99415&	92&	17\\
 210&	98858&	109&	18\\
+240&	107105&	116&	18\\
+270&	107871&	130&	20\\
+300&	110108&	147&	16\\
 \hline 
 \end{tabular} 
 \caption{Calculated Think Time}
@@ -520,14 +577,17 @@ $N$ & $X$ [req/min] & $R$ [ms] & $Z$ [ms]\\
 \end{figure}
 
 
-
-
-
 \subsection{Interpretation}
 
-TODO - describe graphs\\
+As expected while adding more and more clients the response time and its variance gradually increases. As seen in figure \ref{fig:experiment-tp} The system seems to saturate at about 100'000 requests per minute. This load is reached between 90 and 100 clients. From this point on both variance of response time and number of requests which can not be processed within the 1 second timeout time drastically increase.
 
-The calculated think time has the expected magnitude and does not vary too much (around 15ms). The measured data seem to be plausible.
+A flaw in the experiment can be observed in figure \ref{fig:experiment-rt}. The 30 client bar has a very high variance. This is because 30 client produce less load than 300. To fix this issue the 30 client experiment should have been run for a longer period of time.
+
+Another observation is that more data points between 0 and 100 clients should have been taken to get more confidence about what's happening when the system is not yet saturated.
+
+The calculated think time $Z$ has the expected magnitude and does not vary too much (around 15ms). The measured data seem to be plausible.
+
+
 
 %% ----------------------------------------------
 % Section MEMOS
