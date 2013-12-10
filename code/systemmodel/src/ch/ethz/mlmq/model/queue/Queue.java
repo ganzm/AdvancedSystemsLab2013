@@ -76,4 +76,16 @@ public abstract class Queue {
 	public abstract BigDecimal getProbabilityNumJobsInSystem(int n);
 
 	public abstract BigDecimal getProbabilityOfQueueing();
+
+	public boolean isLoadDependent() {
+		return false;
+	}
+
+	public boolean isFixedCapacityQueue() {
+		return false;
+	}
+
+	public boolean isDelayCenter() {
+		return false;
+	}
 }

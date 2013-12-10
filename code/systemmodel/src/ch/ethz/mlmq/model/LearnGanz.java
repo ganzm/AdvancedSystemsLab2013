@@ -13,7 +13,6 @@ public class LearnGanz {
 	private static void createQueues(List<Queue> queues, List<Integer> visitCounts) {
 		int workerThreadCount = 20;
 		int brokerCount = 8;
-		int dbConnectionCount = 15;
 
 		// arrivalrate jobs/ms
 		double lambda1 = 1.5d;
@@ -34,8 +33,6 @@ public class LearnGanz {
 
 		// db service time
 		double s3 = 7;
-		double optimalServiceNodeCount = lambda1 * s3;
-
 		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 12);
 
 		// M/M/8
@@ -144,7 +141,7 @@ public class LearnGanz {
 			// calculate new Queue Length
 			for (int i = 0; i < M; i++) {
 				Queue queue_i = queues.get(i);
-				if (queue_i instanceof QueueMMmB) {
+				if (queue_i.isLoadDependent()) {
 					// load dependent
 
 					BigDecimal[] pJ = pJPerQueue.get(i);
@@ -168,7 +165,7 @@ public class LearnGanz {
 
 					pJ[0] = newPi0;
 
-				} else {
+				} else if (queue_i.isFixedCapacityQueue() || queue_i.isDelayCenter()) {
 					// fixed or delay
 					BigDecimal q_i = X.multiply(new BigDecimal(visitCounts.get(i)));
 					q_i = q_i.multiply(responseTimePerQueue[i]);
@@ -187,13 +184,9 @@ public class LearnGanz {
 				// througput per Queue
 				xPerQueue[i] = X.multiply(v_i);
 
-				if (queue_i instanceof QueueMMmB) {
-					// load dependent
-					uPerQueue[i] = BigDecimal.ONE.subtract(pJ[0]);
-				} else {
-					// Fixed capacity or delay center
-					uPerQueue[i] = X.multiply(queue_i.getMeanServiceTime()).multiply(v_i);
-				}
+				// utilisation
+				uPerQueue[i] = xPerQueue[i].multiply(queue_i.getMeanServiceTime());
+
 			}
 
 			logResult(n, X, rTotal, uPerQueue, rPerQueue, qPerQueue, pJPerQueue);
@@ -229,23 +222,22 @@ public class LearnGanz {
 	private static BigDecimal calculateResponseTime(BigDecimal[] qPerQueue, List<BigDecimal[]> pJPerQueue, int n, int i, Queue queue_i) {
 
 		BigDecimal r = null;
-		if (queue_i instanceof QueueMMm) {
+		if (queue_i.isFixedCapacityQueue()) {
 			// fixed capacity queue
 			BigDecimal q_i = qPerQueue[i];
 			r = queue_i.getMeanServiceTime();
 			r = r.multiply(BigDecimal.ONE.add(q_i));
-		} else if (queue_i instanceof QueueMMmB) {
+		} else if (queue_i.isLoadDependent()) {
 			// load dependent queue
+			BigDecimal[] pJList = pJPerQueue.get(i);
 
 			r = BigDecimal.ZERO;
 			for (int j = 1; j <= n; j++) {
-
+				BigDecimal bigJ = new BigDecimal(j);
 				BigDecimal mu_j = queue_i.getServiceRateWithNJobs(j);
-
-				BigDecimal[] pJList = pJPerQueue.get(i);
 				BigDecimal pJ = pJList[j - 1];
 
-				BigDecimal tmp = pJ.multiply(new BigDecimal(j)).divide(mu_j, Queue.PRECISION, Queue.ROUND);
+				BigDecimal tmp = pJ.multiply(bigJ).divide(mu_j, Queue.PRECISION, Queue.ROUND);
 				r = r.add(tmp);
 			}
 

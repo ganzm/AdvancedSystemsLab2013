@@ -16,7 +16,11 @@ public class QueueMMm extends Queue {
 
 	@Override
 	public BigDecimal getServiceRateWithNJobs(int n) {
-		return getMeanServiceRate();
+		if (n < m) {
+			return new BigDecimal(n).divide(new BigDecimal(s), PRECISION, ROUND);
+		} else {
+			return new BigDecimal(m).divide(new BigDecimal(s), PRECISION, ROUND);
+		}
 	}
 
 	public BigDecimal getTraficIntensity() {
@@ -114,5 +118,9 @@ public class QueueMMm extends Queue {
 	@Override
 	public String toString() {
 		return name + " M/M/" + m;
+	}
+
+	public boolean isLoadDependent() {
+		return true;
 	}
 }

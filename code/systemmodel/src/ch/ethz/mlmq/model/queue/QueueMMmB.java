@@ -144,5 +144,10 @@ public class QueueMMmB extends Queue {
 		tmp = tmp.divide(BigDecimal.ONE.subtract(rho), PRECISION, ROUND);
 		tmp = tmp.divide(factorial(m), PRECISION, ROUND);
 		return tmp;
+
+	}
+
+	public boolean isLoadDependent() {
+		return true;
 	}
 }
