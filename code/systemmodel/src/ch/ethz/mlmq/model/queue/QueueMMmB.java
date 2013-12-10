@@ -23,9 +23,9 @@ public class QueueMMmB extends Queue {
 	@Override
 	public BigDecimal getServiceRateWithNJobs(int n) {
 		if (n < m) {
-			return new BigDecimal(m).divide(new BigDecimal(s), PRECISION, ROUND);
-		} else {
 			return new BigDecimal(n).divide(new BigDecimal(s), PRECISION, ROUND);
+		} else {
+			return new BigDecimal(m).divide(new BigDecimal(s), PRECISION, ROUND);
 		}
 	}
 

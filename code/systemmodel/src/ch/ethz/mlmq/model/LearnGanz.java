@@ -24,10 +24,11 @@ public class LearnGanz {
 		QueueMMm queue1 = new QueueMMm("Network Receive", lambda1 / ((double) brokerCount), s1, brokerCount);
 
 		// WorkerThreadCount
-		int queueSize = brokerCount * workerThreadCount;
+		int queueSize = brokerCount * 100;
+		int totalWorker = brokerCount * workerThreadCount;
 		// Service Time
 		double s2 = 1;
-		QueueMMmB queue2 = new QueueMMmB("ProcessRequest", lambda1 / ((double) brokerCount), s2, brokerCount, queueSize);
+		QueueMMmB queue2 = new QueueMMmB("ProcessRequest", lambda1 / ((double) brokerCount), s2, totalWorker, queueSize);
 
 		// M/M/2
 
@@ -59,11 +60,11 @@ public class LearnGanz {
 		List<Integer> visitCounts = new ArrayList<>();
 		createQueues(queues, visitCounts);
 
-		evaluateQueues(queues);
+		// evaluateQueues(queues);
 
 		int thinktime = 15;
 		int N = 100;
-		// performMVA(queues, visitCounts, thinktime, N);
+		performMVA(queues, visitCounts, thinktime, N);
 	}
 
 	private static void evaluateQueues(List<Queue> queues) {
@@ -101,12 +102,13 @@ public class LearnGanz {
 		int M = queues.size();
 
 		// Q_i - Average Number of Jobs per Queue
-		List<BigDecimal> qPerQueue = new ArrayList<>(queues.size());
+
+		BigDecimal[] qPerQueue = new BigDecimal[queues.size()];
 
 		// P_i(J) probability of j jobs at the system
-		List<List<BigDecimal>> pJPerQueue = new ArrayList<>(queues.size());
+		List<BigDecimal[]> pJPerQueue = new ArrayList<>(queues.size());
 
-		initializeMVA(queues, qPerQueue, pJPerQueue);
+		initializeMVA(queues, qPerQueue, pJPerQueue, N);
 
 		logResultHeader();
 
@@ -137,40 +139,40 @@ public class LearnGanz {
 
 			// Calculate total Throughput
 			BigDecimal tmp = new BigDecimal(thinktime).add(rTotal);
-			BigDecimal X = new BigDecimal(N).divide(tmp, Queue.PRECISION, Queue.ROUND);
+			BigDecimal X = new BigDecimal(n).divide(tmp, Queue.PRECISION, Queue.ROUND);
 
-			//
+			// calculate new Queue Length
 			for (int i = 0; i < M; i++) {
 				Queue queue_i = queues.get(i);
 				if (queue_i instanceof QueueMMmB) {
 					// load dependent
-					List<BigDecimal> pJ = pJPerQueue.get(i);
+
+					BigDecimal[] pJ = pJPerQueue.get(i);
 
 					for (int j = n; j > 0; j--) {
 
 						BigDecimal mu_j = queue_i.getServiceRateWithNJobs(j);
 
-						BigDecimal tmp1 = pJ.get(j - 1);
+						BigDecimal tmp1 = pJ[j - 1];
 						tmp1 = X.multiply(tmp1);
 						tmp1 = tmp1.divide(mu_j, Queue.PRECISION, Queue.ROUND);
 
-						pJ.add(tmp1);
+						pJ[j] = tmp1;
 					}
 
 					BigDecimal newPi0 = BigDecimal.ONE;
 
-					assert n == pJ.size();
-					for (int j = 1; j < pJ.size(); j++) {
-						newPi0 = newPi0.subtract(pJ.get(j));
+					for (int j = 1; j < pJ.length; j++) {
+						newPi0 = newPi0.subtract(pJ[j]);
 					}
 
-					pJ.set(0, newPi0);
+					pJ[0] = newPi0;
 
 				} else {
 					// fixed or delay
 					BigDecimal q_i = X.multiply(new BigDecimal(visitCounts.get(i)));
 					q_i = q_i.multiply(responseTimePerQueue[i]);
-					qPerQueue.set(i, q_i);
+					qPerQueue[i] = q_i;
 				}
 			}
 
@@ -178,14 +180,16 @@ public class LearnGanz {
 
 			for (int i = 0; i < M; i++) {
 				Queue queue_i = queues.get(i);
-				List<BigDecimal> pJ = pJPerQueue.get(i);
+				BigDecimal[] pJ = pJPerQueue.get(i);
 
 				BigDecimal v_i = new BigDecimal(visitCounts.get(i));
+
+				// througput per Queue
 				xPerQueue[i] = X.multiply(v_i);
 
 				if (queue_i instanceof QueueMMmB) {
 					// load dependent
-					uPerQueue[i] = BigDecimal.ONE.subtract(pJ.get(0));
+					uPerQueue[i] = BigDecimal.ONE.subtract(pJ[0]);
 				} else {
 					// Fixed capacity or delay center
 					uPerQueue[i] = X.multiply(queue_i.getMeanServiceTime()).multiply(v_i);
@@ -197,36 +201,37 @@ public class LearnGanz {
 	}
 
 	private static void logResultHeader() {
-
+		System.out.println("Number of Users N;System Througput X; System Response Time R;");
 	}
 
-	private static void logResult(int n, BigDecimal X, BigDecimal R, BigDecimal[] uPerQueue, BigDecimal[] rPerQueue, List<BigDecimal> qPerQueue,
-			List<List<BigDecimal>> pJPerQueue) {
-
-		System.out.println("Number of Users N;System Througput X; System Response Time R;");
+	private static void logResult(int n, BigDecimal X, BigDecimal R, BigDecimal[] uPerQueue, BigDecimal[] rPerQueue, BigDecimal[] qPerQueue,
+			List<BigDecimal[]> pJPerQueue) {
 
 		System.out.println(n + ";" + X + ";" + R);
-
 	}
 
-	private static void initializeMVA(List<Queue> queues, List<BigDecimal> qPerQueue, List<List<BigDecimal>> pJPerQueue) {
+	private static void initializeMVA(List<Queue> queues, BigDecimal[] qPerQueue, List<BigDecimal[]> pJPerQueue, int N) {
 		for (int i = 0; i < queues.size(); i++) {
 			// Q_i = 0
-			qPerQueue.add(BigDecimal.ZERO);
+			qPerQueue[i] = BigDecimal.ZERO;
 
 			// P_i(0) = 1
-			List<BigDecimal> list = new ArrayList<>();
-			list.add(BigDecimal.ONE);
+			BigDecimal[] list = new BigDecimal[N + 1];
+			for (int n = 0; n <= N; n++) {
+				list[n] = BigDecimal.ZERO;
+
+			}
+			list[0] = BigDecimal.ONE;
 			pJPerQueue.add(list);
 		}
 	}
 
-	private static BigDecimal calculateResponseTime(List<BigDecimal> qPerQueue, List<List<BigDecimal>> pJPerQueue, int n, int i, Queue queue_i) {
+	private static BigDecimal calculateResponseTime(BigDecimal[] qPerQueue, List<BigDecimal[]> pJPerQueue, int n, int i, Queue queue_i) {
 
 		BigDecimal r = null;
 		if (queue_i instanceof QueueMMm) {
 			// fixed capacity queue
-			BigDecimal q_i = qPerQueue.get(i);
+			BigDecimal q_i = qPerQueue[i];
 			r = queue_i.getMeanServiceTime();
 			r = r.multiply(BigDecimal.ONE.add(q_i));
 		} else if (queue_i instanceof QueueMMmB) {
@@ -237,8 +242,8 @@ public class LearnGanz {
 
 				BigDecimal mu_j = queue_i.getServiceRateWithNJobs(j);
 
-				List<BigDecimal> pJList = pJPerQueue.get(i);
-				BigDecimal pJ = pJList.get(j - 1);
+				BigDecimal[] pJList = pJPerQueue.get(i);
+				BigDecimal pJ = pJList[j - 1];
 
 				BigDecimal tmp = pJ.multiply(new BigDecimal(j)).divide(mu_j, Queue.PRECISION, Queue.ROUND);
 				r = r.add(tmp);
