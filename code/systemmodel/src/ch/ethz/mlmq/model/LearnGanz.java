@@ -61,7 +61,7 @@ public class LearnGanz {
 
 		evaluateQueues(queues);
 
-		int thinktime = 30;
+		int thinktime = 20;
 		int N = 300;
 
 		mvaBuffer = new StringBuilder();

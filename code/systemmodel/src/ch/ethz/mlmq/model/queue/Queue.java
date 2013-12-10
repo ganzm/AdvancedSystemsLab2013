@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public abstract class Queue {
 
-	public static final int PRECISION = 200;
+	public static final int PRECISION = 100;
 
 	public static final int ROUND = BigDecimal.ROUND_HALF_UP;
 
