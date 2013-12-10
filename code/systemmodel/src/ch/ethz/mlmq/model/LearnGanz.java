@@ -1,5 +1,7 @@
 package ch.ethz.mlmq.model;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,16 +41,16 @@ public class LearnGanz {
 		QueueMMm queue4 = new QueueMMm("Network Send", lambda1 / ((double) brokerCount), s1, brokerCount);
 
 		queues.add(queue1);
-		visitCounts.add(1);
+		visitCounts.add((int) (1d / (long) brokerCount));
 
 		queues.add(queue2);
-		visitCounts.add(1);
+		visitCounts.add((int) (1d / (long) brokerCount));
 
 		queues.add(queue3);
 		visitCounts.add(1);
 
 		queues.add(queue4);
-		visitCounts.add(1);
+		visitCounts.add((int) (1d / (long) brokerCount));
 	}
 
 	public static void main(String[] args) {
@@ -57,11 +59,21 @@ public class LearnGanz {
 		List<Integer> visitCounts = new ArrayList<>();
 		createQueues(queues, visitCounts);
 
-		// evaluateQueues(queues);
+		evaluateQueues(queues);
 
-		int thinktime = 15;
-		int N = 100;
+		int thinktime = 30;
+		int N = 300;
+
+		mvaBuffer = new StringBuilder();
 		performMVA(queues, visitCounts, thinktime, N);
+
+		String filePath = "..\\..\\doc\\plots-ms2-mg\\mva.csv";
+		try (FileOutputStream fout = new FileOutputStream(filePath)) {
+			fout.write(mvaBuffer.toString().getBytes());
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+
 	}
 
 	private static void evaluateQueues(List<Queue> queues) {
@@ -107,13 +119,15 @@ public class LearnGanz {
 
 		initializeMVA(queues, qPerQueue, pJPerQueue, N);
 
-		logResultHeader();
+		logResultHeader(queues.size());
 
 		for (int n = 1; n <= N; n++) {
 
 			// calculate Response Time R (per Queue)
 			BigDecimal[] responseTimePerQueue = new BigDecimal[M];
 			BigDecimal[] uPerQueue = new BigDecimal[M];
+			// demand Per Queue
+			BigDecimal[] dPerQueue = new BigDecimal[M];
 			BigDecimal[] rPerQueue = new BigDecimal[M];
 			BigDecimal[] xPerQueue = new BigDecimal[M];
 
@@ -185,22 +199,66 @@ public class LearnGanz {
 				xPerQueue[i] = X.multiply(v_i);
 
 				// utilisation
-				uPerQueue[i] = xPerQueue[i].multiply(queue_i.getMeanServiceTime());
 
+				if (queue_i.isLoadDependent()) {
+					// load dependent
+					uPerQueue[i] = BigDecimal.ONE.subtract(pJ[0]);
+				} else if (queue_i.isDelayCenter() || queue_i.isFixedCapacityQueue()) {
+					// Fixed capacity or delay center
+					uPerQueue[i] = X.multiply(queue_i.getMeanServiceTime()).multiply(v_i);
+				}
+
+				dPerQueue[i] = uPerQueue[i].divide(X, Queue.PRECISION, Queue.ROUND);
 			}
 
-			logResult(n, X, rTotal, uPerQueue, rPerQueue, qPerQueue, pJPerQueue);
+			logResult(n, X, rTotal, uPerQueue, rPerQueue, qPerQueue, pJPerQueue, dPerQueue);
 		}
 	}
 
-	private static void logResultHeader() {
-		System.out.println("Number of Users N;System Througput X; System Response Time R;");
+	private static void logResultHeader(int numQueues) {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Number of Users N" + separatorChar + "System Througput X" + separatorChar + " System Response Time R");
+
+		for (int i = 0; i < numQueues; i++) {
+			sb.append(separatorChar);
+			sb.append("Utilisation_" + i);
+		}
+
+		for (int i = 0; i < numQueues; i++) {
+			sb.append(separatorChar);
+			sb.append("Demand_" + i);
+		}
+
+		writeLine(sb.toString());
 	}
 
-	private static void logResult(int n, BigDecimal X, BigDecimal R, BigDecimal[] uPerQueue, BigDecimal[] rPerQueue, BigDecimal[] qPerQueue,
-			List<BigDecimal[]> pJPerQueue) {
+	private static void writeLine(String string) {
+		mvaBuffer.append(string);
+		mvaBuffer.append("\r\n");
+	}
 
-		System.out.println(n + ";" + X + ";" + R);
+	private static StringBuilder mvaBuffer = new StringBuilder();
+
+	private static String separatorChar = ",";
+
+	private static void logResult(int n, BigDecimal X, BigDecimal R, BigDecimal[] uPerQueue, BigDecimal[] rPerQueue, BigDecimal[] qPerQueue,
+			List<BigDecimal[]> pJPerQueue, BigDecimal[] dPerQueue) {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append(n + separatorChar + X + separatorChar + R);
+
+		for (int i = 0; i < uPerQueue.length; i++) {
+			sb.append(separatorChar);
+			sb.append(uPerQueue[i]);
+
+		}
+		for (int i = 0; i < uPerQueue.length; i++) {
+			sb.append(separatorChar);
+			sb.append(dPerQueue[i]);
+
+		}
+		writeLine(sb.toString());
 	}
 
 	private static void initializeMVA(List<Queue> queues, BigDecimal[] qPerQueue, List<BigDecimal[]> pJPerQueue, int N) {
