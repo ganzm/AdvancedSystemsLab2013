@@ -16,7 +16,6 @@
 \usepackage[a4paper]{geometry}
 \usepackage{subfiles}
 \usepackage{listings}
-\usepackage{color}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -259,6 +258,10 @@ Service Node Count & 1 \\
 The model shown in section \ref{sec:SystemModel} takes only one middleware into account. Since clients are evenly distributed among multiple stateless middlewares and the visit ratio $V_i$ of the $i$-th queue for $n$ instances is $1 \over n$ we can simplify the model by merging all of them together. This means that for each broker added the queue size and service node count is increased accordingly. This assumption is backed by the Forced Flow law. In a closed system no request leaves the system.
 
 \paragraph{For example} if there are 8 middleware the queue size of the \textit{Network Receive} component is still unbound but the service node count is 8 instead of 1 (it becomes a load dependent service center).
+
+
+\textbf{TODO} why does the model match reality. add another picture with multiple brokers
+
 
 %% ----------------------------------------------
 % Section Single Queues
@@ -556,26 +559,65 @@ U = X_{total} D
 %% ----------------------------------------------
 \section{Mean-Value Analysis}
 
-A Mean-Value Analysis was performed for the system. According to \cite[Box 31.2]{Raj} the following input parameters of the system are needed.
+A Mean-Value Analysis was performed for the system. The algorithm from the book \cite[Box 31.2]{Raj} was implemented in java to perform this analysis.
 
-\begin{tabular}{|c|c|}
-\hline 
-$Z$ & Thinktime \\ 
-\hline 
-$S_i$ & Service timer per Visit \\ 
-\hline 
-$V_i$ & Number of Visits \\ 
-\hline 
-M & Number of Devices \\ 
-\hline 
-N & Number of User \\ 
-\hline 
-$\mu_i(j)$ & • \\ 
-\hline 
-• & • \\ 
-\hline 
-\end{tabular} 
+\subsection{Results}
+By tuning the paraemters for the MVA analysis measured values matched more or less the estimated ones. While plot \ref{fig:mva-rt} and \ref{fig:mva-tp} did not surprise too much I did not expect the graph showing queue demand \ref{fig:mva-demand}
 
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/mva-rt.eps}
+  \end{center}
+  \caption{Mean Value Analysis Response Time}
+  \label{fig:mva-rt}
+\end{figure}
+
+%% ----------------------------------------------
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/mva-tp.eps}
+  \end{center}
+  \caption{Mean Value Analysis Throughput}
+  \label{fig:mva-rt}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/mva-demand.eps}
+  \end{center}
+  \caption{Mean Value Analysis Demand}
+  \label{fig:mva-demand}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/mva-demand.eps}
+  \end{center}
+  \caption{Mean Value Analysis Utilisation}
+  \label{fig:mva-utilisation}
+\end{figure}
+
+%% ----------------------------------------------
 
 
 \subsection{Measured Values}
@@ -647,7 +689,7 @@ Client Type & OneWayClient \\
 \hline 
 Client Think Time & 10ms \\ 
 \hline 
-\# of Clients & 30 - 450 \\ 
+\# of Clients & 30 - 300 \\ 
 \hline 
 Request Timeout & 1 s\\
 \hline 
@@ -755,41 +797,7 @@ Another observation is that more data points between 0 and 100 clients should ha
 The calculated think time $Z$ has the expected magnitude and does not vary too much (around 15ms). The measured data seem to be plausible.
 
 
-
-%% ----------------------------------------------
-% Section MEMOS
-%% ----------------------------------------------
-
 \pagebreak
-
-\section{Memos}
-
-open or closed system
-- do we have an open or a closed system? It's closed!
-
-- use bullshit word "service center"
-
-- build alanytical queuing model of the whole system
-  - parameters
-- build alanytical queuing model for each part of the system
-  - parameters
-- explain where data matches the model and where not
-
-- interactive response time law, not applicable because of client implementation
-
-analytical model, 
-
-
-- network of queues
-  - not too fine, abstract away threads
-  
-  
-- explain why the model matches reality (or not)
-
-
-- siehe buch seite 1078 fuer Anregungen was man so machen müsste
-
-Sample book ref \cite[Page 556]{Raj}
 
 
 \bibliographystyle{plain}
