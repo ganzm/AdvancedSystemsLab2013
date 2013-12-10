@@ -74,4 +74,6 @@ public abstract class Queue {
 	public abstract BigDecimal getMeanNrOfJobsInQueue();
 
 	public abstract BigDecimal getProbabilityNumJobsInSystem(int n);
+
+	public abstract BigDecimal getProbabilityOfQueueing();
 }

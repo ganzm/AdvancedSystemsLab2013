@@ -37,8 +37,6 @@ public class LearnGanz {
 
 		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 12);
 
-		BigDecimal intensity = queue3.getTraficIntensity();
-
 		// M/M/8
 		QueueMMm queue4 = new QueueMMm("Network Send", lambda1 / ((double) brokerCount), s1, brokerCount);
 
@@ -71,23 +69,30 @@ public class LearnGanz {
 	private static void evaluateQueues(List<Queue> queues) {
 
 		for (Queue queue : queues) {
+			int numItems = 30;
+
+			if (queue instanceof QueueMMmB) {
+				QueueMMmB bQueue = (QueueMMmB) queue;
+
+				numItems = bQueue.getQueueSize();
+			}
 
 			System.out.println("======================================================");
 			System.out.println("Queue: " + queue);
-			System.out.println("Traffic Intensity: " + queue.getTraficIntensity());
 			System.out.print("Probability of n Jobs in the System:\n");
 
 			BigDecimal sum = BigDecimal.ZERO;
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i < numItems; i++) {
 				BigDecimal tmp = queue.getProbabilityNumJobsInSystem(i);
 
 				sum = sum.add(tmp);
 				System.out.print("\t" + tmp + "\n");
 			}
 			System.out.println("Total (should be 1)" + sum);
-			// System.out.println("Probability of Queueing " + queue.getProbabilityOfQueueing());
-			System.out.println("MeanNrOfJobsInSystem " + queue.getMeanNrOfJobsInSystem());
-			System.out.println("MeanNrOfJobsInQueue " + queue.getMeanNrOfJobsInQueue());
+			System.out.println("Trafic Intensity ($\\rho$)& \\numprint{" + queue.getTraficIntensity() + "}\\\\");
+			System.out.println("Probability of Queueing & \\numprint{" + queue.getProbabilityOfQueueing() + "}\\\\");
+			System.out.println("Mean \\# of Jobs in the System & \\numprint{" + queue.getMeanNrOfJobsInSystem() + "}\\\\");
+			System.out.println("Mean \\# of Jobs in the Queue & \\numprint{" + queue.getMeanNrOfJobsInQueue() + "}\\\\");
 		}
 	}
 

@@ -129,4 +129,20 @@ public class QueueMMmB extends Queue {
 	public String toString() {
 		return name + " M/M/" + m + "/" + B;
 	}
+
+	public int getQueueSize() {
+		return B;
+	}
+
+	public BigDecimal getProbabilityOfQueueing() {
+		BigDecimal p0 = getProbabilityZeroJobsInSystem();
+		BigDecimal rho = getTraficIntensity();
+		BigDecimal mTimesRho = rho.multiply(new BigDecimal(m));
+
+		BigDecimal tmp = mTimesRho.pow(m);
+		tmp = tmp.multiply(p0);
+		tmp = tmp.divide(BigDecimal.ONE.subtract(rho), PRECISION, ROUND);
+		tmp = tmp.divide(factorial(m), PRECISION, ROUND);
+		return tmp;
+	}
 }
