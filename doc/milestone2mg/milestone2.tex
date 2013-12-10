@@ -270,10 +270,10 @@ To further analyse the queues the experiment described in section \ref{sec:exper
 \subsection{Network Receive - M/M/8}
 \label{sub:QueueNwReceive}
 
-Since we scale the number of middlewares to 8 this queue becomes a M/M/8 queue. The queue size is still infinite. The arrival rate is the total number of requests divided by the experiment run time. The mean service rate is is taken from the measurement from Milestone I. For that we take into account the network delay and the time taken by the middleware reading the network socket and putting the data into the Request Queue.
+Since we scale the number of middlewares to 8 this queue becomes a M/M/8 queue. The queue size is still infinite. The arrival rate is the total number of requests divided by the experiment run time. The value for the mean service rate is is taken from the measurement from Milestone I. For that we take into account the network delay and the time taken by the middleware reading the network socket and putting the data into the Request Queue.\\
 
 
-From the experiment the following values were measured:\\
+From the experiment the following values were measured:
 
 \begin{tabular}{|c|c|c|}
 \hline 
@@ -286,22 +286,54 @@ $m$ & number of service nodes & 8 \\
 \hline 
 \end{tabular} 
 
-\subsubsection{Traffic intensity $\rho$}
+\subsubsection{Calculated Values}
 \begin{equation}
 \label{eq:TraficIntensity}
 \rho = \lambda / (m \mu)
 \end{equation}
 
 
-Since $\rho$ is below 1 this system is stable.
+The following values were obtained by using the formulas from the book \cite[Box 31.2]{Raj}.\\
+
+\nprounddigits{2}
+\begin{tabular}{|l|r|}
+\hline 
+Traffic Intensity ($\rho$)&
+\numprint{0.070312500} \\ 
+\hline 
+
+Probability of Queueing & $\approx 0 $\\
+\hline
+Mean \# of Jobs in the System & \numprint{0.5625000001928859137472963570355136042927559189428076507568359375000000}\\
+\hline
+Mean \# of Jobs in the Queue & $\approx 0 $\\
+\hline 
+\end{tabular} 
+
+\npnoround
 
 
-See \cite[Box 31.2]{Raj}
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/queueanalysis-1NwReceive.eps}
+  \end{center}
+  \caption{Probability of having a certain Number of Jobs in the 'Network Receive' Queue}
+  \label{fig:queueanalysis1}
+\end{figure}
+
+%% ----------------------------------------------
+
+\subsubsection{Notes}
+
+As seen from the numbers like traffic  intensity this queue is not working nearly at capacity. There is almost no queueing at any time.
 
 \subsection{Process Request - M/M/160/800}
 This queue takes into account message deserialisation, processing and serialsation of the response. Database transactions are not included in. The number of service node corresponds to the total number of worker threads. Queue size matches the default queue size of 100 for each of the 8 brokers. The arrival rate is the same as for the previous queue since no messages are lost.\\
 
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|l|l|}
 \hline 
 % arrival rate 47023 msg/30s
 $\lambda$ & mean arrival rate & 195 requests / s \\ 
@@ -312,15 +344,52 @@ $m$ & number of service nodes & 160 \\
 \hline 
 \end{tabular} 
 
+\subsubsection{Calculated Values}
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/queueanalysis-2ProcessRequest.eps}
+  \end{center}
+  \caption{Probability of having a certain Number of Jobs in the 'Process Request' Queue}
+  \label{fig:queueanalysis2}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+
+\nprounddigits{2}
+\begin{tabular}{|l|l|}
+\hline 
+Trafic Intensity ($\rho$)& \numprint{0.02343750000000000000000000000000000000000000000000}\\
+\hline 
+Probability of Queueing & $\approx 0$\\
+\hline
+Mean \# of Jobs in the System & \numprint{0.18653757770770630236581817935192940605440382738157}\\
+\hline 
+Mean \# of Jobs in the Queue &$\approx 0$\\
+\hline 
+\end{tabular} 
+
+\npnoround
+
+
+\subsubsection{Notes}
+
+The calculated values are similar to the queue described in \ref{sub:QueueNwReceive}. 
+
 
 \subsection{Database - M/M/12}
 \label{sub:QueueDatabase}
 
 For the database the mean arrival rate is 8 times higher than for the other queues. This is because the load is evenly spread accross 8 middleware instances while there is only one database.
 
-The number for the mean service rate was taken from the micro benchmark out of Milestone I. While evaluating the traffic intensity for this queue I recognized that setting the number of processing nodes to 2 as initially intended leads to a traffic intensity which is not stable any more ($>1$). I chose to estimate number of service nodes as following. As seen in section \ref{sec:experiment} the system seems to become unstable with about 100 clients. I now assume traffic intensity to be 1 at this point. This leads to the number of service nodes of 12. My first attempt to set this number to 2 (\# of CPU's) seemed to be not quite right. It actually makes sense giving it a second thought. There are no exclusive table locks on the database  like for other teams. So parallel scalability of the database component should be way better than with only 2 service nodes.\\
+The number for the mean service rate was taken from the micro benchmark out of Milestone I. While evaluating the traffic intensity for this queue I recognized that setting the number of processing nodes to 2 as initially intended leads to a traffic intensity which is not stable any more ($>1$). I chose to estimate number of service nodes as following. As seen in section \ref{sec:experiment} the system seems to become unstable with about 100 clients. I now assume traffic intensity to be 1 at this point. This leads to the number of service nodes of 12. My first attempt to set this number to 2 (\# of CPU's) seemed to be not quite right. It actually makes sense giving it a second thought. There are no exclusive table locks on the database  like for other teams. So parallel scalability of the database component should be better than with only 2 service nodes.\\
 
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|l|l|}
 \hline 
 % arrival rate 47023 msg/30s
 $\lambda$ & mean arrival rate & 1567 requests / s \\ 
@@ -331,9 +400,107 @@ $m$ & number of service nodes & 12 \\
 \hline 
 \end{tabular} 
 
+\subsubsection{Calculated Values}
+
+
+\nprounddigits{2}
+\begin{tabular}{|l|l|}
+\hline 
+Trafic Intensity ($\rho$)& \numprint{0.87500000000000000000000000000000000000000000000002}\\
+\hline
+Probability of Queueing & \numprint{0.01877241723997409461703447126559978699383468546595}\\
+\hline
+Mean \# of Jobs in the System & \numprint{10.502053233135622166598738145294674976702450668723077999663741400388580744482931016003195092479718010742491033104010362153186211493760085202466125813620}\\
+\hline
+Mean \# of Jobs in the Queue & \numprint{0.002053233135622166598738145294674976702450668722837999663741400388580744482931016003195092479718010742491033104010362153186211493760085202466125813620}\\
+\hline 
+\end{tabular} 
+
+\npnoround
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/queueanalysis-3Db.eps}
+  \end{center}
+  \caption{Probability of having a certain Number of Jobs in the 'Database' Queue}
+  \label{fig:queueanalysis3}
+\end{figure}
+
+%% ----------------------------------------------
+
+\subsubsection{Notes}
+Having the database modelled like this results in a traffic intensity $\rho$ of $0.88$ which means that this queue is still stable but under heavy load. The mean number of jobs in this is calculated to be $10.5$ which means that with $12$ processing nodes there is no queueing in an average case.
+
 
 \subsection{Network Send - M/M/8}
-This queue is symmetric to \ref{sub:QueueNwReceive}.
+This queue should have the same characteristics like \ref{sub:QueueNwReceive}.
+
+
+\subsection{Conclusion}
+
+Having calculated some values for the modelled queues shows that there is no need of having so many middleware instances running. All queues except for the database queue are on low load.
+
+If the number of middleware instances would be halved to 4 the mean arrival rate per queue would be doubled. We would get the following numbers:
+
+
+
+
+\nprounddigits{2}
+
+
+
+\begin{figure}[H]
+	
+	\begin{center}
+
+
+
+
+
+
+
+\begin{tabular}{|l|l|l|l|}
+\hline 
+& Network Receive & Process Request & Network Send \\
+\hline
+
+Trafic Intensity ($\rho$)
+& \numprint{0.28125000000000000000000000000000000000000000000000}
+& \numprint{0.09375000000000000000000000000000000000000000000000}
+& \numprint{0.28125000000000000000000000000000000000000000000000}
+\\
+
+Probability of Queueing 
+& \numprint{0.01180067807584736998300313857388238891336996501704}
+& \numprint{0.00023489631212789959197640597042626430765036988919}
+& \numprint{0.01180067807584736998300313857388238891336996501704}
+\\
+
+Mean \# of Jobs in the System 
+& \numprint{1.1273854886344730523305484860203063032276050612876242968750000000000}
+& \numprint{0.36830691758139397211463780018653707136797952272140}
+& \numprint{1.1273854886344730523305484860203063032276050612876242968750000000}
+\\
+
+Mean \# of Jobs in the Queue 
+& \numprint{0.0023854886344730523305484860203063032276050612876242968750000000}
+& \numprint{0.00002429961849598961296307647969926872148107274708}
+& \numprint{0.00238548863447305233054848602030630322760506128762429687500}
+\\
+
+\hline 
+\end{tabular} 
+	\end{center}
+  	\caption{Calculated Queue Values with 4 middleware instances}
+  	\label{fig:AnalyzeQueue4Broker}
+\end{figure}
+
+\npnoround
+
 
 
 %% ----------------------------------------------

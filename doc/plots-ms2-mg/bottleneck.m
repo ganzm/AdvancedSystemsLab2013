@@ -1,4 +1,6 @@
 %% Measurement Values
+% measurement values obtained from scaleout-experiment.ods
+
 client_count = [
 30
 60
