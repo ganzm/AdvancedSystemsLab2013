@@ -606,9 +606,9 @@ Plot \ref{fig:mva-rt} and \ref{fig:mva-tp} show the model estimated response tim
 Both graphs from the model match quite good with the measured values. However looking at the response time graph \ref{fig:mva-rt} the model graphs looks a bit steeper than the measured values (specially when looking at the $>200$ client values). Looking at the throughput graph \ref{fig:mva-tp} also shows a slight discrepancy in the same region. The measured values do not saturate at around $10'000$ requests per minute as the model graph does. A possible explanation may be variations while performing measurement at the Amazon cloud or marginally misstuned model parameters.
 
 
-\subsection{Calculating Demand}
+\subsection{Calculating Utilisation}
 
-G
+Figures 
 
 
 % ------------------------------------------------
@@ -637,6 +637,39 @@ G
 \end{figure}
 
 %% ----------------------------------------------
+
+
+
+
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/bottleneck-rt.eps}
+  \end{center}
+  \caption{Bottleneck Response Time}
+  \label{fig:bottleneck-rt}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/bottleneck-tp.eps}
+  \end{center}
+  \caption{Bottleneck Throughput}
+  \label{fig:bottleneck-tp}
+\end{figure}
+
+%% ----------------------------------------------
+
 
 
 

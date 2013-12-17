@@ -108,13 +108,7 @@ mvaDataStruct = importdata('mva.csv',',',1);
 mvaData = mvaDataStruct.data;
 
  
-%% Parameters
 
-% thinktime Z
-Z = 15;
-
-D_max = 22;
-D_tot = 300;
 
 %% Plots Experiment
 
@@ -170,7 +164,6 @@ legend_handle = legend('Model','Measurement');
 set(legend_handle, 'Location','NorthWest');
 xlabel('# of Clients');
 ylabel('# successfull requests [req/min]');
-
 set(h,'Position',[1 1 1024 678]);
 saveas(h,'mva-tp','epsc2');
 
@@ -184,7 +177,6 @@ legend_handle = legend('Model','Measurement');
 set(legend_handle, 'Location','NorthWest');
 xlabel('# of Clients');
 ylabel('Response Time [ms]');
-
 set(h,'Position',[1 1 1024 678]);
 saveas(h,'mva-rt','epsc2');
 
@@ -195,7 +187,7 @@ legend_handle = legend('Receive','Process', 'Database', 'Send');
 set(legend_handle, 'Location','NorthEast');
 set(h,'Position',[1 1 1024 678]);
 xlabel('# of Clients');
-ylabel('Demand');
+ylabel('Demand in [ms]');
 saveas(h,'mva-demand','epsc2');
 
 h = figure;
@@ -208,3 +200,73 @@ xlabel('# of Clients');
 ylabel('Utilisation in %');
 axis([0, 300, 0, 101]);
 saveas(h,'mva-utilisation','epsc2');
+
+
+%% Parameters
+
+% thinktime Z
+Z = 10;
+broker_count = 8;
+
+%% Bottleneck analysis
+
+% total demand
+Dtot = broker_count * (mvaData(:,8) + mvaData(:,9) + mvaData(:,11)) + mvaData(:,10);
+
+% Demand in [ms]
+Dmax = max(mvaData(:,10));
+
+% Demand in [ms] throughput is in req/min there is a factor of 60*1000 
+% dont know where factor 10 comes from
+Dmax = Dmax / 10;
+
+bound_tp1 = zeros(size(mvaData(:,1)));
+bound_tp2 = zeros(size(mvaData(:,1)));
+
+bound_tp1(:) = 60000 / Dmax;
+bound_tp2(:) = 60000 * mvaData(:,1) ./ ((Dtot(1)) + Z);
+
+bound_rt1 = zeros(size(mvaData(:,1)));
+bound_rt2 = zeros(size(mvaData(:,1)));
+
+bound_rt1(1:end) = Dtot(1); 
+bound_rt2 = (mvaData(:,1) * Dmax - Z);
+
+h = figure;
+
+hold on;
+
+plot(mvaData(:,1), bound_tp1, '--k');
+plot(mvaData(:,1), bound_tp2, '--k');
+
+plot(mvaData(:,1), 60000 * mvaData(:,2));
+plot(client_count, x, 'xr');
+
+hold off;
+title('Asymptotic Bounds - Througput');
+legend_handle = legend('Lower Bound 1','Lower Bound 2','Model','Measurement');
+set(legend_handle, 'Location','SouthEast');
+xlabel('# of Clients');
+ylabel('# successfull requests [req/min]');
+axis([0, 300, 0, 120000]);
+set(h,'Position',[1 1 1024 678]);
+saveas(h,'bottleneck-tp','epsc2');
+
+h = figure;
+hold on;
+
+plot(mvaData(:,1), bound_rt1, '--k');
+plot(mvaData(:,1), bound_rt2, '--k');
+
+plot(mvaData(:,1), mvaData(:,3));
+plot(client_count, r_median, 'xr');
+
+hold off;
+title('Asymptotic Bounds - Response Time');
+legend_handle = legend('Upper Bound 1','Upper Bound 2','Model','Measurement');
+set(legend_handle, 'Location','NorthWest');
+xlabel('# of Clients');
+ylabel('Response Time [ms]');
+set(h,'Position',[1 1 1024 678]);
+saveas(h,'bottleneck-rt','epsc2');
+
