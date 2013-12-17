@@ -14,8 +14,8 @@ public class QueueMMmB extends Queue {
 	 */
 	private int B;
 
-	public QueueMMmB(String name, double lambda, double s, int m, int B) {
-		super(name, lambda, s);
+	public QueueMMmB(String name, double lambda, double s, int m, int B, int queueMultiplicity) {
+		super(name, lambda, s, queueMultiplicity);
 		this.m = m;
 		this.B = B;
 	}
@@ -149,5 +149,10 @@ public class QueueMMmB extends Queue {
 
 	public boolean isLoadDependent() {
 		return true;
+	}
+
+	@Override
+	public int getServiceNodeCount() {
+		return m;
 	}
 }

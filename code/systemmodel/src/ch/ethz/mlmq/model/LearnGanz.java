@@ -22,35 +22,38 @@ public class LearnGanz {
 		double s1 = 3;
 
 		// M/M/8 Queue
-		QueueMMm queue1 = new QueueMMm("Network Receive", lambda1 / ((double) brokerCount), s1, brokerCount);
+		QueueMMm queue1 = new QueueMMm("Network Receive", lambda1, s1, brokerCount, brokerCount);
 
 		// WorkerThreadCount
 		int queueSize = brokerCount * 100;
 		int totalWorker = brokerCount * workerThreadCount;
 		// Service Time
 		double s2 = 1;
-		QueueMMmB queue2 = new QueueMMmB("ProcessRequest", lambda1 / ((double) brokerCount), s2, totalWorker, queueSize);
+		QueueMMmB queue2 = new QueueMMmB("ProcessRequest", lambda1, s2, totalWorker, queueSize, brokerCount);
 
 		// M/M/2
 
 		// db service time
-		double s3 = 7;
-		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 12);
+		double s3 = 6;
+		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 10, 1);
 
 		// M/M/8
-		QueueMMm queue4 = new QueueMMm("Network Send", lambda1 / ((double) brokerCount), s1, brokerCount);
+		QueueMMm queue4 = new QueueMMm("Network Send", lambda1, s1, brokerCount, brokerCount);
 
 		queues.add(queue1);
-		visitCounts.add((int) (1d / (long) brokerCount));
+		// visitCounts.add((int) (1d / (long) brokerCount));
+		visitCounts.add(1);
 
 		queues.add(queue2);
-		visitCounts.add((int) (1d / (long) brokerCount));
+		// visitCounts.add((int) (1d / (long) brokerCount));
+		visitCounts.add(1);
 
 		queues.add(queue3);
 		visitCounts.add(1);
 
 		queues.add(queue4);
-		visitCounts.add((int) (1d / (long) brokerCount));
+		// visitCounts.add((int) (1d / (long) brokerCount));
+		visitCounts.add(1);
 	}
 
 	public static void main(String[] args) {
@@ -59,9 +62,9 @@ public class LearnGanz {
 		List<Integer> visitCounts = new ArrayList<>();
 		createQueues(queues, visitCounts);
 
-		evaluateQueues(queues);
+		// evaluateQueues(queues);
 
-		int thinktime = 20;
+		int thinktime = 10;
 		int N = 300;
 
 		mvaBuffer = new StringBuilder();
@@ -207,6 +210,8 @@ public class LearnGanz {
 					// Fixed capacity or delay center
 					uPerQueue[i] = X.multiply(queue_i.getMeanServiceTime()).multiply(v_i);
 				}
+
+				uPerQueue[i] = uPerQueue[i].divide(new BigDecimal(queue_i.getQueueMultiplicity()), Queue.PRECISION, Queue.ROUND);
 
 				dPerQueue[i] = uPerQueue[i].divide(X, Queue.PRECISION, Queue.ROUND);
 			}

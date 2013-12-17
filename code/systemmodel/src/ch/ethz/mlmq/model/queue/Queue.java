@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 public abstract class Queue {
 
-	public static final int PRECISION = 100;
+	public static final int PRECISION = 150;
 
 	public static final int ROUND = BigDecimal.ROUND_HALF_UP;
 
@@ -23,10 +23,16 @@ public abstract class Queue {
 	 */
 	protected double s;
 
-	public Queue(String name, double lambda, double s) {
+	/**
+	 * set this value to the number of brokers
+	 */
+	private int queueMultiplicity;
+
+	public Queue(String name, double lambda, double s, int queueMultiplicity) {
 		this.name = name;
 		this.lambda = lambda;
 		this.s = s;
+		this.queueMultiplicity = queueMultiplicity;
 	}
 
 	public abstract BigDecimal getTraficIntensity();
@@ -79,6 +85,12 @@ public abstract class Queue {
 
 	public boolean isLoadDependent() {
 		return false;
+	}
+
+	public abstract int getServiceNodeCount();
+
+	public int getQueueMultiplicity() {
+		return queueMultiplicity;
 	}
 
 	public boolean isFixedCapacityQueue() {
