@@ -62,7 +62,7 @@ public class LearnGanz {
 		List<Integer> visitCounts = new ArrayList<>();
 		createQueues(queues, visitCounts);
 
-		// evaluateQueues(queues);
+		evaluateQueues(queues);
 
 		int thinktime = 10;
 		int N = 300;
@@ -102,7 +102,7 @@ public class LearnGanz {
 				System.out.print("\t" + tmp + "\n");
 			}
 			System.out.println("Total (should be 1)" + sum);
-			System.out.println("Trafic Intensity ($\\rho$)& \\numprint{" + queue.getTraficIntensity() + "}\\\\");
+			System.out.println("Traffic Intensity ($\\rho$)& \\numprint{" + queue.getTraficIntensity() + "}\\\\");
 			System.out.println("Probability of Queueing & \\numprint{" + queue.getProbabilityOfQueueing() + "}\\\\");
 			System.out.println("Mean \\# of Jobs in the System & \\numprint{" + queue.getMeanNrOfJobsInSystem() + "}\\\\");
 			System.out.println("Mean \\# of Jobs in the Queue & \\numprint{" + queue.getMeanNrOfJobsInQueue() + "}\\\\");
