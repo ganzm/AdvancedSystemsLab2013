@@ -195,6 +195,7 @@ legend_handle = legend('Receive','Process', 'Database', 'Send');
 set(legend_handle, 'Location','NorthEast');
 set(h,'Position',[1 1 1024 678]);
 xlabel('# of Clients');
+ylabel('Demand');
 saveas(h,'mva-demand','epsc2');
 
 h = figure;
@@ -204,6 +205,6 @@ legend_handle = legend('Receive','Process', 'Database', 'Send');
 set(legend_handle, 'Location','East');
 set(h,'Position',[1 1 1024 678]);
 xlabel('# of Clients');
-ylabel('utilisation in percent');
+ylabel('Utilisation in %');
 axis([0, 300, 0, 101]);
 saveas(h,'mva-utilisation','epsc2');

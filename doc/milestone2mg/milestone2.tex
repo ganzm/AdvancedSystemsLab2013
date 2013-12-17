@@ -61,7 +61,7 @@
 
 \begin{abstract}
 
-This document describes an analytical model of the message queuing system which was build during Milestone I. Analytical studies are presented and compared with the results obtained before.
+This document describes an analytical model of the message queuing system which was build during Milestone I. Analytical studies are presented and compared with the results obtained before. Different behaviour between the model and observed values are explained.
 
 
 \end{abstract}
@@ -73,7 +73,7 @@ This document describes an analytical model of the message queuing system which 
 %% ----------------------------------------------
 \section{The System}
 
-This chapter should briefly show the most important components of the System Under Test (SUT). The curious reader is referred to the document Milestone I. In depth information about the technical details are stated there.
+This chapter should briefly show the most important components of the System Under Test (SUT). The curious reader is referred to the document Milestone I \cite{milestone1}. In depth information about the technical details are stated there.
 
 
 % ------------------------------------------------
@@ -81,7 +81,7 @@ This chapter should briefly show the most important components of the System Und
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.4]{../drawings/broker-threading.png}
+    \includegraphics[scale=0.6]{../drawings/broker-threading.png}
   \end{center}
   \caption{System Under Test}
   \label{fig:sut}
@@ -123,7 +123,7 @@ In this chapter we look at the system as a black box and describe it with \texti
 \subsubsection{(A) Arrival Process}
 \label{subsub:ArrivalProcess}
 
-The interarrivaltime is modeled to be exponentially distributed. This can be shown from figure \ref{fig:interarrivaltime}. Data for this plot where obtained from a shortened 2 hour test with mixed types of clients. From the diagram I assume parameter a) to be \textit{Markovian (M)}.
+The interarrivaltime is modeled to be exponentially distributed. This can be shown from figure \ref{fig:interarrivaltime}. Data for this plot where obtained from a shortened 2 hour test with mixed types of clients. Therefore interarrivaltime is assumed to be \textit{Markovian (M)}.
 
 
 % ------------------------------------------------
@@ -142,7 +142,7 @@ The interarrivaltime is modeled to be exponentially distributed. This can be sho
 
 \subsubsection{(S) Service Time Distribution }
 
-Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in chapter \ref{subsub:ArrivalProcess} show an exponential distribution of service time.
+Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in chapter \ref{subsub:ArrivalProcess} show an exponential distribution of service time. Both blots do look quite similar.
 
 % ------------------------------------------------
 % Figure 
@@ -163,8 +163,7 @@ Again it is assumed that the service time distribution is memoryless exponential
 This parameter is determine by the number of middleware instances running.
 
 \subsubsection{(B) Buffer - System Capacity }
-
-TODO
+In a first step the system capacity is assumed to be infinite.
 
 \subsubsection{(K) Population Size}
 
@@ -227,7 +226,7 @@ Service Node Count & Corresponds to \# of worker thread \\
 \end{tabular} 
 
 \subsubsection{Database}
-This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). However in a first attempt the service node count was set to 2. This however turned out to be not quite accurate (see section \ref{sub:QueueDatabase} for further explanations).  The queue size is modelled to be infinite.\\
+This node represents the database. For the experiment an Amazon medium instance with two ECU's (EC2 Compute Units\footnote{Assumed to something equivalent to a CPU. Actually Amazon does not further explain the term ECU.}). However in a first attempt the service node count was set to 2. This however turned out to be not quite accurate (see section \ref{sub:QueueDatabase} for further explanations).  The queue size is modelled to be infinite because no refused database requests or timed out connections were observed during the experiment phase during milestone I. \\
 
 \begin{tabular}{|l|l|}
 \hline 
@@ -254,13 +253,25 @@ Service Node Count & 1 \\
 \end{tabular} 
 
 \subsection{Modelling Multiple Middlewares}
+Taking into account more than one middleware instance would lead to the following model seen in figure \ref{fig:systemmodel-multiplebroker}.
 
-The model shown in section \ref{sec:SystemModel} takes only one middleware into account. Since clients are evenly distributed among multiple stateless middlewares and the visit ratio $V_i$ of the $i$-th queue for $n$ instances is $1 \over n$ we can simplify the model by merging all of them together. This means that for each broker added the queue size and service node count is increased accordingly. This assumption is backed by the Forced Flow law. In a closed system no request leaves the system.
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../drawings-ms2/systemmodel-multiplebroker.eps}
+  \end{center}
+  \caption{System Model with multiple Middleware components}
+  \label{fig:systemmodel-multiplebroker}
+\end{figure}
+
+%% ----------------------------------------------
+
+Since clients and load is evenly distributed among multiple stateless middleware instances and the visit ratio $V_i$ of the $i$-th queue for $n$ instances is $1 \over n$. We can simplify the model by merging all of them together. This means that for each broker added the queue size and service node count is increased accordingly. However merging all middleware instances together leads us back to the model shown in figure \ref{fig:systemmodel-singlebroker} but with modified parameters.
 
 \paragraph{For example} if there are 8 middleware the queue size of the \textit{Network Receive} component is still unbound but the service node count is 8 instead of 1 (it becomes a load dependent service center).
-
-
-\textbf{TODO} why does the model match reality. add another picture with multiple brokers
 
 
 %% ----------------------------------------------
@@ -268,17 +279,18 @@ The model shown in section \ref{sec:SystemModel} takes only one middleware into 
 %% ----------------------------------------------
 \section{Analysing the Queues}
 
-To further analyse the queues the experiment described in section \ref{sec:experiment} with a client count of 90 was taken. The system is nearly at maximum load but not yet saturated. All measurement values used here are taken from there.
+To further analyse the queues the experiment described in section \ref{sec:experiment} with a client count of 90 was taken. The system is nearly at maximum load but not yet saturated. All measurement values used in this chapter are taken from there. All the queues which have been modelled in the previous chapter are now instantiate with specific parameters.\\
+
+To calculate the values which are presented in this and the further chapters a Java program was written which helps calculating characteristic number for the modelled queues.
 
 \subsection{Network Receive - M/M/8}
 \label{sub:QueueNwReceive}
 
-Since we scale the number of middlewares to 8 this queue becomes a M/M/8 queue. The queue size is still infinite. The arrival rate is the total number of requests divided by the experiment run time. The value for the mean service rate is is taken from the measurement from Milestone I. For that we take into account the network delay and the time taken by the middleware reading the network socket and putting the data into the Request Queue.\\
-
+Since we scale the number of middleware instances to 8 this queue becomes a M/M/8 queue. The queue size is still infinite. The arrival rate is the total number of requests divided by the experiment run time. The value for the mean service rate is is taken from the measurement from Milestone I. For that we take into account the network delay and the time taken by the middleware reading the network socket and putting the data into the Request Queue.\\
 
 From the experiment the following values were measured:
 
-\begin{tabular}{|c|c|c|}
+\begin{tabular}{|c|l|l|}
 \hline 
 % arrival rate 47023 msg/30s / 8 broker
 $\lambda$ & mean arrival rate & 195 requests / s \\ 
@@ -291,27 +303,33 @@ $m$ & number of service nodes & 8 \\
 
 \subsubsection{Calculated Values}
 \begin{equation}
-\label{eq:TraficIntensity}
+\label{eq:TrafficIntensity}
 \rho = \lambda / (m \mu)
 \end{equation}
 
 
 The following values were obtained by using the formulas from the book \cite[Box 31.2]{Raj}.\\
 
+\begin{figure}[H]
+\begin{center}
 \nprounddigits{2}
 \begin{tabular}{|l|r|}
 \hline 
-Trafic Intensity ($\rho$)& \numprint{0.0703125000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}\\
-\hline 
-Probability of Queueing & \numprint{2.9507402528811424030530858008706937217170499011166833144112083354565637861508584621623691814E-9}\\
-\hline 
-Mean \# of Jobs in the System & \numprint{0.562500000192885913747296357035513604292755918942807644292966786482812751908812244565891687803704674882775878906250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}\\
-\hline 
-Mean \# of Jobs in the Queue & \numprint{1.92885913747296357035513604292755918942807644292966786482812751908812244565891687803704674882775878906250000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000E-10}\\
+Traffic Intensity ($\rho$)& \numprint{0.562500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001}\\
+\hline
+Probability of Queueing & \numprint{0.004996678253810118287754045200141901428395110707714987388618561756962298075099102852842837348515043338671570100178407263991769762473888999513201437997}\\
+\hline
+Mean \# of Jobs in the System & \numprint{4.501229651289023583797376972060972421054644109275726735177667849182377440541918919842691792003736123946626206704340779912622974589983808620973951916390073594165218273735214030744349982262321450611161535626576422679780379712740612612143394645331435619582666053737477699092001028779690763875060849820250370003321746189881712245954799858098571604889292285012611381438243037701924900897147157162651484956661328429899821592736008230237526111000486798562003}\\
+\hline
+Mean \# of Jobs in the Queue & \numprint{0.001229651289023583797376972060972421054644109275726735177667849182377440541918919842691792003736123946626206704340779912622974589983808620973951916382073594165218273735214030744349982262321450611161535626576422679780379712740612612143394645331435619582666053737477699092001028779690763875060849820250370003321746189881712245954799858098571604889292285012611381438243037701924900897147157162651484956661328429899821592736008230237526111000486798562003}\\
 \hline 
 \end{tabular} 
 
 \npnoround
+\end{center}
+\caption{Characteristic values for 'Network Receive'}
+\label{tbl:queueanalysis-result-nwreceive}
+\end{figure}
 
 
 % ------------------------------------------------
@@ -327,12 +345,12 @@ Mean \# of Jobs in the Queue & \numprint{1.9288591374729635703551360429275591894
 
 %% ----------------------------------------------
 
-\subsubsection{Notes}
+\subsubsection{Explanation}
 
-As seen from the numbers like traffic  intensity this queue is not working nearly at capacity. There is almost no queueing at any time.
+As seen from the calculated traffic  intensity this queue is not working nearly at capacity. There is almost no queueing at any time. Queueing happens only if there are more than 8 jobs in the system.
 
 \subsection{Process Request - M/M/160/800}
-This queue takes into account message deserialisation, processing and serialsation of the response. Database transactions are not included in. The number of service node corresponds to the total number of worker threads. Queue size matches the default queue size of 100 for each of the 8 brokers. The arrival rate is the same as for the previous queue since no messages are lost.\\
+This queue takes into account message deserialisation, processing and serialsation of the response. The number of service node corresponds to the total number of worker threads (20) times the number of middleware instances (8). Queue size matches the default queue size of 100 for each of the brokers. The arrival rate is the same as for the previous queue since no messages are lost.\\
 
 \begin{tabular}{|c|l|l|}
 \hline 
@@ -361,62 +379,71 @@ $m$ & number of service nodes & 160 \\
 %% ----------------------------------------------
 
 
-
+\begin{figure}[H]
+\begin{center}
 \nprounddigits{2}
 \begin{tabular}{|l|l|}
 \hline 
-Trafic Intensity ($\rho$)& \numprint{0.0011718750000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}\\
+Traffic Intensity ($\rho$)& \numprint{0.009375000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000}\\
 \hline 
 Probability of Queueing & \numprint{0}\\
 \hline 
-Mean \# of Jobs in the System & \numprint{0.1865375777076272513013068439552955771675849758818792464345783094409526520454327385763104948187568200}\\
+Mean \# of Jobs in the System & \numprint{1.285665595380242339401395452400300768646652659670658271275311493447245608470943401822097144423619853821366025757014136766249178203693466191165032240124}\\
 \hline 
 Mean \# of Jobs in the Queue & \numprint{0}\\
 \hline 
 \end{tabular} 
-
 \npnoround
+\end{center}
+\caption{Characteristic values for 'Process Request'}
+\label{tbl:queueanalysis-result-processrequest}
+\end{figure}
 
 
-\subsubsection{Notes}
+\subsubsection{Explanation}
 
-The calculated values are similar to the queue described in \ref{sub:QueueNwReceive}. 
+The calculated values are similar to the queue described in \ref{sub:QueueNwReceive}. The Traffic intensity is very low and the probability of queueing is almost 0. This indicates that for this experiment the number of worker threads is way too high and could be lowered significantly without loosing performance.
 
 
 \subsection{Database - M/M/12}
 \label{sub:QueueDatabase}
 
-For the database the mean arrival rate is 8 times higher than for the other queues. This is because the load is evenly spread accross 8 middleware instances while there is only one database.
+For the database the mean arrival rate of requests is 8 times higher than for the other queues. This is because the load is evenly spread accross all 8 middleware instances while there is only one database.
 
-The number for the mean service rate was taken from the micro benchmark out of Milestone I. While evaluating the traffic intensity for this queue I recognized that setting the number of processing nodes to 2 as initially intended leads to a traffic intensity which is not stable any more ($>1$). I chose to estimate number of service nodes as following. As seen in section \ref{sec:experiment} the system seems to become unstable with about 100 clients. I now assume traffic intensity to be 1 at this point. This leads to the number of service nodes of 12. My first attempt to set this number to 2 (\# of CPU's) seemed to be not quite right. It actually makes sense giving it a second thought. There are no exclusive table locks on the database  like for other teams. So parallel scalability of the database component should be better than with only 2 service nodes.\\
+The number for the mean service rate was taken from the micro benchmark out of Milestone I. While evaluating the traffic intensity for this queue I recognized that setting the number of processing nodes to 2 as initially intended leads to a traffic intensity which is not stable any more ($>1$). I chose to estimate number of service nodes as following. As seen in section \ref{sec:experiment} the system seems to become unstable with about 100 clients. I now assume traffic intensity to be 1 at this point. This leads to the number of service nodes of about 10. My first attempt to set this number to 2 (\# of CPU's) seemed to be not quite right. Giving it a second thought this actually makes sense.  The number of service nodes can also be seen as how good a service center scales while increasing the load. Having number of nodes set to 2 indicates very poor scaling. During milestone I no exclusive table locks on the database were implemented so the number of service nodes should be bigger than 2.\\
 
 \begin{tabular}{|c|l|l|}
 \hline 
 % arrival rate 47023 msg/30s
 $\lambda$ & mean arrival rate & 1567 requests / s \\ 
 \hline 
-$\mu$ & mean service rate & $1/7ms$ \\ 
+$\mu$ & mean service rate & $1/6ms$ \\ 
 \hline 
-$m$ & number of service nodes & 12 \\ 
+$m$ & number of service nodes & 10 \\ 
 \hline 
 \end{tabular} 
 
 \subsubsection{Calculated Values}
 
-
+\begin{figure}[H]
+\begin{center}
 \nprounddigits{2}
 \begin{tabular}{|l|l|}
 \hline 
-Trafic Intensity ($\rho$)& \numprint{0.8749999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999997}\\
+Traffic Intensity ($\rho$)& \numprint{0.899999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999998}\\
 \hline 
-Probability of Queueing & \numprint{0.0187724172399740946170344712655997869938346854659942090913562699431539983598599307729005555331068213}\\
+Probability of Queueing & \numprint{0.069473569685349808102999820998413071284044893437387342617953592191071724608412355889383929041438836625694013853087079726584549620482130523923281773359}\\
 \hline 
-Mean \# of Jobs in the System & \numprint{10.502053233135622166598738145294674976702450668722843116619367092025032468570609679928285998261433554983911293878994171288832756034759952073612804229848697045555160737209649630968484423902624994949034790810482448402331484466897586096019170554878308060521181777935705116140147612606230438950002020386083}\\
+Mean \# of Jobs in the System & \numprint{9.006252621271681482729269983889857176415564040409364860835615823297196455214757112030044553613729495296312461246777837175392609465843391747153095359582421157711496559692964799713597460914054471829499819748188725747505714759373459769423014286466302138601110422164939327562535279392771408838277250837374122105721258600767588000716006347714863820426250450629528185631235713101566350576442464283834244653497223944587651681093661801518071477904306872906564}\\
 \hline 
-Mean \# of Jobs in the Queue & \numprint{0.002053233135622166598738145294674976702450668722843116619367092025032468570609679928285998261433558583911293878994171288832756034759952073612804229848697045555160737209649630968484423902624994949034790810482448402331484466897586096019170554878308060521181777935705116140147612606230438950002020386083}\\
+Mean \# of Jobs in the Queue & \numprint{0.006252621271681482729269983889857176415564040409364860835615823297196455214757112030044553613729495296312461246777837175392609465843391747153095359602421157711496559692964799713597460914054471829499819748188725747505714759373459769423014286466302138601110422164939327562535279392771408838277250837374122105721258600767588000716006347714863820426250450629528185631235713101566350576442464283834244653497223944587651681093661801518071477904306872906564}\\
 \hline 
 \end{tabular} 
 \npnoround
+\end{center}
+\caption{Characteristic values for 'Database'}
+\label{tbl:queueanalysis-result-database}
+\end{figure}
 
 
 % ------------------------------------------------
@@ -432,21 +459,18 @@ Mean \# of Jobs in the Queue & \numprint{0.0020532331356221665987381452946749767
 
 %% ----------------------------------------------
 
-\subsubsection{Notes}
-Having the database modelled like this results in a traffic intensity $\rho$ of $0.88$ which means that this queue is still stable but under heavy load. The mean number of jobs in this is calculated to be $10.5$ which means that with $12$ processing nodes there is no queueing in an average case.
+\subsubsection{Explanation}
+Having the database modelled like this results in a traffic intensity $\rho$ of $0.9$ which means that this service center is stable but under heavy load. The mean number of jobs in this is calculated to be $9$ which means that with $10$ processing nodes there is no queueing on average.
 
 
 \subsection{Network Send - M/M/8}
-This queue should have the same characteristics like \ref{sub:QueueNwReceive}.
-
+Since this queue is symmetric to \ref{sub:QueueNwReceive} the characteristics is the same. One could consider to merge both queues 'Network Send' and 'Network Receive' together.
 
 \subsection{Conclusion}
 
-Having calculated some values for the modelled queues shows that there is no need of having so many middleware instances running. All queues except for the database queue are on low load.
+Having calculated some values for the modelled queues shows that one could switch off a few of the middleware instances while still being able to serve the same number of clients. All queues except for the database queue are on low load.
 
 If the number of middleware instances would be halved to 4 the mean arrival rate per queue would be doubled. We would get the following numbers:
-
-
 
 
 \nprounddigits{2}
@@ -457,7 +481,7 @@ If the number of middleware instances would be halved to 4 the mean arrival rate
 & Network Receive & Process Request & Network Send \\
 \hline
 
-Trafic Intensity ($\rho$)
+Traffic Intensity ($\rho$)
 & \numprint{0.28125000000000000000000000000000000000000000000000}
 & \numprint{0.09375000000000000000000000000000000000000000000000}
 & \numprint{0.28125000000000000000000000000000000000000000000000}
@@ -545,10 +569,11 @@ U = X_{total} D
 %% ----------------------------------------------
 \section{Mean-Value Analysis}
 
-A Mean-Value Analysis was performed for the system. The algorithm from the book \cite[Box 31.2]{Raj} was implemented in java to perform this analysis.
+A Mean-Value Analysis was performed for the system. Because some of the queues are modelled to be load dependent the extended MVA algorithm from the book \cite[Box 36.1]{Raj} was implemented in java to perform this analysis.
 
-\subsection{Results}
-By tuning the paraemters for the MVA analysis measured values matched more or less the estimated ones. While plot \ref{fig:mva-rt} and \ref{fig:mva-tp} did not surprise too much I did not expect the graph showing queue demand \ref{fig:mva-demand}
+\subsection{Model versus Measurement}
+Plot \ref{fig:mva-rt} and \ref{fig:mva-tp} show the model estimated response time and throughput of the system. The red crosses show measured values.
+
 
 % ------------------------------------------------
 % Figure 
@@ -577,19 +602,13 @@ By tuning the paraemters for the MVA analysis measured values matched more or le
 %% ----------------------------------------------
 
 
+\subsubsection{Explanation}
+Both graphs from the model match quite good with the measured values. However looking at the response time graph \ref{fig:mva-rt} the model graphs looks a bit steeper than the measured values (specially when looking at the $>200$ client values). Looking at the throughput graph \ref{fig:mva-tp} also shows a slight discrepancy in the same region. The measured values do not saturate at around $10'000$ requests per minute as the model graph does. A possible explanation may be variations while performing measurement at the Amazon cloud or marginally misstuned model parameters.
 
-% ------------------------------------------------
-% Figure 
 
-\begin{figure}[H]
-	\begin{center}
-    \includegraphics[scale=0.6]{../plots-ms2-mg/mva-demand.eps}
-  \end{center}
-  \caption{Mean Value Analysis Demand}
-  \label{fig:mva-demand}
-\end{figure}
+\subsection{Calculating Demand}
 
-%% ----------------------------------------------
+G
 
 
 % ------------------------------------------------
@@ -606,47 +625,20 @@ By tuning the paraemters for the MVA analysis measured values matched more or le
 %% ----------------------------------------------
 
 
-\subsection{Measured Values}
+% ------------------------------------------------
+% Figure 
 
-\begin{tabular}{|l|l|}
-\hline 
-$N$ & Number of clients in the system \\ 
-\hline 
-$X$ & Total throughput in requests per second \\ 
-\hline 
-\end{tabular} 
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/mva-demand.eps}
+  \end{center}
+  \caption{Mean Value Analysis Demand}
+  \label{fig:mva-demand}
+\end{figure}
 
-\begin{tabular}{|c|c|c|c|c|}
-\hline 
-$N$ & $X$ & • & • & • \\ 
-\hline 
-30 & • & • & • & • \\ 
-\hline 
-60 & • & • & • & • \\ 
-\hline 
-90 & • & • & • & • \\ 
-\hline 
-120 & • & • & • & • \\ 
-\hline 
-120 & • & • & • & • \\ 
-\hline 
-\end{tabular} 
-
-\subsection{Service Times}
-
-\begin{tabular}{|c|c|c|c|c|}
-\hline 
-  & Network Receive & Process Request & Database & Network Send \\ 
-\hline 
-Mean service time $S$ & • & • & • & • \\ 
-\hline 
-Visit Ratio $V$ & • & • & • & • \\ 
-
-\hline 
-\end{tabular} 
+%% ----------------------------------------------
 
 
-- balanced job bounds
 
 %% ----------------------------------------------
 % Section Experiments
@@ -774,9 +766,9 @@ $N$ & $X$ [req/min] & $R$ [ms] & $Z$ [ms]\\
 
 \subsection{Interpretation}
 
-As expected while adding more and more clients the response time and its variance gradually increases. As seen in figure \ref{fig:experiment-tp} The system seems to saturate at about 100'000 requests per minute. This load is reached between 90 and 100 clients. From this point on both variance of response time and number of requests which can not be processed within the 1 second timeout time drastically increase.
+As expected while adding more and more clients the response time and its variance gradually increases. As seen in figure \ref{fig:experiment-tp} The system seems to saturate at about 100'000 requests per minute. This load is reached between 90 and 100 clients. From this point on both variance of response time and number of requests which can not be processed within the 1 second timeout time drastically increase. This can be seen in figure \ref{fig:experiment-error} where the number of requests which have not been processed jumps while scaling the number of clients.
 
-A flaw in the experiment can be observed in figure \ref{fig:experiment-rt}. The 30 client bar has a very high variance. This is because 30 client produce less load than 300. To fix this issue the 30 client experiment should have been run for a longer period of time.
+A flaw in the experiment can be observed in figure \ref{fig:experiment-rt}. The 30 client bar has a very high variance. This is because 30 client produce less load (thuss less measurement values) than 300. To fix this issue the 30 client experiment should have been run for a longer period of time. This should have reduced measurement variance.
 
 Another observation is that more data points between 0 and 100 clients should have been taken to get more confidence about what's happening when the system is not yet saturated.
 
