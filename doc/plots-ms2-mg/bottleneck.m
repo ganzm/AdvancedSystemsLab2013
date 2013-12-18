@@ -244,7 +244,7 @@ plot(client_count, x, 'xr');
 
 hold off;
 title('Asymptotic Bounds - Througput');
-legend_handle = legend('Lower Bound 1','Lower Bound 2','Model','Measurement');
+legend_handle = legend('Upper Bound 1','Upper Bound 2','Model','Measurement');
 set(legend_handle, 'Location','SouthEast');
 xlabel('# of Clients');
 ylabel('# successfull requests [req/min]');
@@ -263,7 +263,7 @@ plot(client_count, r_median, 'xr');
 
 hold off;
 title('Asymptotic Bounds - Response Time');
-legend_handle = legend('Upper Bound 1','Upper Bound 2','Model','Measurement');
+legend_handle = legend('Lower Bound 1','Lower Bound 2','Model','Measurement');
 set(legend_handle, 'Location','NorthWest');
 xlabel('# of Clients');
 ylabel('Response Time [ms]');
