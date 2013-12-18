@@ -211,7 +211,9 @@ The TCP and NIO receive / send contains many things like the network card, the t
 
 There are several worker threads in the system. These worker threads are modelled as a M/M/x queue, where x corresponds to the number of worker threads per middleware. The workers obviously are load dependent. The queue size is 100, as it corresponds to the queue size of the queue from which the worker threads can get the requests which have to be processed.\\
 
-\noindent Additionally, the middlewares can be scaled, so the middleware queues are modelled as n * M/M/x queues, where n corresponds to the amount of middlewares.
+\noindent Additionally, the middlewares can be scaled. The clients are evenly distributed between the middlewares, and so are the requests sent by the clients. Therefore, the model is simplified further as follows: for every additional middleware, the workers are merged into one big worker pool across all middlewares. Therefore, the middleware queues are modelled as M/M/(n * x) queues, where n corresponds to the amount of middlewares and x corresponds to the number of worker threads per middleware.\\
+
+\noindent Unfortunately this simplification also means that the "TCP and NIO receive / send" must be changed as a M/M/n queue, where n corresponds to the amount of middlewares. It still can be modelled as an unbound queue.
 
 
 \subsubsection{TCP}
