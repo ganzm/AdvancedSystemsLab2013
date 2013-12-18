@@ -16,10 +16,10 @@ public class QueueMMm extends Queue {
 
 	@Override
 	public BigDecimal getServiceRateWithNJobs(int n) {
-		if (n < m) {
-			return new BigDecimal(n).divide(new BigDecimal(s), PRECISION, ROUND);
+		if ((n * queueMultiplicity) < (m * queueMultiplicity)) {
+			return new BigDecimal(n).divide(new BigDecimal(s), PRECISION, ROUND).multiply(new BigDecimal(queueMultiplicity));
 		} else {
-			return new BigDecimal(m).divide(new BigDecimal(s), PRECISION, ROUND);
+			return new BigDecimal(m).divide(new BigDecimal(s), PRECISION, ROUND).multiply(new BigDecimal(queueMultiplicity));
 		}
 	}
 

@@ -26,7 +26,7 @@ public abstract class Queue {
 	/**
 	 * set this value to the number of brokers
 	 */
-	private int queueMultiplicity;
+	protected int queueMultiplicity;
 
 	public Queue(String name, double lambda, double s, int queueMultiplicity) {
 		this.name = name;
