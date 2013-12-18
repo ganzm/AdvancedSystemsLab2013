@@ -109,6 +109,14 @@ This document is the follow up document of Advanced Systems Lab - Milestone I an
 
 In the analysis, the focus of the system is on the middleware. Additionally, the database is modelled as a queue, but no further internals of the database are considered.\\
 
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../drawings/broker-threading.png}
+  \end{center}
+  \caption{Middleware's main Components}
+  \label{fig:middleware-threading}
+\end{figure}
+
 Figure \ref{fig:middleware-threading} shows a overview of the systems components. The most important parts of the analytical models are:
 
 \begin{itemize}
@@ -149,6 +157,43 @@ The population size is defined by the amount of clients issuing requests to the 
 \subsection{SD: Service Discipline}
 
 In general, the service discipline is First Come, First Served (FCFS). However, because there are limited CPU's on the middleware, and CPU's usually use Round Robin (RR), this may have to be considered in the analysis.
+
+
+\section{Model}
+
+\subsection{General Model}
+
+The following queueing model network was created based on the understanding of the closed system as shown in figure \ref{fig:general-queueing-network}.
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6, trim = 15mm 94mm 12mm 10mm, clip]{../drawings-ms2le/general-queueing-network.pdf}
+  \end{center}
+  \caption{general queueing network}
+  \label{fig:general-queueing-network}
+\end{figure}
+
+
+%Initially the TCP connections were modelled as queues. To simplify the model, the TCP connections were replaced by delay stations.\\
+
+\subsection{Simplified Model}
+
+\noindent Initially the TCP connections are modelled as a separate System. To be precise, these TCP connections would influence one another. In the simplified model, those TCP connections act as separate queues. Additionally, the NIO part of the middleware is included in the TCP connection queue. This is a good idea because the NIO thread and the network are strongly linked and the NIO processing is very fast.\\
+
+\noindent Next, the model was further simplified by separating the NIO component into two separate queues. In the real system however, similar to the TCP connection, there is only one NIO thread.\\
+
+\noindent Furthermore, the TCP network connection between the middleware and the database is separated. In the real system, this would be the same connection.\\
+
+\noindent Those simplifications then lead to the simplified queueing network as shown in figure \ref{fig:simplified-queueing-network}.\\
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6, trim = 15mm 94mm 12mm 10mm, clip]{../drawings-ms2le/simplified-queueing-network.pdf}
+  \end{center}
+  \caption{simplified queueing network}
+  \label{fig:simplified-queueing-network}
+\end{figure}
+
 
 
 
