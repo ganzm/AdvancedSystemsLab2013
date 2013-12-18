@@ -515,64 +515,15 @@ Mean \# of Jobs in the Queue
 \npnoround
 
 
-
-%% ----------------------------------------------
-% Section Bottleneck Analysis
-%% ----------------------------------------------
-\section{Bottleneck Analysis}
-
-A bottleneck analysis was performed to determine which component limits the total capacity of the system. Table \ref{tabular:BottleneckParams} shows the values required for this Analysis.
-
-Row $S$ and $X$ are measurement values obtained from Milestone I. By applying \textit{Utilisation Law} (eq. \ref{eq:UtilisationLaw}) row $U$ can be calculated.   
-
-\begin{equation}
-\label{eq:UtilisationLaw}
-U = X S
-\end{equation}
-
-
-The last row $D$ is obtained by combining \textit{Utilisation Law} and \textit{Forced Flow Law} (eq. \ref{eq:Demand}). 
-
-\begin{equation}
-\label{eq:Demand}
-U = X_{total} D
-\end{equation}
-
-
-\begin{figure}[H]
-\label{tabular:BottleneckParams}
-\begin{center}
-\begin{tabular}{|l|l|l|l|l|l|}
-\hline 
- & \textbf{Network Receive} & \textbf{Process Request} & \textbf{Database} & \textbf{Network Send}\\ 
-\hline
-\textbf{$S$ Mean Service Time [ms]} & • & • & • & • \\
-\hline 
-\textbf{$X$ Throughput [req/min]} & • & • & • & • \\
-\hline
-\textbf{$U$ Utilisation} & • & • & • & • \\
-\hline
-\textbf{$D$ Demand} & • & • & • & • \\
-\hline
-\end{tabular} 
-\caption{Bottleneck Analysis Input Parameters}
-\end{center}
-\end{figure}
-
-
-- Mean Service Time per Device $S_i$\\
-- Throughput per Device $X_i$
-
-
 %% ----------------------------------------------
 % Section MVA
 %% ----------------------------------------------
 \section{Mean-Value Analysis}
 
-A Mean-Value Analysis was performed for the system. Because some of the queues are modelled to be load dependent the extended MVA algorithm from the book \cite[Box 36.1]{Raj} was implemented in java to perform this analysis.
+A Mean-Value Analysis was performed for the system. Because some of the queues are modelled to be load dependent the extended MVA algorithm from the book \cite[Box 36.1]{Raj} was implemented to perform this analysis.
 
 \subsection{Model versus Measurement}
-Plot \ref{fig:mva-rt} and \ref{fig:mva-tp} show the model estimated response time and throughput of the system. The red crosses show measured values.
+Plot \ref{fig:mva-rt} and \ref{fig:mva-tp} show the estimated response time and throughput of the system. The red crosses show measured values obtained from the experiment. The blue graph shows the output of the MVA.
 
 
 % ------------------------------------------------
@@ -602,14 +553,13 @@ Plot \ref{fig:mva-rt} and \ref{fig:mva-tp} show the model estimated response tim
 %% ----------------------------------------------
 
 
-\subsubsection{Explanation}
-Both graphs from the model match quite good with the measured values. However looking at the response time graph \ref{fig:mva-rt} the model graphs looks a bit steeper than the measured values (specially when looking at the $>200$ client values). Looking at the throughput graph \ref{fig:mva-tp} also shows a slight discrepancy in the same region. The measured values do not saturate at around $10'000$ requests per minute as the model graph does. A possible explanation may be variations while performing measurement at the Amazon cloud or marginally misstuned model parameters.
+\subsubsection{Interpretation}
+Both graphs from the model match quite good with the measured values. However looking at the response time graph \ref{fig:mva-rt} the model graphs looks a bit steeper than the measured values (specially when looking at the values beyond 200 client). Looking at the throughput graph \ref{fig:mva-tp} also shows a slight discrepancy in the same region. The measured values do not saturate at around $10'000$ requests per minute as the model graph does. A possible explanation may be variations while performing measurement at the Amazon cloud or marginally misstuned model parameters.
 
 
 \subsection{Calculating Utilisation}
 
-Figures 
-
+Performing a Mean-Value Analysis also yields utilisation and demand of each modelled queue. Both figures \ref{fig:mva-utilisation} and \ref{fig:mva-demand} show utilisation and demand per queue.
 
 % ------------------------------------------------
 % Figure 
@@ -639,10 +589,6 @@ Figures
 %% ----------------------------------------------
 
 
-
-
-
-
 % ------------------------------------------------
 % Figure 
 
@@ -670,6 +616,79 @@ Figures
 
 %% ----------------------------------------------
 
+
+
+\subsubsection{Interpretation}
+Figure \ref{fig:mva-demand} which plots demand per service center identifies the database as a bottle neck. This was expected since the numbers for the analysis were taken from an experiment which was parametrized in a way such that the database had to become the bottleneck. The number of brokers was chosen to be high enough to not make the middleware a bottleneck.
+
+
+%% ----------------------------------------------
+% Section Use the Model 
+%% ----------------------------------------------
+\section{Changing Model Parameters}
+
+Now that we have the modelled the system to match the measured data as close as possible the next step is to play around with different parameters. So far the  database was detected to be the bottleneck. Now I increase the number of database instances so step by step until an other service center becomes the bottle neck device.
+
+
+\subsection{Result}
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/dbscaleout-rt.eps}
+  \end{center}
+  \caption{Scaled Database Responsetime}
+  \label{fig:dbscaleout-rt}
+\end{figure}
+
+%% ----------------------------------------------
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.6]{../plots-ms2-mg/dbscaleout-tp.eps}
+  \end{center}
+  \caption{Scaled Database Throughput}
+  \label{fig:dbscaleout-tp}
+\end{figure}
+
+%% ----------------------------------------------
+
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.8]{../plots-ms2-mg/dbscaleout-demand-0.eps}
+  \end{center}
+  \caption{Scaled Database - Demand}
+  \label{fig:dbscaleout-demand}
+\end{figure}
+
+%% ----------------------------------------------
+
+% ------------------------------------------------
+% Figure 
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.8]{../plots-ms2-mg/dbscaleout-utilisation-0.eps}
+  \end{center}
+  \caption{Scaled Database - Utilisation}
+  \label{fig:dbscaleout-utilisation}
+\end{figure}
+
+%% ----------------------------------------------
+
+\subsection{Interpretation}
+Performance of both response time (fig. \ref{fig:dbscaleout-rt}) and throughput (fig. \ref{fig:dbscaleout-tp}) gradually increase while scaling the number of database. Because of numerical instability of the model calculation it was not possible to show graphs beyond a client count of about 500. However this graphs show that the system scales by increasing the number of databases.\\
+
+One can observe that demand and utilisation per database service center gets lower and lower until the network becomes the bottleneck. By having a look at the figure showing the demand (fig. \ref{fig:dbscaleout-demand}) one can see that the graphs of the Send/Receive service center cross with the demand graph of the database while having about 10 database instances. I assume from this that as soon as we use 10 databases the network (Send/Receive) becomes the new bottleneck.
 
 
 
@@ -808,7 +827,15 @@ Another observation is that more data points between 0 and 100 clients should ha
 The calculated think time $Z$ has the expected magnitude and does not vary too much (around 15ms). The measured data seem to be plausible.
 
 
+%% ----------------------------------------------
+% Section Conclusion
+%% ----------------------------------------------
 \pagebreak
+\section{Conclusion}
+
+Having some problems with obtaining good measurement values from the system delayed me quite a bit for this milestone. As stated in the experiment section results are still not quite optimal. However the model created from the system seems to match the reality quite ok.\\
+
+An other major problem I faced was while calculating actual values for the queuing model. Numbers become quite large or small when iteratively adding up values over 300 clients. Java's \textit{BigDecimal} allowed me to define the precision with which to perform mathmatical operations. This allowed me to trade between precision and minutes over minutes of model calculation time.
 
 
 \bibliographystyle{plain}

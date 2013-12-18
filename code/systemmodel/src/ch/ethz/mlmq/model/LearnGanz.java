@@ -12,7 +12,7 @@ import ch.ethz.mlmq.model.queue.QueueMMmB;
 
 public class LearnGanz {
 
-	private static void createQueues(List<Queue> queues, List<Integer> visitCounts) {
+	private static void createQueues(List<Queue> queues, List<Integer> visitCounts, int dbQueuMultiplicity) {
 		int workerThreadCount = 20;
 		int brokerCount = 8;
 
@@ -35,24 +35,21 @@ public class LearnGanz {
 
 		// db service time
 		double s3 = 6;
-		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 10, 1);
+		QueueMMm queue3 = new QueueMMm("Database", lambda1, s3, 10 * dbQueuMultiplicity, dbQueuMultiplicity);
 
 		// M/M/8
 		QueueMMm queue4 = new QueueMMm("Network Send", lambda1, s1, brokerCount, brokerCount);
 
 		queues.add(queue1);
-		// visitCounts.add((int) (1d / (long) brokerCount));
 		visitCounts.add(1);
 
 		queues.add(queue2);
-		// visitCounts.add((int) (1d / (long) brokerCount));
 		visitCounts.add(1);
 
 		queues.add(queue3);
 		visitCounts.add(1);
 
 		queues.add(queue4);
-		// visitCounts.add((int) (1d / (long) brokerCount));
 		visitCounts.add(1);
 	}
 
@@ -60,9 +57,9 @@ public class LearnGanz {
 
 		List<Queue> queues = new ArrayList<>();
 		List<Integer> visitCounts = new ArrayList<>();
-		createQueues(queues, visitCounts);
+		createQueues(queues, visitCounts, 1);
 
-		evaluateQueues(queues);
+		// evaluateQueues(queues);
 
 		int thinktime = 10;
 		int N = 300;
@@ -77,6 +74,26 @@ public class LearnGanz {
 			ex.printStackTrace();
 		}
 
+		dbScaleOut(thinktime, N);
+	}
+
+	private static void dbScaleOut(int thinktime, int N) {
+		for (int numDbs = 1; numDbs <= 12; numDbs++) {
+			System.out.println("DbScaleout " + numDbs);
+			List<Queue> queues = new ArrayList<>();
+			List<Integer> visitCounts = new ArrayList<>();
+			createQueues(queues, visitCounts, numDbs);
+
+			mvaBuffer = new StringBuilder();
+			performMVA(queues, visitCounts, thinktime, N);
+
+			String filePath = "..\\..\\doc\\plots-ms2-mg\\dbscaleout-" + numDbs + ".csv";
+			try (FileOutputStream fout = new FileOutputStream(filePath)) {
+				fout.write(mvaBuffer.toString().getBytes());
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
 	}
 
 	private static void evaluateQueues(List<Queue> queues) {
