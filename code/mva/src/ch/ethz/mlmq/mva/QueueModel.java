@@ -1,3 +1,5 @@
+package ch.ethz.mlmq.mva;
+
 public class QueueModel {
 
 	public static void main(String[] args) {
@@ -36,9 +38,9 @@ public class QueueModel {
 				}
 
 				if (N == maxClients)
-					mva.calculateNetwork(N, Z, true);
+					mva.calculateNetwork(N, Z, true, true);
 				else
-					mva.calculateNetwork(N, Z, false);
+					mva.calculateNetwork(N, Z, false, true);
 				mva.clearQueues();
 			}
 		}

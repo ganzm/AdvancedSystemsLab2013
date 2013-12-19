@@ -1,3 +1,5 @@
+package ch.ethz.mlmq.mva;
+
 public class MainModel {
 
 	public static void main(String[] args) {
@@ -10,7 +12,7 @@ public class MainModel {
 		double tcpTime = 2.617;
 		int middlewareCount = 80;
 		// int dbWorkers = 4 * 15;
-		int dbWorkers = 12;
+		int dbWorkers = 8;
 		double dbServiceTime = 5.106;
 
 		for (int N = 1; N <= maxClients; N++) {
@@ -47,10 +49,13 @@ public class MainModel {
 			 * Queue database2 = new Queue("DB retrieve1", 70, 0.5, Queue.Type.loadDependent, 4 * 20, maxClients + 1); mva.addQueue(database2);
 			 */
 
-			if (N == maxClients)
-				mva.calculateNetwork(N, Z, true);
-			else
-				mva.calculateNetwork(N, Z, false);
+			if (N == maxClients) {
+				mva.calculateNetwork(N, Z, true, true);
+				// mva.calculateNetwork(N, Z, true, false);
+			} else {
+				mva.calculateNetwork(N, Z, false, true);
+				// mva.calculateNetwork(N, Z, false, false);
+			}
 
 			mva.clearQueues();
 		}

@@ -1,3 +1,5 @@
+package ch.ethz.mlmq.mva;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -16,7 +18,7 @@ public class Mva {
 		queues = new ArrayList<Queue>();
 	}
 
-	public void calculateNetwork(int N, double Z, boolean bottleneck) {
+	public void calculateNetwork(int N, double Z, boolean bottleneck, boolean printResponseTime) {
 		for (int n = 1; n <= N; n++) {
 
 			// calculate response time for entire system
@@ -30,20 +32,23 @@ public class Mva {
 
 			// System.out.println("responseTime: " + responseTimeTotal + "ms");
 
-			if (n == N) {
-				// System.out.print(n + ": ");
-				System.out.println(responseTimeTotal);
-
-			}
-
 			// calculate throughput for entire system
 			double throughput = n / (Z + responseTimeTotal);
+
+			if (n == N) {
+				// System.out.print(n + ": ");
+				if (printResponseTime)
+					System.out.println(responseTimeTotal);
+				else
+					System.out.println(throughput * 1000);
+			}
+
 			// System.out.println("throughput: " + throughput * 1000 * 60 +
 			// "/minute");
 
-			if (n == N) {
-				// System.out.println(throughput * 1000 * 60);
-			}
+			// if (n == N) {
+			// System.out.println(throughput * 1000 * 60);
+			// }
 
 			// calculate new queue length for each queue
 			for (int i = 0; i < queues.size(); i++) {
