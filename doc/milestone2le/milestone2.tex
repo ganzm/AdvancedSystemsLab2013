@@ -103,6 +103,23 @@ This document is the follow up document of Advanced Systems Lab - Milestone I an
 ** explain why you think they can be applied in the corresponding analysis
 
 
+\section{Introduction}
+
+\subsection{Data Sources}
+
+This document extends the document of milestone I. Especially the following test runs are used in this analysis:
+
+\begin{itemize}
+\item Microbenchmarks
+\item 2 hour test
+\item Scaleout experiments
+\end{itemize}
+
+\subsubsection{Scaleout Experiments}
+
+Some additional scaleout experiments were conducted. They were executed with 4 middlewares distributed on 2 virtual machines. For the client and middleware instances, Amazon instances of the type m1.small was used, and for the database the type m1.medium was used.\\
+\noindent Then, the number of clients was scaled from in steps of 15 from 15-60, and in steps of 30 from 60-300.
+
 
 %% ----------------------------------------------
 \section{Components}
@@ -132,7 +149,7 @@ Because the clients wait for the current message to be answered before sending t
 
 \section{Performance Characteristics}
 
-As described in the book (TODO) in section 30.1, a queuing system can be specified by six parameters. Therefore we use the Kendall notation in the form A/S/m/B/K/SD, where the letters correspond to the six parameters listed on page 507-509 in the book.
+As described in the book (TODO) in section 30.1, a queuing system can be specified by six parameters. Therefore we use the Kendall notation in the form A/S/m/B/K/SD, where the letters correspond to the six parameters listed on page 507-509 in the book. Unless specified otherwise, when A/S/m is written, then this corresponds to a A/S/m/$\infty$/$\infty$/FCFS queue, where FCFS means First Come First Serve\footnote{https://en.wikipedia.org/wiki/First-come,\_first-served}.
 
 \subsection{A: Arrival Process}
 
@@ -148,7 +165,9 @@ The number of servers is the amount of middlewares running.
 
 \subsection{B: System Capacity}
 
-The system capacity is defined by those who are waiting for service and those who receive service.  This is dependent on how many requests a middleware can accept. Because there are always less clients connected to a middleware then connections to the NIO part of the middlware can be established, the system capacity will be the same as the population size (TODO: check!!!).
+The system capacity is defined by those who are waiting for service and those who receive service.  This is dependent on how many requests a middleware can accept. Because there are always less clients connected to a middleware then connections to the NIO part of the middlware can be established, the system capacity will be the same as the population size.\\
+
+Unless otherwise specified, 
 
 \subsection{K: Population Size}
 
@@ -174,8 +193,6 @@ The following queueing model network was created based on the understanding of t
 \end{figure}
 
 
-%Initially the TCP connections were modelled as queues. To simplify the model, the TCP connections were replaced by delay stations.\\
-
 \subsection{Simplified Model}
 
 \noindent Initially the TCP connections are modelled as a separate System. To be precise, these TCP connections would influence one another. In the simplified model, those TCP connections act as separate queues. Additionally, the NIO part of the middleware is included in the TCP connection queue. This is a good idea because the NIO thread and the network are strongly linked and the NIO processing is very fast.\\
@@ -184,7 +201,10 @@ The following queueing model network was created based on the understanding of t
 
 \noindent Furthermore, the TCP network connection between the middleware and the database is separated. In the real system, this would be the same connection.\\
 
-\noindent Those simplifications then lead to the simplified queueing network as shown in figure \ref{fig:simplified-queueing-network}.\\
+\noindent To further simplify the model, the TCP connections are modeled as delay centers instead of queues. This should be ok, because the network connection utilization is not at it's limit during the test runs.\\
+
+\noindent Those simplifications then lead to the simplified queueing network as shown in figure \ref{fig:simplified-queueing-network}. Note that the TCP connections are still drawn as queues, but they are modeled as delay centers instead.\\
+
 
 \begin{figure}[H]
 	\begin{center}
@@ -196,40 +216,80 @@ The following queueing model network was created based on the understanding of t
 
 \subsection{Service Centers}
 
-\subsubsection{Client}
+\subsubsection{Client: M/M/$\infty$/$\infty$/$\infty$/FCFS}
 
-The clients do simple operations (send and receive messages) and don't do any computation. The think time (\textbf{Z}) of the client doesn't depend on the client count and thus correspond to the sleep time between requests.
+The clients do simple operations (send and receive messages) and don't do any computation. The think time (\textbf{Z}) of the client doesn't depend on the client count and thus correspond to the sleep time between requests.\\
 
-\subsubsection{TCP and NIO receive / send}
+\noindent The think time of the clients is 50ms TODO check this.\\
+
+For the scaleout test, the number of clients was scaled from 15, 30, 45, 60.
+
+\subsubsection{TCP and NIO receive / send: M/M/$\infty$/$\infty$/$\infty$/FCFS}
 
 The TCP and NIO receive / send contains many things like the network card, the time it takes to physically transport and rout the signal to the corresponding receiver, the OS buffer, and the JVM network buffer. It was decided to also add the NIO thread to this queue, because it acts like the OS buffer or the JVM network buffer.\\
 
-\noindent The queue is modelled as a fixed capacity service center with and unbound queue size. Because only one network connection and one NIO thread is used, the service node count is 1. So it is modelled as M/M/1 queue.
+\noindent According to the Java specification, the buffer of the TCP connection is 50, and thus the queue should be modeled as M/M/$\infty$/50/$\infty$/FCFS. However, to simplify the model, it is modeled as M/M/$\infty$/$\infty$/$\infty$/FCFS.\\
+
+\noindent The queue is modelled as a fixed capacity service center with and unbound queue size. Because only one network connection and one NIO thread is used, the service node count is 1. So it is modelled as M/M/$\infty$/$\infty$/$\infty$/FCFS queue.\\
+
+\noindent In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
+
+\subsubsection{TCP M/M/$\infty$/$\infty$/$\infty$/FCFS}
+
+This is the same as \textbf{TCP and NIO receive} without the NIO. Therefore it is also modelled as a fixed capacity service center with unbound queue size and a node count of 1.\\
+
+\noindent As measured in the milestone I, the mean service time of the TCP connection is 2.644ms for sending and 2.590ms for receiving messges. For this analysis, the mean of 2.617ms is assumed to simplify the analysis.\\
+
+\noindent In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
 
 
-\subsubsection{Workers (Middleware)}
+\subsubsection{Workers (Middleware): M/M/80/$\infty$/$\infty$/FCFS}
 
 There are several worker threads in the system. These worker threads are modelled as a M/M/x queue, where x corresponds to the number of worker threads per middleware. The workers obviously are load dependent. The queue size is 100, as it corresponds to the queue size of the queue from which the worker threads can get the requests which have to be processed.\\
 
-\noindent Additionally, the middlewares can be scaled. The clients are evenly distributed between the middlewares, and so are the requests sent by the clients. Therefore, the model is simplified further as follows: for every additional middleware, the workers are merged into one big worker pool across all middlewares. Therefore, the middleware queues are modelled as M/M/(n * x) queues, where n corresponds to the amount of middlewares and x corresponds to the number of worker threads per middleware.\\
+\noindent Additionally, the middlewares can be scaled. The clients are evenly distributed between the middlewares, and so are the requests sent by the clients. Therefore, the model is simplified further as follows: for every additional middleware, the workers are merged into one big worker pool across all middlewares. Therefore, the middleware queues are modelled as M/M/(n * x)/$\infty$/$\infty$/FCFS queues, where n corresponds to the amount of middlewares and x corresponds to the number of worker threads per middleware.\\
 
-\noindent Unfortunately this simplification also means that the "TCP and NIO receive / send" must be changed as a M/M/n queue, where n corresponds to the amount of middlewares. It still can be modelled as an unbound queue.
+For the scaleout test, 4 middlewares were used, each with 20 workerthreads. This gives a total of 4*20 = 80. The visit count for the middleware is 1/80, because one messages passes through exactly one middleware worker.\\
+
+The service time of the middleware is calculated as follows:
+Total service time - DB service time - 4 * TCP service time. As estimated in the milestone I, for sending the service time is 0.042ms and for receiving it is 0.043ms. For the analysis, a service time of 0.042ms is used.
 
 
-\subsubsection{TCP}
-
-This is the same as "TCP and NIO receive" without the NIO. Therefore it is also modelled as a fixed capacity service center with unbound queue size and a node count of 1.
-
-\subsubsection{Database}
+\subsubsection{Database M/M/60/$\infty$/$\infty$/FCFS}
 
 As stated in the requirements, there must be only one database. However there is never a global table lock and there are multiple ECU's (EC2 Compute Unit\footnote{https://aws.amazon.com/en/ec2/faqs/\#What\_is\_an\_EC2\_Compute\_Unit\_and\_why\_did\_you\_introduce\_it})  available. Furthermore it's unknown how the hardware of the Amazon medium instance is exactly built, but it can be considered that it takes advantage of advanced technology like the locality effect, caching, fail-safe and performance optimized hardware. Unfortunately in one hand, fortunately in the other hand, details about the hardware which the system runs on is unknown. Further information can be found on the amazon website\footnote{https://aws.amazon.com/en/ec2/instance-types/}.\\
 
-Even tough there are 2 ECU's: because there is one vCPU for the medium instance, the node count is set to 1. Also, the service center is modelled as load dependent for obvious reasons.
+Even tough there are 2 ECU's: because there is one vCPU for the medium instance, the node count is set to 1. Also, the service center is modelled as load dependent for obvious reasons.\\
+
+The service time is 4016ms for sending and 6196ms for receiving messages, as measured in the microbenchmarks. For this analysis, the mean of 5106ms is used.\\
+
+For the scaleout test, 4 middlewares were used, each with 15 database connections. This gives a total number of database connections of 4*15 = 60.
 
 
+\section{Mean Value Analysis}
 
+The mean value analysis is performed as described in the book used in this course\footnote{The Art of Computer Systems Performance Analysis, Raj Jain, 1991}. Here, the values of the microbenchmarks of milestone I are used:
 
+\noindent The mean value analysis is based on the scaleout experiment conducted during this milestone.\\
 
+\noindent The number of clients varies from 15-300\footnote{from 15-60 in steps of 15, from 60-300 in steps of 30}.\\
+
+\begin{tabular}{|l|l|r|r|r|}
+\hline
+\textbf{Variable} & \textbf{Description} & \textbf{Value} \\ \hline
+$N_{client}$ & \# clients & 15-300 \\ \hline
+Z & client think time & 10ms \\ \hline
+$N_{middleware}$ & \# middleware workers & 80 \\ \hline
+$S_{middleware}$ & middleware service time & 0.042ms \\ \hline
+$V_{middleware}$ & middleware visit count & 1/80 \\ \hline
+$N_{tcp}$ & \# TCP & 80 \\ \hline
+$S_{tcp}$ & TCP service time & 2.617ms \\ \hline
+$V_{tcp}$ & TCP visit count & 4 \\ \hline
+$N_{db}$ & \# DB & 1 \\ \hline
+$S_{db}$ & DB service time & 5106ms \\ \hline
+$V_{db}$ & DB visit count & 1 \\ \hline
+\end{tabular}
+\\
 
 
 
