@@ -255,15 +255,17 @@ The service time of the middleware is calculated as follows:
 Total service time - DB service time - 4 * TCP service time. As estimated in the milestone I, for sending the service time is 0.042ms and for receiving it is 0.043ms. For the analysis, a service time of 0.042ms is used.\\
 
 
-\subsubsection{Database M/M/60/$\infty$/$\infty$/FCFS}
+\subsubsection{Database M/M/8/$\infty$/$\infty$/FCFS}
 
 As stated in the requirements, there must be only one database. However there is never a global table lock and there are multiple ECU's (EC2 Compute Unit\footnote{https://aws.amazon.com/en/ec2/faqs/\#What\_is\_an\_EC2\_Compute\_Unit\_and\_why\_did\_you\_introduce\_it})  available. Furthermore it's unknown how the hardware of the Amazon medium instance is exactly built, but it can be considered that it takes advantage of advanced technology like the locality effect, caching, fail-safe and performance optimized hardware. Unfortunately in one hand, fortunately in the other hand, details about the hardware which the system runs on is unknown. Further information can be found on the amazon website\footnote{https://aws.amazon.com/en/ec2/instance-types/}.\\
 
-Even tough there are 2 ECU's: because there is one vCPU for the medium instance, the node count is set to 1. Also, the service center is modelled as load dependent for obvious reasons.\\
+Even tough there are 2 ECU's: because there is one vCPU for the medium instance, the node count was first set to 1. Unfortunately this yielded bad results. Therefore, multiple values for the node count were tested. The best results were achieved with a node count of 8. One reason to explain this may be that the database implements bulk IO operations and stores the corresponding pages in the cache. Also, the vCPU instance implements hyperthreading, so more vCPU power is available than only one vCPU.\\
+
+The service center is modelled as load dependent for obvious reasons.\\
 
 The service time is 4016ms for sending and 6196ms for receiving messages, as measured in the microbenchmarks. For this analysis, the mean of 5106ms is used.\\
 
-For the scaleout test, 4 middlewares were used, each with 15 database connections. This gives a total number of database connections of 4*15 = 60.
+
 
 
 \section{Mean Value Analysis}

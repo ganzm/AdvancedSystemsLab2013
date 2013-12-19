@@ -13,7 +13,7 @@ public class MainModel {
 		int middlewareCount = 80;
 		// int dbWorkers = 4 * 15;
 		int dbWorkers = 8;
-		double dbServiceTime = 5.106;
+		double dbServiceTime = 5.106;// 4.016;
 
 		for (int N = 1; N <= maxClients; N++) {
 
