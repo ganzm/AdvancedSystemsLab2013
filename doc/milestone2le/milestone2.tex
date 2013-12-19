@@ -220,7 +220,7 @@ The following queueing model network was created based on the understanding of t
 
 The clients do simple operations (send and receive messages) and don't do any computation. The think time (\textbf{Z}) of the client doesn't depend on the client count and thus correspond to the sleep time between requests.\\
 
-\noindent The think time of the clients is 50ms TODO check this.\\
+\noindent The think time of the clients is 10ms.\\
 
 For the scaleout test, the number of clients was scaled from 15, 30, 45, 60.
 
@@ -290,7 +290,7 @@ $V_{middleware}$ & middleware visit count & 1/80 \\ \hline
 $N_{tcp}$ & \# TCP & 80 \\ \hline
 $S_{tcp}$ & TCP service time & 2.617ms \\ \hline
 $V_{tcp}$ & TCP visit count & 4 \\ \hline
-$N_{db}$ & \# DB & 1 \\ \hline
+$N_{db}$ & \# DB Workers & 60 \\ \hline
 $S_{db}$ & DB service time & 5106ms \\ \hline
 $V_{db}$ & DB visit count & 1 \\ \hline
 \end{tabular}
