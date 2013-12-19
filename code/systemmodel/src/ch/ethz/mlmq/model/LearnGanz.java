@@ -59,7 +59,7 @@ public class LearnGanz {
 		List<Integer> visitCounts = new ArrayList<>();
 		createQueues(queues, visitCounts, 1);
 
-		// evaluateQueues(queues);
+		evaluateQueues(queues);
 
 		int thinktime = 10;
 		int N = 300;

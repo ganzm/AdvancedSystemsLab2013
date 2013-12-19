@@ -61,8 +61,7 @@
 
 \begin{abstract}
 
-This document describes an analytical model of the message queuing system which was build during Milestone I. Analytical studies are presented and compared with the results obtained before. Different behaviour between the model and observed values are explained.
-
+This document describes an analytical model of the message queuing system which was build during Milestone I.  Similarities and discrepancies between the model and the measurement values are stated and explained. Further the model is used to estimate some number for which no measurement values could have been taken.
 
 \end{abstract}
 
@@ -118,12 +117,12 @@ Due to the nature of the tests performed during Milestone I the system should be
 
 
 \subsection{Kendall's Notation}
-In this chapter we look at the system as a black box and describe it with \textit{Kendall's Notation}. The 6 characteristic parameters A/S/m/B/K/SD are defined as followed.
+In this chapter we look at the system as a black box and describe it with \textit{Kendall's Notation}. Let us describe the 6 characteristic parameters A/S/m/B/K/SD as following.
 
 \subsubsection{(A) Arrival Process}
 \label{subsub:ArrivalProcess}
 
-The interarrivaltime is modeled to be exponentially distributed. This can be shown from figure \ref{fig:interarrivaltime}. Data for this plot where obtained from a shortened 2 hour test with mixed types of clients. Therefore interarrivaltime is assumed to be \textit{Markovian (M)}.
+The interarrivaltime is modeled to be exponentially distributed. This can be shown from figure \ref{fig:interarrivaltime}. Data for this plot where measured from a shortened 2 hour test with mixed types of clients. Therefore interarrivaltime is assumed to be \textit{Markovian (M)}.
 
 
 % ------------------------------------------------
@@ -133,7 +132,7 @@ The interarrivaltime is modeled to be exponentially distributed. This can be sho
 	\begin{center}
     \includegraphics[scale=0.6]{../plots-ms2-mg/interarrivaltime.eps}
   \end{center}
-  \caption{Histogram showing Interarrivaltime}
+  \caption{Histogram showing measured Interarrivaltime}
   \label{fig:interarrivaltime}
 \end{figure}
 
@@ -142,7 +141,7 @@ The interarrivaltime is modeled to be exponentially distributed. This can be sho
 
 \subsubsection{(S) Service Time Distribution }
 
-Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in chapter \ref{subsub:ArrivalProcess} show an exponential distribution of service time. Both blots do look quite similar.
+Again it is assumed that the service time distribution is memoryless exponentially distributed. Data drawn from the same test as in chapter \ref{subsub:ArrivalProcess} show an exponential distribution of service time. Both plots look quite similar.
 
 % ------------------------------------------------
 % Figure 
@@ -175,7 +174,7 @@ Because the whole messaging system consists of queues  First Come First Server (
 \section{Refined System Model}
 \label{sec:RefinedSystemModel}
 
-Modelling the system as a black box is not very accurate. To be able to do a more distinct analysis and to identify bottle neck components the black box queue is refined into a queueing network.
+Modelling the system as a black box is not very accurate. To be able to do a more distinct analysis and to identify bottle neck components, the black box queue is refined into a queueing network.
 
 Figure \ref{fig:systemmodel-singlebroker} shows the model of the system with only one middleware instance. It is modelled having four different service centers which are described in the following subsection.
 
@@ -195,7 +194,7 @@ Figure \ref{fig:systemmodel-singlebroker} shows the model of the system with onl
 \subsection{Service Centers}
 
 \subsubsection{Client}
-The clients are modelled as Delay Centers. The time a client is sleeping between two requests is the think time $Z$.
+The clients are modelled as delay centers. The time a client is sleeping between two requests is the think time $Z$.
 
 \subsubsection{Network Receive}
 \label{subsub:ServiceCenterNetworkReceive}
@@ -234,7 +233,7 @@ Type & fixed-capacity service center \\
 \hline 
 Queue Size & unbound \\ 
 \hline 
-Service Node Count & 12 \\ 
+Service Node Count & 10 \\ 
 \hline 
 \end{tabular} 
 
@@ -272,6 +271,8 @@ Taking into account more than one middleware instance would lead to the followin
 Since clients and load is evenly distributed among multiple stateless middleware instances and the visit ratio $V_i$ of the $i$-th queue for $n$ instances is $1 \over n$. We can simplify the model by merging all of them together. This means that for each broker added the queue size and service node count is increased accordingly. However merging all middleware instances together leads us back to the model shown in figure \ref{fig:systemmodel-singlebroker} but with modified parameters.
 
 \paragraph{For example} if there are 8 middleware the queue size of the \textit{Network Receive} component is still unbound but the service node count is 8 instead of 1 (it becomes a load dependent service center).
+
+\paragraph{Note} This simplification is technically not correct. Since it is assumed that a M/M/n queue behaves the same as n times a M/M/1 queue in parallel - which is not the case. But since our model is only an approximation of the real system I do this simplification any way.
 
 
 %% ----------------------------------------------
@@ -460,7 +461,7 @@ Mean \# of Jobs in the Queue & \numprint{0.0062526212716814827292699838898571764
 %% ----------------------------------------------
 
 \subsubsection{Explanation}
-Having the database modelled like this results in a traffic intensity $\rho$ of $0.9$ which means that this service center is stable but under heavy load. The mean number of jobs in this is calculated to be $9$ which means that with $10$ processing nodes there is no queueing on average.
+Having the database modelled like this results in a traffic intensity $\rho$ of $0.9$ which means that this service center is stable but under heavy load. The mean number of jobs in this is calculated to be $9$ which means that with $10$ processing nodes there is no queueing on average. Figure \ref{fig:queueanalysis3} shows as expected a nice bell curve with probabilities of having certain number of jobs in the database.
 
 
 \subsection{Network Send - M/M/8}
@@ -554,7 +555,9 @@ Plot \ref{fig:mva-rt} and \ref{fig:mva-tp} show the estimated response time and 
 
 
 \subsubsection{Interpretation}
-Both graphs from the model match quite good with the measured values. However looking at the response time graph \ref{fig:mva-rt} the model graphs looks a bit steeper than the measured values (specially when looking at the values beyond 200 client). Looking at the throughput graph \ref{fig:mva-tp} also shows a slight discrepancy in the same region. The measured values do not saturate at around $10'000$ requests per minute as the model graph does. A possible explanation may be variations while performing measurement at the Amazon cloud or marginally misstuned model parameters.
+Both graphs from the model match quite good with the measured values. However looking at the response time graph in figure \ref{fig:mva-rt} the model graphs looks a bit steeper than the measured values (specially when looking at the values beyond 200 client). This means that the actual system has a better performance than the model. The simplification which was performed on the model in chapter \ref{sec:RefinedSystemModel} however should have improved performance comparing it with the real system. This indicates that the mentioned simplification does not majorly affect the model.\\
+
+Looking at the throughput graph \ref{fig:mva-tp} also shows a slight discrepancy in the same region. The measured values do not saturate at around $10'000$ requests per minute as the model graph does. A possible explanation may also be variations while performing measurement at the Amazon cloud or marginally misstuned model parameters.
 
 
 \subsection{Calculating Utilisation}
@@ -627,7 +630,7 @@ Figure \ref{fig:mva-demand} which plots demand per service center identifies the
 %% ----------------------------------------------
 \section{Changing Model Parameters}
 
-Now that we have the modelled the system to match the measured data as close as possible the next step is to play around with different parameters. So far the  database was detected to be the bottleneck. Now I increase the number of database instances so step by step until an other service center becomes the bottle neck device.
+Now that we have modelled and parametrized the system to match the measured data as close as possible the next step is to play around with different parameters. So far the database was observed to be the bottleneck. Now I increase the number of database instances step by step until an other service center becomes the bottleneck device.
 
 
 \subsection{Result}
@@ -686,7 +689,7 @@ Now that we have the modelled the system to match the measured data as close as 
 %% ----------------------------------------------
 
 \subsection{Interpretation}
-Performance of both response time (fig. \ref{fig:dbscaleout-rt}) and throughput (fig. \ref{fig:dbscaleout-tp}) gradually increase while scaling the number of database. Because of numerical instability of the model calculation it was not possible to show graphs beyond a client count of about 500. However this graphs show that the system scales by increasing the number of databases.\\
+Performance of both response time (fig. \ref{fig:dbscaleout-rt}) and throughput (fig. \ref{fig:dbscaleout-tp}) gradually increase while scaling the number of database. Because of numerical instability of the model calculation, it was not possible to show graphs beyond a client count of about 500. However this plots show that the system scales by increasing the number of databases.\\
 
 One can observe that demand and utilisation per database service center gets lower and lower until the network becomes the bottleneck. By having a look at the figure showing the demand (fig. \ref{fig:dbscaleout-demand}) one can see that the graphs of the Send/Receive service center cross with the demand graph of the database while having about 10 database instances. I assume from this that as soon as we use 10 databases the network (Send/Receive) becomes the new bottleneck.
 
