@@ -13,7 +13,9 @@ public class MainModel {
 		int middlewareCount = 80;
 		// int dbWorkers = 4 * 15;
 		int dbWorkers = 8;
-		double dbServiceTime = 5.106;// 4.016;
+		double dbServiceTime = 4.506;
+		// fixed value: 4.506
+		// estimated value: 5.106
 
 		for (int N = 1; N <= maxClients; N++) {
 
@@ -49,12 +51,14 @@ public class MainModel {
 			 * Queue database2 = new Queue("DB retrieve1", 70, 0.5, Queue.Type.loadDependent, 4 * 20, maxClients + 1); mva.addQueue(database2);
 			 */
 
+			boolean printResponseTime = true;
+
 			if (N == maxClients) {
 				// mva.calculateNetwork(N, Z, true, true);
-				mva.calculateNetwork(N, Z, true, false);
+				mva.calculateNetwork(N, Z, true, printResponseTime);
 			} else {
 				// mva.calculateNetwork(N, Z, false, true);
-				mva.calculateNetwork(N, Z, false, false);
+				mva.calculateNetwork(N, Z, false, printResponseTime);
 			}
 
 			mva.clearQueues();
