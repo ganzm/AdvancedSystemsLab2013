@@ -266,8 +266,6 @@ The service center is modelled as load dependent for obvious reasons.\\
 The service time is 4016ms for sending and 6196ms for receiving messages, as measured in the microbenchmarks. For this analysis, the mean of 5106ms is used.\\
 
 
-
-
 \section{Mean Value Analysis}
 
 The mean value analysis is performed as described in the book used in this course\footnote{The Art of Computer Systems Performance Analysis, Raj Jain, 1991}. Here, the values of the microbenchmarks of milestone I are used:
@@ -292,16 +290,40 @@ $V_{middleware}$ & middleware visit count & 1/80 \\ \hline
 $N_{tcp}$ & \# TCP & 80 \\ \hline
 $S_{tcp}$ & TCP service time & 2.617ms \\ \hline
 $V_{tcp}$ & TCP visit count & 4 \\ \hline
-$N_{db}$ & \# DB Workers & 60 \\ \hline
+$N_{db}$ & \# DB Workers & 8 \\ \hline
 $S_{db}$ & DB service time & 5106ms \\ \hline
 $V_{db}$ & DB visit count & 1 \\ \hline
 \end{tabular}
 \\
 
+\subsection{Results}
+
+The analysis yielded decent results, especially for the response time. The response time can be seen in figure \ref{fig:rt-total} and the throughput can be seen in figure \ref{fig:tp-total}
+
+\begin{landscape}\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 34mm 24mm 25mm, clip]{measurements_increase_load/rt_total.pdf}
+  \end{center}
+  \caption{mean value analysis, throughput}
+  \label{fig:rt_total}
+\end{figure}
+
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 34mm 24mm 25mm, clip]{measurements_increase_load/tp_total.pdf}
+  \end{center}
+  \caption{mean value analysis, throughput}
+  \label{fig:tp_total}
+\end{figure}
+
+\end{landscape}
 
 
 
+\subsubsection{Interpretation}
 
+The mean value analysis for the response time seems pretty well. However, there seems to be a additional constant  of about 10-30ms where the response time of the model doesn't match. There might be a delay center missing, or some delay center
 
 
 
