@@ -50,11 +50,11 @@ public class MainModel {
 			 */
 
 			if (N == maxClients) {
-				mva.calculateNetwork(N, Z, true, true);
-				// mva.calculateNetwork(N, Z, true, false);
+				// mva.calculateNetwork(N, Z, true, true);
+				mva.calculateNetwork(N, Z, true, false);
 			} else {
-				mva.calculateNetwork(N, Z, false, true);
-				// mva.calculateNetwork(N, Z, false, false);
+				// mva.calculateNetwork(N, Z, false, true);
+				mva.calculateNetwork(N, Z, false, false);
 			}
 
 			mva.clearQueues();
