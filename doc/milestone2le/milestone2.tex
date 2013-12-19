@@ -384,7 +384,7 @@ As described in the simplified model description, the system could be modelled d
 \section{Measurement Analysis}
 \label{sec:measurement-analysis}
 
-Here, the calculated numbers are sanity checked by using the formula $ThroughputX=\frac{UsersN}{ResponseTimeR + ThinkTimeZ}$ and calculating the following values:
+Here, the calculated numbers are sanity checked by using the formula $$X_{Throughput}=\frac{N_{Users}}{R_{ResponseTime} + Z_{ThinkTime}}$$ and calculating the following values:
 
 \begin{table}[h!]
 \begin{center}
@@ -394,10 +394,21 @@ Here, the calculated numbers are sanity checked by using the formula $Throughput
 XXXX & XXXX & XXXXXX & XXXXXX & XXXXXX & XXXXXX \\ \hline
 \end{tabular}
 \caption{measured throughput compared to calculated throughput}
+\label{tab:sanity-check}
 \end{center}
 \end{table}
 
+In figure \ref{fig:tp-sanity-check-total-fixed} the $X_{calculated}$ is displayed and compared to the measured throughput. The difference in percentage is actually quite small, which can also be seen in the table \ref{tab:sanity-check}.
 
+\begin{landscape}\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_sanity_check_total_fixed.pdf}
+  \end{center}
+  \caption{mean value analysis, throughput fixed, with sanity check}
+  \label{fig:tp-sanity-check-total-fixed}
+\end{figure}
+
+\end{landscape}
 
 
 
