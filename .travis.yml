@@ -11,3 +11,7 @@ before_script:
   - psql -c "alter role postgres with password 'postgres';" -U postgres 
 script:
   - mvn test -B -e
+branches:
+  except:
+    - master
+	
