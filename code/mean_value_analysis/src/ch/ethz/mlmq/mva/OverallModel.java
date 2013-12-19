@@ -1,6 +1,6 @@
 package ch.ethz.mlmq.mva;
 
-public class MainModel {
+public class OverallModel {
 
 	public static void main(String[] args) {
 		Mva mva = new Mva();
