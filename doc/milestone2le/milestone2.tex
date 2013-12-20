@@ -329,6 +329,20 @@ To do the analysis, a Java program was written. It can be found in the code/mean
 
 Here, in the figures \ref{fig:rt-total}, \ref{fig:tp-total}, \ref{fig:rt-total-fixed} and \ref{fig:tp-total-fixed}, the model and the measured data are compared.
 
+\subsubsection{Interpretation}
+
+The first analysis without the adjusted service time for the database yielded not so good results for the response time. The mean value analysis for the response time seems pretty well. However, there seemed to be a additional constant of about 50ms where the response time of the model didn't match. It clearly can be observed that the measured response time and the modelled response time diverge, see figure \ref{fig:rt-total}. Also, the measured throughput is clearly higher then the modelled throughput, see figure \ref{fig:tp-total}. For those reasons, the mean service time of the database was adjusted and the fixed model was generated.\\
+
+The analysis of the fixed model yields decent results, especially for the response time, which can be seen in figure \ref{fig:rt-total-fixed}. The predicted values of the model are well in between the standard deviation of the measured datapoints.\\
+
+The throughput model and the measured datapoints can be compared in figure \ref{fig:tp-total-fixed}. Unlike the response time, the throughput model seems to be less accurate then the response time model. This is somewhat strange because they are related with the formula $Throughput=\frac{Users}{ResponseTime + ThinkTime}$. This will be further discussed in section \ref{sec:measurement-analysis}.
+
+
+\subsubsection{Possible Further Investigations}
+
+As described in the simplified model description, the system could be modelled differently, by splitting up the database for sending and receiving into two separate parts. I think that this way, the model would be more accurate compared to the measured data. However, the trade-off between model complexity and best fit is always tricky, and I chose to stay with the slightly simplified model.
+
+
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
     \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_total.pdf}
@@ -364,20 +378,6 @@ Here, in the figures \ref{fig:rt-total}, \ref{fig:tp-total}, \ref{fig:rt-total-f
 
 \end{landscape}
 
-
-
-\subsubsection{Interpretation}
-
-The first analysis without the adjusted service time for the database yielded not so good results for the response time. The mean value analysis for the response time seems pretty well. However, there seemed to be a additional constant of about 50ms where the response time of the model didn't match. It clearly can be observed that the measured response time and the modelled response time diverge, see figure \ref{fig:rt-total}. Also, the measured throughput is clearly higher then the modelled throughput, see figure \ref{fig:tp-total}. For those reasons, the mean service time of the database was adjusted and the fixed model was generated.\\
-
-The analysis of the fixed model yields decent results, especially for the response time, which can be seen in figure \ref{fig:rt-total-fixed}. The predicted values of the model are well in between the standard deviation of the measured datapoints.\\
-
-The throughput model and the measured datapoints can be compared in figure \ref{fig:tp-total-fixed}. Unlike the response time, the throughput model seems to be less accurate then the response time model. This is somewhat strange because they are related with the formula $Throughput=\frac{Users}{ResponseTime + ThinkTime}$. This will be further discussed in section \ref{sec:measurement-analysis}.
-
-
-\subsubsection{Possible Further Investigations}
-
-As described in the simplified model description, the system could be modelled differently, by splitting up the database for sending and receiving into two separate parts. I think that this way, the model would be more accurate compared to the measured data. However, the trade-off between model complexity and best fit is always tricky, and I chose to stay with the slightly simplified model.
 
 
 
@@ -498,13 +498,9 @@ If this was a real system, one could decide to invest some work and implement th
 
 
 
-\section{Middleware}
+\subsection{Middleware}
 
-Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-middleware-scale} show that scaling the middleware has practically no effect on the system. This is because one single middleware has a connection pool of 20, which seems to be enough to satisfy about 50-60 clients. Then the requests start queuing at the database level.
-
-
-
-
+Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-middleware-scale} show that scaling the middleware has practically no effect on the system. This is because one single middleware has a connection pool of 20, which seems to be enough to satisfy about 50-60 clients. Then the requests start queuing at the database level.\\
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
@@ -527,16 +523,26 @@ Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-midd
 
 
 
+\section{Conclusion}
+
+First, the assumptions, on which the whole analysis bases on, were stated. There it was already clear that a queueing model would not be an exact solution, but could only be used for rough approximations because the assumptions are not fully met when the system is runnning on the Amazon elastic compute cloud.\\
+
+In this document, the system implemented in the prior milestone is explained by an analytical queuing model. Each component of the system has been modelled individually, and then those components were combined to a queueing network to model the system as a whole. The parameters and how they were obtained is clearly stated, and thus the experiments should be reproducible.\\
+
+Next, the performance characteristics of the model were compared to the measurements obtained in milestone I and during this milestone (scaleout experiments) using the operational laws. In the beginning, it was hard to find a model that fits to the system, but once the first mean value analysis was created, it was then simpler to go to more complex models that fit better to the system.\\
+
+It then was explained where the model and the data match and where they diverge. Extensive explanations were given concerning the code, system and hardware of the system.\\
+
+Finally, the model was used to predict how the system would behave when scaled. This was done using graphs to plot how they would scale. It seems that the system is clearly limited by the database. Scaling the middlewares on the other hand would not have a noticeable effect.\\
 
 
+\section{Lessons Learned}
 
+The modelled system seems to predict the behaviour of the system quite well. Unfortunately I believe that some of the measurements obtained in milestone I, especially the microbenchmarks, are not 100\% accurate. Therefore the middleware service time might be a little too low and thus, scaling the middlewares doesn't have an effect on the system as a whole.\\
 
+However, the power of having a system model cannot be underestimated. Using the system model, one can easily check, whether it is cost and time efficient to invest into system development of certain parts of the system. Especially when it is not possible to build up an infrastructure (e.g. if you want to implement a new network protocol which should be used across the whole internet), such system models play a crucial role in software development and system development.\\
 
-
-
-
-
-
+\section{References}
 
 
 

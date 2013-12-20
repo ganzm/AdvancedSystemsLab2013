@@ -4,7 +4,7 @@ import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.queue.Queue;
 import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.queue.QueueType;
 import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.solver.MeanValueAnalyzer;
 
-public class ScaleMiddlewares {
+public class ScaleMiddlewares2 {
 
 	public static void main(String[] args) {
 
@@ -15,8 +15,8 @@ public class ScaleMiddlewares {
 		double Z = 10;
 
 		double tcpTime = 2.617;
-		int middlewareCount = 1;
-		int dbWorkers = 128;
+		int middlewareCount = 4 * 20;
+		int dbWorkers = 8;
 		double dbServiceTime = 4.506; // fixed value (good): 4.506, estimated value (bad): 5.106
 
 		MeanValueAnalyzer mva = new MeanValueAnalyzer();
