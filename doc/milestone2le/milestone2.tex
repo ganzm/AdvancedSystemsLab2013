@@ -443,8 +443,13 @@ In this section, the model developed in the previous section is used to simulate
 
 The Java program was extended so it can locate the bottleneck component of the system. The reason why the database is listed first here is that the database is the bottleneck of the model. Figure \ref{fig:tp-db-scale} shows that the throughput would grow linearly, as we would expect it. And figure \ref{fig:rt-db-scale} shows that the response time would also grow slower.\\
 
-However, the predicted model seems to be flawed somewhat: While it works well for two database instances, there are some bumps when modelling 3 or 4 databases. This may be a possible weak point of this model.
+However, the predicted model seems to be flawed somewhat: While it works well for two database instances, there are some bumps when modelling 3 or 4 databases. This may be a possible weak point of this model.\\
 
+To find the limit of the rest of the system and to further validate the model, the database was scaled even more, from 10-30 databaes. However, the one database is displayed too as a reference.\\
+
+In the figures \ref{fig:tp-db-scale2} and \ref{fig:rt-db-scale2} it shows that the throughput and the response time grow linearly respectively, but only up to 12 databases. Then, another component becomes the system limit. Therefore the models 20 x database and 30 x database overlap exactly and no difference can be distinguished. Again, we also notice the disfigurement / the bump of the model at the peek of the curve. But also again, it is nice to see that the general trend is recorded.\\
+
+If this was a real system, one could decide to invest some work and implement the messaging system with multiple databases. It seems to have a linear effect, which is great in this case. However, there is one caveat which is not captured by the model: There would be additional overhead to either synchornize the databases, or the middlewares would have to connect to multiple databases. This might be insignificant if there are only 2 or 3 additional databases, but it will probably become a concern if 10 or 20 additional databases are implemented. In this case, one should probably refine the model and run the simulations again.\\
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
@@ -453,12 +458,29 @@ However, the predicted model seems to be flawed somewhat: While it works well fo
   \caption{model prediction, throughput database scaling}
   \label{fig:tp-db-scale}
 \end{figure}
+
 \begin{figure}[H]
 	\begin{center}
     \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale.pdf}
   \end{center}
   \caption{model prediction, response time database scaling}
   \label{fig:rt-db-scale}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale2.pdf}
+  \end{center}
+  \caption{model prediction, throughput database scaling, high values}
+  \label{fig:tp-db-scale2}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale2.pdf}
+  \end{center}
+  \caption{model prediction, response time database scaling, high values}
+  \label{fig:rt-db-scale2}
 \end{figure}
 \end{landscape}
 
