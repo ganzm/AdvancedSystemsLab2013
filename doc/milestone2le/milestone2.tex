@@ -409,7 +409,9 @@ Here, the calculated numbers are sanity checked by using the formula $$X_{Throug
 \end{center}
 \end{table}
 
-In figure \ref{fig:tp-sanity-check-total-fixed} the $X_{calculated}$ is displayed and compared to the measured throughput. The difference in percentage is actually quite small, which can also be seen in the table \ref{tab:sanity-check}.
+In figure \ref{fig:tp-sanity-check-total-fixed} the $X_{calculated}$ is displayed and compared to the measured throughput. The difference in percentage is actually quite small, which can also be seen in the table \ref{tab:sanity-check}.\\
+
+The reason why the throughput is less exact then the response time is that a small deviation in the response time has a big effect when the throughput is calculated, because the measured response time multiplies.\\
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
@@ -420,6 +422,34 @@ In figure \ref{fig:tp-sanity-check-total-fixed} the $X_{calculated}$ is displaye
 \end{figure}
 
 \end{landscape}
+
+
+\subsection{Mismatch Explanation Model v.s. Measured Data}
+
+There are several reasons why the model doesn't match the measured data perfectly.\\
+
+Firstly, as already described in the very first chapter, the assumptions to model a queueing network don't hold fully, so there will be deviations.\\
+
+Next, the queueing model is a very simplified version of the real system, so that it's less complicated. The downside of this is that the model of course is not exact.\\
+
+Nevertheless, the model can show global trends of the messaging system. Therefore it can predict how the system might change when implementing things differently. Due to the fact that building, actually implementing and configuring more complex parts of the system (e.g. multiple databases) is time consuming and in practice often a cost factor, models like this can help estimating which components could bring significant performance improvements.\\
+
+
+\section{Scaling the System}
+
+In this section, the model developed in the previous section is used to simulate what would happen if certain components would be implemented differently, scaled differently, or optimized furthermore. It shows how the model is a powerful tool to consider implementing new features, or even more important, why certain costly features should not be implemented from a performance point of view.\\
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
