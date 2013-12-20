@@ -446,6 +446,22 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale_stable.pdf}
+  \end{center}
+  \caption{model prediction, throughput database scaling, stable algorithm vs. unstable algorithm}
+  \label{fig:tp-db-scale-stable}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale_stable.pdf}
+  \end{center}
+  \caption{model prediction, response time database scaling, stable algorithm vs. unstable algorithm}
+  \label{fig:rt-db-scale-stable}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
     \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/db_utilisation.pdf}
   \end{center}
   \caption{model prediction, database utilisation for database scaling}
@@ -520,7 +536,8 @@ The modelled system seems to predict the behaviour of the system quite well. Unf
 
 Even tough there are Tools to analyze queuing systems, like the Java Modeling Tools\footnote{http://jmt.sourceforge.net/}, these tools often are difficult to use and / or are out of date. For example, the Java Modeling Tools did not even run under MacOS, but worked under Windows. It is unclear to me why there is no more sophisticated software, which is easy to use, and up to date, in which a queuing network can easily be simulated with numerical stability.\\
 
-Instead, a Java program was implemented, which obviously is numerically not stable when using big numbers (e.g. for components, or for clients).\\
+Instead, a Java program was implemented, which obviously is numerically not stable when using big numbers (e.g. for components, or for clients). Even tough the program was fixed, see figure  TODO XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+, the performance of the computation for the model decreased dramatically by using BigDecimal instead of double. However, if a real system should be evaluated, then the fixed program can be used, and a long computation would still be preferred compared to implementing the real system and running some tests. For the overview, the fast but numerically unstable variant is a good starting point.\\
 
 However, the power of having a system model cannot be underestimated. Using the system model, one can easily check, whether it is cost and time efficient to invest into system development of certain parts of the system. Especially when it is not possible to build up an infrastructure (e.g. if you want to implement a new network protocol which should be used across the whole internet), such system models play a crucial role in software development and system development.\\
 
