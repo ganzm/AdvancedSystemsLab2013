@@ -85,7 +85,7 @@ However, these assumptions may easily be violated. Examples:\\
 
 The first assumption is not entirely true for the system, because the computational capacity of the Amazon machines may very well depend on the workload of the physical server, because other people might use the same server/network at the same time. Another possibility which would influence the system would be the operating system, which may run some background jobs. Another example may be the garbage collector of the JVM, which may interfere. Lastly, we consider some SSH connection to the server, which also influences the performance. However, we assume that all those interferences are minor and don't influence the system at great scale.\\
 
-Even tough there are unit tests which support the stability of the system, it is possible that the system may contain a bug, which in the worst case could destroy a job. Therefore, the third assumption (and therefore also the second one) can be violated. However, this should not happen, and there are also system logs where most of these possible errors would be logged.\\
+Even tough there are unit tests which support the stability of the system, it is possible that the system may contain a bug, which in the worst case could destroy a job. Therefore, the third assumption (and therefore also the second one) can be violated. However, this should not happen, and there are also system logs where most of these possible errors would be logged.
 
 \subsection{Data Sources}
 
@@ -99,8 +99,7 @@ This document extends the document of milestone I\cite{milestone1}. Especially t
 
 \subsubsection{Scaleout Experiments}
 
-Some additional scaleout experiments were conducted. They were executed with 4 middlewares distributed on 2 virtual machines. For the client and middleware instances, Amazon instances of the type m1.small was used, and for the database the type m1.medium was used.\\
-\noindent Then, the number of clients was scaled from in steps of 15 from 15-60, and in steps of 30 from 60-300.
+Some additional scaleout experiments were conducted. They were executed with 4 middlewares distributed on 2 virtual machines. For the client and middleware instances, Amazon instances of the type m1.small was used, and for the database the type m1.medium was used. Then, the number of clients was scaled from in steps of 15 from 15-60, and in steps of 30 from 60-300.
 
 
 \pagebreak
@@ -129,6 +128,8 @@ Figure \ref{fig:middleware-threading} shows a overview of the systems components
 \end{itemize}
 
 Because the clients wait for the current message to be answered before sending the next message, the system is modelled as a \textbf{closed system}. If messages fail to be processed by the middleware, the client implements a backoff time, so the system doesn't get overloaded.
+
+\pagebreak
 
 \section{Performance Characteristics}
 
