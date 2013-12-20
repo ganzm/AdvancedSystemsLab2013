@@ -313,7 +313,7 @@ As described in the simplified model description, the system could be modelled d
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_total.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/rt_total.pdf}
   \end{center}
   \caption{mean value analysis, response time, with standard deviation}
   \label{fig:rt-total}
@@ -321,7 +321,7 @@ As described in the simplified model description, the system could be modelled d
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_total.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_total.pdf}
   \end{center}
   \caption{mean value analysis, throughput}
   \label{fig:tp-total}
@@ -330,7 +330,7 @@ As described in the simplified model description, the system could be modelled d
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_total_fixed.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/rt_total_fixed.pdf}
   \end{center}
   \caption{mean value analysis, response time fixed, with standard deviation}
   \label{fig:rt-total-fixed}
@@ -338,7 +338,7 @@ As described in the simplified model description, the system could be modelled d
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_total_fixed.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_total_fixed.pdf}
   \end{center}
   \caption{mean value analysis, throughput fixed}
   \label{fig:tp-total-fixed}
@@ -384,7 +384,7 @@ The reason why the throughput is less exact then the response time is that a sma
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_sanity_check_total_fixed.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_sanity_check_total_fixed.pdf}
   \end{center}
   \caption{mean value analysis, throughput fixed, with sanity check}
   \label{fig:tp-sanity-check-total-fixed}
@@ -418,11 +418,11 @@ In this section, the model developed in the previous section is used to simulate
 
 The Java program was extended so it can locate the bottleneck component of the system. The reason why the database is listed first here is that the database is the bottleneck of the model. Figure \ref{fig:tp-db-scale} shows that the throughput would grow linearly, as we would expect it. And figure \ref{fig:rt-db-scale} shows that the response time would also grow slower.\\
 
-However, the predicted model seems to be flawed somewhat: While it works well for two database instances, there are some bumps when modelling 3 or 4 databases. This may be a possible weak point of this model.\\
+However, the predicted model seems to be flawed somewhat: While it works well for two database instances, there are some bumps when modelling 3 or 4 databases. Initially, it was assumed that this could have been a possible weak point of this model. However, further investigations showed that the model is fine, but the Java implementation of the queuing network is numerically unstable. To avoid this, a new implementation was created, which used the Java BigDecimal class. Figures \ref{fig:tp-db-scale-stable} and \ref{fig:rt-db-scale-stable} nicely show how the numerically stable version of the Java program creates more accurate results. The downside of the more more precise model implementation is that it is computationally more expensive, but only by a constant factor, compared to the numerically unstable implementation. To be able to do more experiments, I decided to stick with the unstable implementation, so the simulations are faster.\\
 
 To find the limit of the rest of the system and to further validate the model, the database was scaled even more, from 10-30 databaes. However, the one database is displayed too as a reference.\\
 
-To display the database utilisation figure \ref{fig:db-utilisation} has been inserted. It is clearly visible that there is a relationship between response time and database utilization. In the real system, this would mean that message start queuing up waiting for the database connection. We also note the bumps which are obviously wrong - it is obviously not possible that the utilisation goes over 100\%.\\
+To display the database utilization figure \ref{fig:db-utilisation} has been inserted. It is clearly visible that there is a relationship between response time and database utilization. In the real system, this would mean that message start queuing up waiting for the database connection. We also note the bumps which are obviously wrong - it is obviously not possible that the utilisation goes over 100\%.\\
 
 In the figures \ref{fig:tp-db-scale2} and \ref{fig:rt-db-scale2} it shows that the throughput and the response time grow linearly respectively, but only up to 12 databases. Then, another component becomes the system limit. Therefore the models 20 x database and 30 x database overlap exactly and no difference can be distinguished. Again, we also notice the disfigurement / the bump of the model at the peek of the curve. But also again, it is nice to see that the general trend is recorded.\\
 
@@ -430,7 +430,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_db_scale.pdf}
   \end{center}
   \caption{model prediction, throughput database scaling}
   \label{fig:tp-db-scale}
@@ -438,7 +438,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/rt_db_scale.pdf}
   \end{center}
   \caption{model prediction, response time database scaling}
   \label{fig:rt-db-scale}
@@ -446,7 +446,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale_stable.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_db_scaling_stable.pdf}
   \end{center}
   \caption{model prediction, throughput database scaling, stable algorithm vs. unstable algorithm}
   \label{fig:tp-db-scale-stable}
@@ -454,7 +454,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale_stable.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/rt_db_scaling_stable.pdf}
   \end{center}
   \caption{model prediction, response time database scaling, stable algorithm vs. unstable algorithm}
   \label{fig:rt-db-scale-stable}
@@ -462,7 +462,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/db_utilisation.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/db_utilisation.pdf}
   \end{center}
   \caption{model prediction, database utilisation for database scaling}
   \label{fig:db-utilisation}
@@ -470,7 +470,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale2.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_db_scale2.pdf}
   \end{center}
   \caption{model prediction, throughput database scaling, high values}
   \label{fig:tp-db-scale2}
@@ -478,7 +478,7 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale2.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/rt_db_scale2.pdf}
   \end{center}
   \caption{model prediction, response time database scaling, high values}
   \label{fig:rt-db-scale2}
@@ -495,7 +495,7 @@ Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-midd
 
 \begin{landscape}\begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_middleware_scaling.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/tp_middleware_scaling.pdf}
   \end{center}
   \caption{model prediction, throughput middleware scaling}
   \label{fig:tp-middleware-scale}
@@ -503,7 +503,7 @@ Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-midd
 
 \begin{figure}[H]
 	\begin{center}
-    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_middleware_scaling.pdf}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 24mm, clip]{measurements_increase_load/rt_middleware_scaling.pdf}
   \end{center}
   \caption{model prediction, response time middleware scaling}
   \label{fig:rt-middleware-scale}
