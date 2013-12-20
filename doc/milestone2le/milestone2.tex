@@ -498,13 +498,31 @@ If this was a real system, one could decide to invest some work and implement th
 
 
 
+\section{Middleware}
+
+Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-middleware-scale} show that scaling the middleware has practically no effect on the system. This is because one single middleware has a connection pool of 20, which seems to be enough to satisfy about 50-60 clients. Then the requests start queuing at the database level.
 
 
 
 
 
+\begin{landscape}\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_middleware_scaling.pdf}
+  \end{center}
+  \caption{model prediction, throughput middleware scaling}
+  \label{fig:tp-middleware-scale}
+\end{figure}
 
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_middleware_scaling.pdf}
+  \end{center}
+  \caption{model prediction, response time middleware scaling}
+  \label{fig:rt-middleware-scale}
+\end{figure}
 
+\end{landscape}
 
 
 
