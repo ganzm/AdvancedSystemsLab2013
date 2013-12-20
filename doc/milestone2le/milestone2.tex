@@ -17,6 +17,7 @@
 \usepackage{subfiles}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{parskip}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -179,15 +180,15 @@ The following queueing model network was created based on the understanding of t
 
 \subsection{Simplified Model}
 
-\noindent Initially the TCP connections are modelled as a separate System. To be precise, these TCP connections would influence one another. In the simplified model, those TCP connections act as separate queues. Additionally, the NIO part of the middleware is included in the TCP connection queue. This is a good idea because the NIO thread and the network are strongly linked and the NIO processing is very fast.\\
+Initially the TCP connections are modelled as a separate System. To be precise, these TCP connections would influence one another. In the simplified model, those TCP connections act as separate queues. Additionally, the NIO part of the middleware is included in the TCP connection queue. This is a good idea because the NIO thread and the network are strongly linked and the NIO processing is very fast.\\
 
-\noindent Next, the model was further simplified by separating the NIO component into two separate queues. In the real system however, similar to the TCP connection, there is only one NIO thread.\\
+Next, the model was further simplified by separating the NIO component into two separate queues. In the real system however, similar to the TCP connection, there is only one NIO thread.\\
 
-\noindent Furthermore, the TCP network connection between the middleware and the database is separated. In the real system, this would be the same connection.\\
+Furthermore, the TCP network connection between the middleware and the database is separated. In the real system, this would be the same connection.\\
 
-\noindent To further simplify the model, the TCP connections are modeled as delay centers instead of queues. This should be ok, because the network connection utilization is not at it's limit during the test runs.\\
+To further simplify the model, the TCP connections are modeled as delay centers instead of queues. This should be ok, because the network connection utilization is not at it's limit during the test runs.\\
 
-\noindent Those simplifications then lead to the simplified queueing network as shown in figure \ref{fig:simplified-queueing-network}. Note that the TCP connections are still drawn as queues, but they are modeled as delay centers instead.\\
+Those simplifications then lead to the simplified queueing network as shown in figure \ref{fig:simplified-queueing-network}. Note that the TCP connections are still drawn as queues, but they are modeled as delay centers instead.\\
 
 
 \begin{figure}[H]
@@ -204,7 +205,7 @@ The following queueing model network was created based on the understanding of t
 
 The clients do simple operations (send and receive messages) and don't do any computation. The think time (\textbf{Z}) of the client doesn't depend on the client count and thus correspond to the sleep time between requests.\\
 
-\noindent The think time of the clients is 10ms.\\
+The think time of the clients is 10ms.\\
 
 For the scaleout test, the number of clients was scaled from 15, 30, 45, 60.
 
@@ -212,34 +213,35 @@ For the scaleout test, the number of clients was scaled from 15, 30, 45, 60.
 
 The TCP and NIO receive / send contains many things like the network card, the time it takes to physically transport and rout the signal to the corresponding receiver, the OS buffer, and the JVM network buffer. It was decided to also add the NIO thread to this queue, because it acts like the OS buffer or the JVM network buffer.\\
 
-\noindent According to the Java specification, the buffer of the TCP connection is 50, and thus the queue should be modeled as M/M/$\infty$/50/$\infty$/FCFS. However, to simplify the model, it is modeled as M/M/$\infty$/$\infty$/$\infty$/FCFS.\\
+According to the Java specification, the buffer of the TCP connection is 50, and thus the queue should be modeled as M/M/$\infty$/50/$\infty$/FCFS. However, to simplify the model, it is modeled as M/M/$\infty$/$\infty$/$\infty$/FCFS.\\
 
-\noindent The queue is modelled as a fixed capacity service center with and unbound queue size. Because only one network connection and one NIO thread is used, the service node count is 1. So it is modelled as M/M/$\infty$/$\infty$/$\infty$/FCFS queue.\\
+The queue is modelled as a fixed capacity service center with and unbound queue size. Because only one network connection and one NIO thread is used, the service node count is 1. So it is modelled as M/M/$\infty$/$\infty$/$\infty$/FCFS queue.\\
 
-\noindent In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
+In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
 
-\noindent Another thing that could have been modelled would have been the separation of sending and receiving messages. For this, the database would be split up into two parts, one for sending and one for receiving respectively. However, to keep the model simple, this hasn't been done.
+Another thing that could have been modelled would have been the separation of sending and receiving messages. For this, the database would be split up into two parts, one for sending and one for receiving respectively. However, to keep the model simple, this hasn't been done.
 
 
 \subsubsection{TCP M/M/$\infty$/$\infty$/$\infty$/FCFS}
 
 This is the same as \textbf{TCP and NIO receive} without the NIO. Therefore it is also modelled as a fixed capacity service center with unbound queue size and a node count of 1.\\
 
-\noindent As measured in the milestone I\cite{milestone1}, the mean service time of the TCP connection is 2.644ms for sending and 2.590ms for receiving messges. For this analysis, the mean of 2.617ms is assumed to simplify the analysis.\\
+As measured in the milestone I\cite{milestone1}, the mean service time of the TCP connection is 2.644ms for sending and 2.590ms for receiving messges. For this analysis, the mean of 2.617ms is assumed to simplify the analysis.\\
 
-\noindent In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
+In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
 
 
 \subsubsection{Workers (Middleware): 80 * M/M/1/$\infty$/$\infty$/FCFS}
 
 There are several worker threads in the system. These worker threads are modelled as a M/M/x queue, where x corresponds to the number of worker threads per middleware. The workers obviously are load dependent. The queue size is 100, as it corresponds to the queue size of the queue from which the worker threads can get the requests which have to be processed.\\
 
-\noindent Additionally, the middlewares can be scaled. The clients are evenly distributed between the middlewares, and so are the requests sent by the clients. Therefore, the model is simplified further as follows: for every additional middleware, the workers are merged into one big worker pool across all middlewares. Therefore, the middleware queues are modelled as (n * x) * M/M/1/$\infty$/$\infty$/FCFS queues, where n corresponds to the amount of middlewares and x corresponds to the number of worker threads per middleware.\\
+Additionally, the middlewares can be scaled. The clients are evenly distributed between the middlewares, and so are the requests sent by the clients. Therefore, the model is simplified further as follows: for every additional middleware, the workers are merged into one big worker pool across all middlewares. Therefore, the middleware queues are modelled as (n * x) * M/M/1/$\infty$/$\infty$/FCFS queues, where n corresponds to the amount of middlewares and x corresponds to the number of worker threads per middleware.\\
 
-For the scaleout test, 4 middlewares were used, each with 20 workerthreads. This gives a total of 4*20 = 80. The visit count for the middleware is 1/80, because one messages passes through exactly one middleware worker.\\
+For the scaleout test, 4 middlewares were used, each with 20 workerthreads. This gives a total of $4*20 = 80$. The visit count for the middleware is therefore 1/80, because one messages passes through exactly one middleware worker.\\
 
 The service time of the middleware is calculated as follows:
-Total service time - DB service time - 4 * TCP service time. As estimated in the milestone I\cite{milestone1}, for sending the service time is 0.042ms and for receiving it is 0.043ms. For the analysis, a service time of 0.042ms is used.\\
+$$Total service time - DB service time - 4 * TCP service time$$
+As estimated in the milestone I\cite{milestone1}, for sending the service time is 0.042ms and for receiving it is 0.043ms. For the analysis, a service time of 0.042ms is used.\\
 
 
 \subsubsection{Database M/M/8/$\infty$/$\infty$/FCFS}
@@ -261,11 +263,11 @@ The service time is 4.016ms for sending and 6.196ms for receiving messages, as m
 The mean value analysis is performed as described in the book used in this course \cite[Box 34.3, Box 35.1, Box 36.1]{Raj}. Here, the values of the microbenchmarks of milestone I\cite{milestone1} are used. Furthermore, the mean value analysis is also based on the scaleout experiments conducted during this milestone.\\
 
 
-%\noindent To calculate the mean arrival time and the mean service rate, the scaleout experiment with 60 clients was used. This gives a mean arrival rate ($\lambda$) 178.885 messages per second. The mean service time for this test was 32.99374762ms, and there are 80 workers, which gives a mean service rate of 1 / 32.99374762ms / 80 workers = 0.37885966 requests/s/worker and 30.30877278 requests/s in total. \\
+%To calculate the mean arrival time and the mean service rate, the scaleout experiment with 60 clients was used. This gives a mean arrival rate ($\lambda$) 178.885 messages per second. The mean service time for this test was 32.99374762ms, and there are 80 workers, which gives a mean service rate of 1 / 32.99374762ms / 80 workers = 0.37885966 requests/s/worker and 30.30877278 requests/s in total. \\
 
 Here, all values from above and from milestone I\cite{milestone1} are listed. They are used as input for the mean value analysis.\\
 
-\noindent The number of clients varies from 15-300\footnote{from 15-60 in steps of 15, from 60-300 in steps of 30}.\\
+The number of clients varies from 15-300\footnote{from 15-60 in steps of 15, from 60-300 in steps of 30}.\\
 
 \begin{table}[h!]
 \begin{center}
