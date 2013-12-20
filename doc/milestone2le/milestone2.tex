@@ -447,6 +447,8 @@ However, the predicted model seems to be flawed somewhat: While it works well fo
 
 To find the limit of the rest of the system and to further validate the model, the database was scaled even more, from 10-30 databaes. However, the one database is displayed too as a reference.\\
 
+To display the database utilisation figure \ref{fig:db-utilisation} has been inserted. It is clearly visible that there is a relationship between response time and database utilization. In the real system, this would mean that message start queuing up waiting for the database connection. We also note the bumps which are obviously wrong - it is obviously not possible that the utilisation goes over 100\%.\\
+
 In the figures \ref{fig:tp-db-scale2} and \ref{fig:rt-db-scale2} it shows that the throughput and the response time grow linearly respectively, but only up to 12 databases. Then, another component becomes the system limit. Therefore the models 20 x database and 30 x database overlap exactly and no difference can be distinguished. Again, we also notice the disfigurement / the bump of the model at the peek of the curve. But also again, it is nice to see that the general trend is recorded.\\
 
 If this was a real system, one could decide to invest some work and implement the messaging system with multiple databases. It seems to have a linear effect, which is great in this case. However, there is one caveat which is not captured by the model: There would be additional overhead to either synchornize the databases, or the middlewares would have to connect to multiple databases. This might be insignificant if there are only 2 or 3 additional databases, but it will probably become a concern if 10 or 20 additional databases are implemented. In this case, one should probably refine the model and run the simulations again.\\
@@ -469,6 +471,14 @@ If this was a real system, one could decide to invest some work and implement th
 
 \begin{figure}[H]
 	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/db_utilisation.pdf}
+  \end{center}
+  \caption{model prediction, database utilisation for database scaling}
+  \label{fig:db-utilisation}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
     \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale2.pdf}
   \end{center}
   \caption{model prediction, throughput database scaling, high values}
@@ -482,6 +492,8 @@ If this was a real system, one could decide to invest some work and implement th
   \caption{model prediction, response time database scaling, high values}
   \label{fig:rt-db-scale2}
 \end{figure}
+
+
 \end{landscape}
 
 
