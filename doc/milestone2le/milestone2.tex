@@ -404,7 +404,7 @@ Nevertheless, the model can show global trends of the messaging system. Therefor
 
 \subsubsection{The Bumps}
 
-After doing the analysis, the reason for the ugly bumps in the graphs were discovered: The algorithm to simulate the queuing network works with doubles. This leads to numerical instabilities because it works with very small and very numbers. These instabilities can be avoided when the Java algorithm would be changed to use BigDecimal instead of double. However, for the interpretation of the test results it doesn't matter, because one can easily interpret the model if it wouldn't have those bumps. Unfortunately, there was no time left for implementing this.\\
+After doing the analysis, the reason for the ugly bumps in the graphs were discovered: The algorithm to simulate the queuing network works with doubles. This leads to numerical instabilities because it works with very small and very numbers. These instabilities can be avoided when the Java algorithm is changed to use BigDecimal instead of double (implemented in code/mean_value_analysis_stable). However, for the interpretation of the test results it doesn't matter, because one can easily interpret the model if it wouldn't have those bumps.\\
 
 
 \pagebreak
