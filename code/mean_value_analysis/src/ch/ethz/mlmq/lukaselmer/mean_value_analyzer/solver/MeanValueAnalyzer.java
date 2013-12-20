@@ -17,7 +17,7 @@ public class MeanValueAnalyzer {
 		queues.clear();
 	}
 
-	public void calculateNetwork(int n, double thinkTime, boolean bottleneck, boolean printResponseTime) {
+	public void calculateNetwork(int n, double thinkTime, boolean printBottleneck, boolean printResponseTime) {
 		for (int i = 1; i <= n; i++) {
 
 			double responseTimeTotal = 0.0;
@@ -33,9 +33,9 @@ public class MeanValueAnalyzer {
 
 			if (i == n) {
 				if (printResponseTime)
-					System.out.println(responseTimeTotal);
+					printNumber(responseTimeTotal);
 				else
-					System.out.println(throughput * 1000);
+					printNumber(throughput * 1000);
 			}
 
 			// calc queue length, for each queue
@@ -43,10 +43,14 @@ public class MeanValueAnalyzer {
 				queues.get(m).updateQueueLength(throughput, i);
 			}
 
-			if (bottleneck && i == n) {
+			if (printBottleneck && i == n) {
 				calcBottleneck(i, throughput);
 			}
 		}
+	}
+
+	private void printNumber(double number) {
+		System.out.println(("" + number).replace('.', ','));
 	}
 
 	public void calcBottleneck(int n, double throughput) {

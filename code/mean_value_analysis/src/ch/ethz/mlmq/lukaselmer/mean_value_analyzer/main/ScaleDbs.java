@@ -4,11 +4,13 @@ import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.queue.Queue;
 import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.queue.QueueType;
 import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.solver.MeanValueAnalyzer;
 
-public class OverallSystem {
+public class ScaleDbs {
 
 	public static void main(String[] args) {
 
 		boolean printResponseTime = true;
+		int dbCount = 1;
+
 		boolean printBottleneck = false;
 		double middlewareTime = 0.042;
 		int maxClients = 300;
@@ -16,7 +18,7 @@ public class OverallSystem {
 
 		double tcpTime = 2.617;
 		int middlewareCount = 80;
-		int dbWorkers = 8;
+		int dbWorkers = 8 * dbCount;
 		double dbServiceTime = 4.506; // fixed value (good): 4.506, estimated value (bad): 5.106
 
 		MeanValueAnalyzer mva = new MeanValueAnalyzer();
@@ -28,9 +30,11 @@ public class OverallSystem {
 			mva.addQueue(new Queue("TCP 4", tcpTime, 1, QueueType.delayCenter, 1, maxClients + 1));
 
 			for (int i = 1; i <= middlewareCount; i++) {
-				mva.addQueue(new Queue("Middleware " + i, middlewareTime, 1.0 / middlewareCount, QueueType.loadDependent, 1, maxClients + 1));
+				mva.addQueue(new Queue("Middleware " + i, middlewareTime, 1.0 / (double) middlewareCount, QueueType.loadDependent, 1, maxClients + 1));
 			}
-			mva.addQueue(new Queue("Database", dbServiceTime, 1, QueueType.loadDependent, dbWorkers, maxClients + 1));
+
+			mva.addQueue(new Queue("Database", dbServiceTime, 1.0, QueueType.loadDependent, dbWorkers, maxClients + 1));
+
 			mva.calculateNetwork(numClients, Z, numClients == maxClients && printBottleneck, printResponseTime);
 			mva.clearQueues();
 		}

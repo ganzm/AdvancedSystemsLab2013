@@ -420,7 +420,6 @@ The reason why the throughput is less exact then the response time is that a sma
   \caption{mean value analysis, throughput fixed, with sanity check}
   \label{fig:tp-sanity-check-total-fixed}
 \end{figure}
-
 \end{landscape}
 
 
@@ -442,9 +441,26 @@ In this section, the model developed in the previous section is used to simulate
 
 \subsection{Database}
 
-The Java program was extended so it can locate the bottleneck component of the system. The reason why the database is listed first here is that the database is the bottleneck of the model.
+The Java program was extended so it can locate the bottleneck component of the system. The reason why the database is listed first here is that the database is the bottleneck of the model. Figure \ref{fig:tp-db-scale} shows that the throughput would grow linearly, as we would expect it. And figure \ref{fig:rt-db-scale} shows that the response time would also grow slower.\\
+
+However, the predicted model seems to be flawed somewhat: While it works well for two database instances, there are some bumps when modelling 3 or 4 databases. This may be a possible weak point of this model.
 
 
+\begin{landscape}\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/tp_db_scale.pdf}
+  \end{center}
+  \caption{model prediction, throughput database scaling}
+  \label{fig:tp-db-scale}
+\end{figure}
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.7, trim = 23mm 28mm 24mm 25mm, clip]{measurements_increase_load/rt_db_scale.pdf}
+  \end{center}
+  \caption{model prediction, response time database scaling}
+  \label{fig:rt-db-scale}
+\end{figure}
+\end{landscape}
 
 
 
