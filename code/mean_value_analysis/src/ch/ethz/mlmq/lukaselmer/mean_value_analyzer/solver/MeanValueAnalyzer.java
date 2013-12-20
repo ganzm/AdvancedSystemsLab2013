@@ -1,7 +1,9 @@
-package ch.ethz.mlmq.lukaselmer.mean_value_analyzer;
+package ch.ethz.mlmq.lukaselmer.mean_value_analyzer.solver;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import ch.ethz.mlmq.lukaselmer.mean_value_analyzer.queue.Queue;
 
 public class MeanValueAnalyzer {
 

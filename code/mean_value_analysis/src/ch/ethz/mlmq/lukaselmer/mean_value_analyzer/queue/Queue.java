@@ -1,14 +1,10 @@
-package ch.ethz.mlmq.lukaselmer.mean_value_analyzer;
+package ch.ethz.mlmq.lukaselmer.mean_value_analyzer.queue;
 
 public class Queue {
 
-	enum Type {
-		delayCenter, fixedCapacity, loadDependent
-	}
-
 	private double serviceTime;
 	private double visits;
-	private Type type;
+	private QueueType type;
 	private double responseTime;
 	private double queueLength;
 	private String name;
@@ -16,7 +12,7 @@ public class Queue {
 	private final double[] P;
 	private int numberOfServices;
 
-	public Queue(String name, double serviceTime, double visits, Type type, int numberOfServices, int size) {
+	public Queue(String name, double serviceTime, double visits, QueueType type, int numberOfServices, int size) {
 		setName(name);
 		P = new double[size];
 		setServiceTime(serviceTime);
@@ -30,9 +26,9 @@ public class Queue {
 	}
 
 	public double updateResponseTime(int n) {
-		if (type == Type.fixedCapacity) {
+		if (type == QueueType.fixedCapacity) {
 			responseTime = serviceTime * (1 + queueLength);
-		} else if (type == Type.loadDependent) {
+		} else if (type == QueueType.loadDependent) {
 			double sum = 0;
 			for (int i = 1; i <= n; i++) {
 				sum += P[i - 1] * i / getMu(i);
@@ -51,7 +47,7 @@ public class Queue {
 	}
 
 	public void updateQueueLength(double throughput, int n) {
-		if (type == Type.loadDependent) {
+		if (type == QueueType.loadDependent) {
 			for (int j = n; j >= 1; j--) {
 				P[j] = (throughput / getMu(j)) * P[j - 1];
 				if (P[j] < 0) {
@@ -68,7 +64,7 @@ public class Queue {
 					P[0] = 0;
 				}
 			}
-			int G = 0;
+			// int G = 0;
 		} else {
 			queueLength = throughput * visits * responseTime;
 		}
@@ -90,11 +86,11 @@ public class Queue {
 		this.visits = visits;
 	}
 
-	public Type getType() {
+	public QueueType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(QueueType type) {
 		this.type = type;
 	}
 
