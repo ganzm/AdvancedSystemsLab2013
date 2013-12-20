@@ -1,9 +1,9 @@
-package ch.ethz.mlmq.mva;
+package ch.ethz.mlmq.lukaselmer.mean_value_analyzer;
 
 public class MiddlewareModel {
 
 	public static void main(String[] args) {
-		Mva mva = new Mva();
+		MeanValueAnalyzer mva = new MeanValueAnalyzer();
 		int codeTime = 2;
 		int maxClients = 1000;
 		int maxMid = 10;

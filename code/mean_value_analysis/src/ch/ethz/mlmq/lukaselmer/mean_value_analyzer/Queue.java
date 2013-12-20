@@ -1,10 +1,10 @@
-package ch.ethz.mlmq.mva;
-/**
- * 
- * @author sara
- * 
- */
+package ch.ethz.mlmq.lukaselmer.mean_value_analyzer;
+
 public class Queue {
+
+	enum Type {
+		delayCenter, fixedCapacity, loadDependent
+	}
 
 	private double serviceTime;
 	private double visits;
@@ -15,10 +15,6 @@ public class Queue {
 
 	private final double[] P;
 	private int numberOfServices;
-
-	enum Type {
-		delayCenter, fixedCapacity, loadDependent
-	}
 
 	public Queue(String name, double serviceTime, double visits, Type type, int numberOfServices, int size) {
 		setName(name);
@@ -47,15 +43,11 @@ public class Queue {
 	}
 
 	private double getMu(int i) {
-
 		if (i < numberOfServices) {
 			return i / serviceTime;
 		} else {
 			return numberOfServices / serviceTime;
 		}
-		/*
-		 * if (i == 1) return 0.32; else if (i == 2) return 0.39; else return 0.42;
-		 */
 	}
 
 	public void updateQueueLength(double throughput, int n) {
