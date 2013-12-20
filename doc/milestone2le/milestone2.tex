@@ -217,9 +217,9 @@ According to the Java specification, the buffer of the TCP connection is 50, and
 
 The queue is modelled as a fixed capacity service center with and unbound queue size. Because only one network connection and one NIO thread is used, the service node count is 1. So it is modelled as M/M/$\infty$/$\infty$/$\infty$/FCFS queue.\\
 
-In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
+In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.\\
 
-Another thing that could have been modelled would have been the separation of sending and receiving messages. For this, the database would be split up into two parts, one for sending and one for receiving respectively. However, to keep the model simple, this hasn't been done.
+Another thing that could have been modelled would have been the separation of sending and receiving messages. For this, the database would be split up into two parts, one for sending and one for receiving respectively. However, to keep the model simple, this hasn't been done.\\
 
 
 \subsubsection{TCP M/M/$\infty$/$\infty$/$\infty$/FCFS}
@@ -402,6 +402,10 @@ Next, the queueing model is a very simplified version of the real system, so tha
 
 Nevertheless, the model can show global trends of the messaging system. Therefore it can predict how the system might change when implementing things differently. Due to the fact that building, actually implementing and configuring more complex parts of the system (e.g. multiple databases) is time consuming and in practice often a cost factor, models like this can help estimating which components could bring significant performance improvements.\\
 
+\subsubsection{The Bumps}
+
+After doing the analysis, the reason for the ugly bumps in the graphs were discovered: The algorithm to simulate the queuing network works with doubles. This leads to numerical instabilities because it works with very small and very numbers. These instabilities can be avoided when the Java algorithm would be changed to use BigDecimal instead of double. However, for the interpretation of the test results it doesn't matter, because one can easily interpret the model if it wouldn't have those bumps. Unfortunately, there was no time left for implementing this.\\
+
 
 \pagebreak
 
@@ -514,7 +518,18 @@ Finally, the model was used to predict how the system would behave when scaled. 
 
 The modelled system seems to predict the behaviour of the system quite well. Unfortunately I believe that some of the measurements obtained in milestone I\cite{milestone1}, especially the microbenchmarks, are not 100\% accurate. Therefore the middleware service time might be a little too low and thus, scaling the middlewares doesn't have an effect on the system as a whole.\\
 
+Even tough there are Tools to analyze queuing systems, like the Java Modeling Tools\footnote{http://jmt.sourceforge.net/}, these tools often are difficult to use and / or are out of date. For example, the Java Modeling Tools did not even run under MacOS, but worked under Windows. It is unclear to me why there is no more sophisticated software, which is easy to use, and up to date, in which a queuing network can easily be simulated with numerical stability.\\
+
+Instead, a Java program was implemented, which obviously is numerically not stable when using big numbers (e.g. for components, or for clients).\\
+
 However, the power of having a system model cannot be underestimated. Using the system model, one can easily check, whether it is cost and time efficient to invest into system development of certain parts of the system. Especially when it is not possible to build up an infrastructure (e.g. if you want to implement a new network protocol which should be used across the whole internet), such system models play a crucial role in software development and system development.\\
+
+\begin{figure}[H]
+	\begin{center}
+    \includegraphics[scale=0.52]{consecutive_vowels.png}
+  \end{center}
+  \caption{an xkcd comic which relates to queuing theory. Sometimes, you need something to laugh about when correcting these ASL reports. Source: http://xkcd.com/853/}
+\end{figure}
 
 \pagebreak
 
