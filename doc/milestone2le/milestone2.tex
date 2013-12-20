@@ -62,49 +62,11 @@
 
 \begin{abstract}
 
-This document is the follow up document of Advanced Systems Lab - Milestone I and describes an analytical queueing model of the system which was built using the operational laws. Using this model, the performance characteristics of the model are derived and compared to the measurements of Milestone I. Furthermore it is analysed where the data matches the model and where it does not.
+This document is the follow up document of Advanced Systems Lab - Milestone I \cite{milestone1} and describes an analytical queueing model of the system which was built using the operational laws. Using this model, the performance characteristics of the model are derived and compared to the measurements of Milestone I \cite{milestone1}. Furthermore it is analysed where the data matches the model and where it does not.
 
 \end{abstract}
 
 \pagebreak
-
-%% ----------------------------------------------
-% Section Messaging System
-%% ----------------------------------------------
-\section{Tasks}
-
-{
-* analytical queuing model\\
-** for each component of the system\\
-** and for the system as a whole.\\
-
-* derive the performance characteristics that the model predicts\\
-** compare them with the results obtained in milestone 2\\
-
-* Explain where the model and data match and where they do not match\\
-** sufficiently detailed explanations of characteristics behind the observed behaviour\\
-*** code\\
-*** system\\
-*** hardware\\
-
-* the modeling should include for each component\\
-** the queuing model(s)\\
-** parameters\\
-
-* overall system should be modeled\\
-** as queuing network\\
-{\color{red}** the experimental results analyzed using the operational laws\\}
-
-{
-\color{red}
-* clearly indicate\\
-** the behavior expected from the model through graphs\\
-** plot them together with the measured behavior\\
-
-* When evaluating the experimental data and the models\\
-** clearly indicate the laws you are applying\\
-** explain why you think they can be applied in the corresponding analysis\\
-}
 
 \section{Introduction}
 
@@ -126,11 +88,11 @@ Even tough there are unit tests which support the stability of the system, it is
 
 \subsection{Data Sources}
 
-This document extends the document of milestone I. Especially the following test runs are used in this analysis:
+This document extends the document of milestone I\cite{milestone1}. Especially the following test runs are used in this analysis:
 
 \begin{itemize}
-\item Microbenchmarks (conducted during last milestone)
-\item 2 hour test (conducted during last milestone)
+\item Microbenchmarks (conducted during last milestone\cite{milestone1})
+\item 2 hour test (conducted during last milestone\cite{milestone1})
 \item Scaleout experiments (conducted during this milestone, see below)
 \end{itemize}
 
@@ -140,7 +102,8 @@ Some additional scaleout experiments were conducted. They were executed with 4 m
 \noindent Then, the number of clients was scaled from in steps of 15 from 15-60, and in steps of 30 from 60-300.
 
 
-%% ----------------------------------------------
+\pagebreak
+
 \section{Components}
 
 In the analysis, the focus of the system is on the middleware. Additionally, the database is modelled as a queue, but no further internals of the database are considered.\\
@@ -168,11 +131,11 @@ Because the clients wait for the current message to be answered before sending t
 
 \section{Performance Characteristics}
 
-As described in the book (TODO) in section 30.1, a queuing system can be specified by six parameters. Therefore we use the Kendall notation in the form A/S/m/B/K/SD, where the letters correspond to the six parameters listed on page 507-509 in the book. Unless specified otherwise, when A/S/m is written, then this corresponds to a A/S/m/$\infty$/$\infty$/FCFS queue, where FCFS means First Come First Serve\footnote{https://en.wikipedia.org/wiki/First-come,\_first-served}.
+As described in the textbook \cite{Raj} in section 30.1, a queuing system can be specified by six parameters. Therefore we use the Kendall notation in the form A/S/m/B/K/SD, where the letters correspond to the six parameters listed on page 507-509 in the textbook\cite{Raj}. Unless specified otherwise, when A/S/m is written, then this corresponds to a A/S/m/$\infty$/$\infty$/FCFS queue, where FCFS means First Come First Serve\footnote{https://en.wikipedia.org/wiki/First-come,\_first-served}.
 
 \subsection{A: Arrival Process}
 
-Even tough the clients send in a certain deterministic interval, because of the network and the operating system there is a delay until the requests arrive in the queuing system. We assume that this delay is exponentially distributed. Thus, A is the Markovian M. (can be seen in figure TODO)
+Even tough the clients send in a certain deterministic interval, because of the network and the operating system there is a delay until the requests arrive in the queuing system. We assume that this delay is exponentially distributed. Thus, A is the Markovian M.
 
 \subsection{S: Service Time Distribution}
 
@@ -196,6 +159,8 @@ The population size is defined by the amount of clients issuing requests to the 
 
 In general, the service discipline is First Come, First Served (FCFS). However, because there are limited CPU's on the middleware, and CPU's usually use Round Robin (RR), this may have to be considered in the analysis.
 
+
+\pagebreak
 
 \section{Model}
 
@@ -260,7 +225,7 @@ The TCP and NIO receive / send contains many things like the network card, the t
 
 This is the same as \textbf{TCP and NIO receive} without the NIO. Therefore it is also modelled as a fixed capacity service center with unbound queue size and a node count of 1.\\
 
-\noindent As measured in the milestone I, the mean service time of the TCP connection is 2.644ms for sending and 2.590ms for receiving messges. For this analysis, the mean of 2.617ms is assumed to simplify the analysis.\\
+\noindent As measured in the milestone I\cite{milestone1}, the mean service time of the TCP connection is 2.644ms for sending and 2.590ms for receiving messges. For this analysis, the mean of 2.617ms is assumed to simplify the analysis.\\
 
 \noindent In the following analysis, the "TCP and NIO receive" and the "TCP" are merged together as TCP.
 
@@ -274,7 +239,7 @@ There are several worker threads in the system. These worker threads are modelle
 For the scaleout test, 4 middlewares were used, each with 20 workerthreads. This gives a total of 4*20 = 80. The visit count for the middleware is 1/80, because one messages passes through exactly one middleware worker.\\
 
 The service time of the middleware is calculated as follows:
-Total service time - DB service time - 4 * TCP service time. As estimated in the milestone I, for sending the service time is 0.042ms and for receiving it is 0.043ms. For the analysis, a service time of 0.042ms is used.\\
+Total service time - DB service time - 4 * TCP service time. As estimated in the milestone I\cite{milestone1}, for sending the service time is 0.042ms and for receiving it is 0.043ms. For the analysis, a service time of 0.042ms is used.\\
 
 
 \subsubsection{Database M/M/8/$\infty$/$\infty$/FCFS}
@@ -289,15 +254,16 @@ The service time is 4.016ms for sending and 6.196ms for receiving messages, as m
 
 
 
+\pagebreak
 
 \section{Mean Value Analysis}
 
-The mean value analysis is performed as described in the book used in this course\footnote{The Art of Computer Systems Performance Analysis, Raj Jain, 1991} (especially Box 34.3, Box 35.1, Box 36.1). Here, the values of the microbenchmarks of milestone I are used. Furthermore, the mean value analysis is also based on the scaleout experiments conducted during this milestone.\\
+The mean value analysis is performed as described in the book used in this course \cite[Box 34.3, Box 35.1, Box 36.1]{Raj}. Here, the values of the microbenchmarks of milestone I\cite{milestone1} are used. Furthermore, the mean value analysis is also based on the scaleout experiments conducted during this milestone.\\
 
 
 %\noindent To calculate the mean arrival time and the mean service rate, the scaleout experiment with 60 clients was used. This gives a mean arrival rate ($\lambda$) 178.885 messages per second. The mean service time for this test was 32.99374762ms, and there are 80 workers, which gives a mean service rate of 1 / 32.99374762ms / 80 workers = 0.37885966 requests/s/worker and 30.30877278 requests/s in total. \\
 
-Here, all values from above and from milestone I are listed. They are used as input for the mean value analysis.\\
+Here, all values from above and from milestone I\cite{milestone1} are listed. They are used as input for the mean value analysis.\\
 
 \noindent The number of clients varies from 15-300\footnote{from 15-60 in steps of 15, from 60-300 in steps of 30}.\\
 
@@ -380,6 +346,7 @@ As described in the simplified model description, the system could be modelled d
 
 
 
+\pagebreak
 
 \section{Measurement Analysis}
 \label{sec:measurement-analysis}
@@ -433,6 +400,8 @@ Next, the queueing model is a very simplified version of the real system, so tha
 
 Nevertheless, the model can show global trends of the messaging system. Therefore it can predict how the system might change when implementing things differently. Due to the fact that building, actually implementing and configuring more complex parts of the system (e.g. multiple databases) is time consuming and in practice often a cost factor, models like this can help estimating which components could bring significant performance improvements.\\
 
+
+\pagebreak
 
 \section{Scaling the System}
 
@@ -522,30 +491,37 @@ Using this model, the figures \ref{fig:tp-middleware-scale} and \ref{fig:rt-midd
 
 
 
+\pagebreak
 
 \section{Conclusion}
 
 First, the assumptions, on which the whole analysis bases on, were stated. There it was already clear that a queueing model would not be an exact solution, but could only be used for rough approximations because the assumptions are not fully met when the system is runnning on the Amazon elastic compute cloud.\\
 
-In this document, the system implemented in the prior milestone is explained by an analytical queuing model. Each component of the system has been modelled individually, and then those components were combined to a queueing network to model the system as a whole. The parameters and how they were obtained is clearly stated, and thus the experiments should be reproducible.\\
+In this document, the system implemented in the prior milestone\cite{milestone1} is explained by an analytical queuing model. Each component of the system has been modelled individually, and then those components were combined to a queueing network to model the system as a whole. The parameters and how they were obtained is clearly stated, and thus the experiments should be reproducible.\\
 
-Next, the performance characteristics of the model were compared to the measurements obtained in milestone I and during this milestone (scaleout experiments) using the operational laws. In the beginning, it was hard to find a model that fits to the system, but once the first mean value analysis was created, it was then simpler to go to more complex models that fit better to the system.\\
+Next, the performance characteristics of the model were compared to the measurements obtained in milestone I\cite{milestone1} and during this milestone (scaleout experiments) using the operational laws. In the beginning, it was hard to find a model that fits to the system, but once the first mean value analysis was created, it was then simpler to go to more complex models that fit better to the system.\\
 
 It then was explained where the model and the data match and where they diverge. Extensive explanations were given concerning the code, system and hardware of the system.\\
 
 Finally, the model was used to predict how the system would behave when scaled. This was done using graphs to plot how they would scale. It seems that the system is clearly limited by the database. Scaling the middlewares on the other hand would not have a noticeable effect.\\
 
 
+\pagebreak
+
 \section{Lessons Learned}
 
-The modelled system seems to predict the behaviour of the system quite well. Unfortunately I believe that some of the measurements obtained in milestone I, especially the microbenchmarks, are not 100\% accurate. Therefore the middleware service time might be a little too low and thus, scaling the middlewares doesn't have an effect on the system as a whole.\\
+The modelled system seems to predict the behaviour of the system quite well. Unfortunately I believe that some of the measurements obtained in milestone I\cite{milestone1}, especially the microbenchmarks, are not 100\% accurate. Therefore the middleware service time might be a little too low and thus, scaling the middlewares doesn't have an effect on the system as a whole.\\
 
 However, the power of having a system model cannot be underestimated. Using the system model, one can easily check, whether it is cost and time efficient to invest into system development of certain parts of the system. Especially when it is not possible to build up an infrastructure (e.g. if you want to implement a new network protocol which should be used across the whole internet), such system models play a crucial role in software development and system development.\\
+
+\pagebreak
 
 \section{References}
 
 
 
+\bibliographystyle{plain}
+\bibliography{literature}
 
 
 
